@@ -1,0 +1,24 @@
+[
+  {
+    "id": "0df29ec4-fd02-4eb7-aa98-371c53937116",
+    "title": "camara",
+    "description": "23 inchs",
+    "code": "jhglgtyiy9",
+    "price": 400,
+    "status": true,
+    "stock": 35,
+    "category": "informatica",
+    "thumbnails": []
+  },
+  {
+    "id": "d8c4f4d8-2f48-480e-9182-1d994ef30326",
+    "title": "teclado",
+    "description": "201 teclas",
+    "code": "lelele",
+    "price": 100,
+    "status": true,
+    "stock": 35,
+    "category": "informatica",
+    "thumbnails": []
+  }
+]

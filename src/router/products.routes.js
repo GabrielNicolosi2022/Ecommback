@@ -8,15 +8,15 @@ const router = Router();
 
 const productManager = new ProductManager();
 
-// Obtener todos los productos
+// Obtener todos los productos paginados, filtrados y ordenados
 router.get('/', async (req, res) => {
   try {
     // Obtener los query params
     const limit = parseInt(req.query.limit) || 10;
     const page = parseInt(req.query.page) || 1;
     const sort = req.query.sort;
-    const query = req.query.query;
-
+    const query = req.query;
+    /* 
     // Cargo los productos utilizando el método loadProducts()
     const products = await productManager.getAllProducts();
     // validación del query param 'limit'
@@ -24,6 +24,73 @@ router.get('/', async (req, res) => {
       res.json(products.slice(0, limit));
       return res.json({ status: 'success', data: products });
     }
+    
+ */
+    // opciones de paginación
+    const options = {
+      limit: limit,
+      page: page,
+    };
+
+    // opciones de ordenamiento
+    console.log('sort:', sort);
+    const sortOptions = {};
+    if (sort === 'asc') {
+      sortOptions.price = 1;
+    } else if (sort === 'desc') {
+      sortOptions.price = -1;
+    }
+    console.log('sortOptions:', sortOptions);
+
+    // filtro de búsqueda
+    const filter = {};
+
+    if (query) {
+      filter.$or = [];
+      if (query.category) {
+        filter.$or.push({ category: query.category });
+      }
+      if (query.status) {
+        filter.$or.push({ status: query.status });
+      }
+    }
+
+    // Cargo los productos utilizando mongoose-paginate-v2
+    const {
+      docs,
+      totalPages,
+      prevPage,
+      nextPage,
+      Page,
+      hasNextPage,
+      hasPrevPage,
+    } = await productManager.getAllProductsPaginated(
+      options,
+      filter,
+      sortOptions
+    );
+    // enlaces a página previa y siguiente
+    const prevLink = hasPrevPage
+      ? `/products?page=${prevPage}&limit=${limit}`
+      : null;
+    const nextLink = hasNextPage
+      ? `/products?page=${nextPage}&limit=${limit}`
+      : null;
+
+    // objeto para respuesta
+    const response = {
+      status: 'success',
+      payload: docs,
+      totalPages: totalPages,
+      prevPage: prevPage,
+      nextPage: nextPage,
+      page: page,
+      hasPrevPage: hasPrevPage,
+      hasNextPage: hasNextPage,
+      prevLink: prevLink,
+      nextLink: nextLink,
+    };
+    res.json(response);
   } catch (error) {
     res.status(500).json({ error: 'Error al obtener los productos' });
   }
@@ -52,48 +119,62 @@ router.get('/:pid', async (req, res) => {
 // Crear un nuevo producto
 router.post('/', uploader.array('thumbnails', 5), async (req, res) => {
   try {
-    const {
-      title,
-      description,
-      code,
-      price,
-      status,
-      stock,
-      category,
-      thumbnails,
-    } = req.body;
+    const productsData = req.body;
 
-    // Valida que se proporcionen todos los campos obligatorios
-    if (
-      !title ||
-      !description ||
-      !code ||
-      !price ||
-      !status ||
-      !stock ||
-      !category
-    ) {
-      return res.status(400).json({ error: 'Faltan campos obligatorios' }); // Ver problema en productManagerDB
+    // Verificar que se proporcionen al menos un producto
+    if (!Array.isArray(productsData) || productsData.length === 0) {
+      return res.status(400).json({ error: 'No se proporcionaron productos' });
     }
-    const nuevoProducto = {
-      title,
-      description,
-      code,
-      price,
-      status: status || true,
-      stock,
-      category,
-      thumbnails: thumbnails || [],
-    };
-    console.log('Nuevo producto: ', nuevoProducto);
-    await productManager.createProduct(nuevoProducto);
+
+    const createdProducts = [];
+    for (const productData of productsData) {
+      const {
+        title,
+        description,
+        code,
+        price,
+        status,
+        stock,
+        category,
+        thumbnails,
+      } = productData;
+
+      // Verificar campos obligatorios
+      if (
+        !title ||
+        !description ||
+        !code ||
+        !price ||
+        !status ||
+        !stock ||
+        !category
+      ) {
+        console.error(error);
+        return res.status(400).json({ error: 'Faltan campos obligatorios' });
+      }
+
+      const newProduct = {
+        title,
+        description,
+        code,
+        price,
+        status: status || true,
+        stock,
+        category,
+        thumbnails: thumbnails || [],
+      };
+
+      const createdProduct = await productManager.createProduct(newProduct);
+      createdProducts.push(createdProduct);
+    }
+
     res.send({
       status: 'success',
-      message: 'Nuevo producto cargado correctamente',
-      data: nuevoProducto,
+      message: 'Nuevos productos cargados correctamente',
+      data: createdProducts,
     });
   } catch (error) {
-    console.error('El error es: ', error);
+    console.error('El error es:', error);
     return res.status(500).json({ error: 'Error al guardar los productos' });
   }
 });

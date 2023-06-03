@@ -2,7 +2,30 @@ import productsModel from '../models/ProductModel.js';
 
 class ProductManager {
   constructor() {}
-  
+
+  async getAllProductsPaginated(options, filter, sortOptions) {
+    try {
+      const paginationOptions = {
+        ...options,
+        sort: sortOptions, // Incluir el ordenamiento aquí
+      };
+
+      const result = await productsModel.paginate(filter, paginationOptions);
+
+      return {
+        docs: result.docs,
+        totalPages: result.totalPages,
+        prevPage: result.prevPage,
+        nextPage: result.nextPage,
+        page: result.page,
+        hasNextPage: result.hasNextPage,
+        hasPrevPage: result.hasPrevPage,
+      };
+    } catch (error) {
+      throw new Error('Error al obtener los productos paginados');
+    }
+  }
+
   async getAllProducts() {
     try {
       const products = await productsModel.find().lean();
@@ -21,18 +44,19 @@ class ProductManager {
     }
   }
 
-  async createProduct(productData) {
+  async createProduct(productsData) {
     try {
-      if (Array.isArray(productData)) {
-        const result = await productsModel.insertMany(productData);
+      if (Array.isArray(productsData)) {
+        const result = await productsModel.insertMany(productsData);
         return result;
       } else {
-        const newProduct = new productsModel(productData);
+        const newProduct = new productsModel(productsData);
         const result = await newProduct.save();
         return result;
       }
     } catch (error) {
-      throw new Error('Error al crear el producto');
+      console.error(error);
+      throw Error('Error al crear el producto');
     }
   }
 

@@ -23,6 +23,7 @@ class CartManager {
       const carts = await cartsModel.find().lean();
       return carts;
     } catch (error) {
+      console.error('Error al obtener los carritos:', error);
       throw new Error('Error al obtener los carritos');
     }
   }
@@ -32,6 +33,7 @@ class CartManager {
       const cart = await cartsModel.findById(cartId);
       return cart;
     } catch (error) {
+      console.error('Error al obtener el carrito:', error);
       throw new Error('Error al obtener el carrito');
     }
   }
@@ -59,13 +61,16 @@ class CartManager {
   async removeProductFromCart(cartId, productId) {
     try {
       const cart = await cartsModel.findById(cartId);
-      const index = cart.products.indexOf(productId);
+      const index = cart.products.findIndex(
+        (product) => product._id.toString() === productId
+      );
       if (index > -1) {
         cart.products.splice(index, 1);
         await cart.save();
       }
       return cart;
     } catch (error) {
+      console.error('Error al eliminar el producto del carrito:', error);
       throw new Error('Error al eliminar el producto del carrito');
     }
   }
@@ -74,6 +79,7 @@ class CartManager {
     try {
       await cartsModel.findByIdAndRemove(cartId);
     } catch (error) {
+      console.error('Error al eliminar el carrito:', error);
       throw new Error('Error al eliminar el carrito');
     }
   }

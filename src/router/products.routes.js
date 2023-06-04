@@ -34,6 +34,7 @@ router.get('/', async (req, res) => {
 
     // opciones de ordenamiento
     console.log('sort:', sort);
+    
     const sortOptions = {};
     if (sort === 'asc') {
       sortOptions.price = 1;
@@ -46,11 +47,11 @@ router.get('/', async (req, res) => {
     const filter = {};
 
     if (query) {
-      filter.$or = [];
       if (query.category) {
-        filter.$or.push({ category: query.category });
+        filter.$or = [{ category: query.category }];
       }
       if (query.status) {
+        filter.$or = filter.$or || [];
         filter.$or.push({ status: query.status });
       }
     }
@@ -92,6 +93,7 @@ router.get('/', async (req, res) => {
     };
     res.json(response);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: 'Error al obtener los productos' });
   }
 });

@@ -6,7 +6,7 @@ import productsRouter from './router/products.routes.js';
 import morgan from 'morgan';
 import cartsRouter from './router/carts.routes.js';
 import router from './router/carts.routes.js';
-import index from './router/index.routes.js';
+import viewsRouter from './router/views.routes.js'
 
 /* CONFIGURATIONS */
 
@@ -65,12 +65,13 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'handlebars');
 
 // Router express
-app.use('/', index);
+// app.use('/', index);
 // file system
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
 // mongoDB
-app.use('/products', productsRouter);
-app.use('/carts', cartsRouter);
+app.use('/', viewsRouter);
+app.use('api/products', productsRouter);
+app.use('api/carts', cartsRouter);
 
 export default app;

@@ -30,7 +30,10 @@ class CartManager {
 
   async getCartById(cartId) {
     try {
-      const cart = await cartsModel.findById(cartId).populate('products.product');
+      const cart = await cartsModel
+        .findById(cartId)
+        .populate('products.product')
+        .lean();
       console.log(cart);
       return cart;
     } catch (error) {

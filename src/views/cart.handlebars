@@ -1,0 +1,24 @@
+<h1>{{pageTitle}}</h1>
+
+{{! Verificar si hay productos en el carrito }}
+{{#if products.length}}
+  <div class='row'>
+    <div class='container'>
+      <div class='col'>
+        <h2>Productos en el carrito:</h2>
+        <hr />
+        {{#each products}}
+          <div class='product'>
+            <h3>{{this.product.title}}</h3>
+            <p>{{this.product.description}}</p>
+            <p>Precio: $ {{this.product.price}}</p>
+            <p>Cantidad: {{this.quantity}} u.</p>
+          </div>
+        <hr />
+        {{/each}}
+      </div>
+    </div>
+  </div>
+{{else}}
+  <p>No hay productos en el carrito</p>
+{{/if}}

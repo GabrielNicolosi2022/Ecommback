@@ -1,0 +1,47 @@
+<h1 class='text-center pb-3'>{{pageTitle}}</h1>
+
+<div class='row'>
+  <div class='container'>
+    <div class='col'>
+      {{#each products}}
+        <div class='product'>
+          <h2>{{title}}</h2>
+          <p>{{description}}</p>
+          <p>Precio: $ {{price}}</p>
+          <p>Categoría: {{category}}</p>
+
+          {{! Opción 1: Botón para ver detalles del producto en una nueva página }}
+          <a href='/product/{{_id}}'>Ver detalles</a>
+
+          {{! Opción 2: Botón para agregar al carrito directamente }}
+          <form action='/cart/add' method='POST'>
+            <input type='hidden' name='productId' value='{{_id}}' />
+            <input class="btn btn-primary mt-3" type='submit' value='Agregar al carrito' />
+          </form>
+        </div>
+      {{/each}}
+    </div>
+  </div>
+</div>
+
+<!-- Paginación -->
+<div class='row'>
+  <div class='container'>
+    <div class='col'>
+      <div class='pagination'>
+        {{#if totalPages}}
+          {{#if prevLink}}
+            <div>
+              <a class='btn btn-outline-primary me-4' href='{{prevLink}}'>Página Anterior</a>
+            </div>
+          {{/if}}
+          {{#if nextLink}}
+            <div >
+              <a class='btn btn-outline-primary' href={{nextLink}}>Página Siguiente</a>
+            </div>
+          {{/if}}
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</div>

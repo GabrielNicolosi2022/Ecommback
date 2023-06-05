@@ -5,7 +5,6 @@ import CartManager from '../dao/controllers/cartManagerDB.js';
 const router = Router();
 const cartManager = new CartManager();
 
-
 router.get('/', (req, res) => {
   res.render('index', { title: 'EcommBack' });
 });
@@ -14,10 +13,33 @@ router.get('/products', async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 5;
     const page = parseInt(req.query.page) || 1;
-    const sort = req.query.sort; // Aún no implementado
-    const query = req.query; // Aún no implementado
+    const sort = req.query.sort;
+    const query = req.query;
 
-    const products = await productsModel.find().lean();
+    let products = await productsModel.find().lean();
+
+    // Lógica para ordenar los productos si se proporciona sort
+    if (sort) {
+      if (sort === 'asc') {
+        products = products.sort((a, b) => a.price - b.price);
+      } else if (sort === 'desc') {
+        products = products.sort((a, b) => b.price - a.price);
+      }
+    }
+
+    // Lógica para filtrar los productos si se proporciona query
+    if (query) {
+      if (query.category) {
+        products = products.filter(
+          (product) => product.category === query.category
+        );
+      }
+      if (query.status) {
+        products = products.filter(
+          (product) => product.status === query.status
+        );
+      }
+    }
 
     // Lógica de paginación
     const totalProducts = products.length;
@@ -47,6 +69,7 @@ router.get('/products', async (req, res) => {
       nextLink,
     });
   } catch (error) {
+    console.error('Error al obtener los productos', error);
     res.status(500).json({ message: 'Error al obtener los productos', error });
   }
 });
@@ -56,8 +79,11 @@ router.get('/product/:pid', async (req, res) => {
     const productId = req.params.pid;
     const product = await productsModel.findById(productId).lean();
 
-    res.render('productDetail', { pageTitle: 'Detalle del Producto', title: 'EcommBack', product });
-    
+    res.render('productDetail', {
+      pageTitle: 'Detalle del Producto',
+      title: 'EcommBack',
+      product,
+    });
   } catch (error) {
     res
       .status(500)
@@ -78,7 +104,6 @@ router.get('/cart/:cid', async (req, res) => {
       pageTitle: 'Carrito',
       products: cart.products,
     });
-
   } catch (error) {
     res.status(500).json({ message: 'Error al obtener el carrito', error });
   }

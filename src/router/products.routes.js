@@ -23,13 +23,15 @@ router.get('/', async (req, res) => {
 
     // opciones de ordenamiento
     console.log('sort:', sort);
-    
+
     const sortOptions = {};
-    if (sort === 'asc') {
-      sortOptions.price = 1;
-    } else if (sort === 'desc') {
-      sortOptions.price = -1;
-    }
+if (sort) {
+  if (sort === 'asc') {
+    sortOptions.price = 1;
+  } else if (sort === 'desc') {
+    sortOptions.price = -1;
+  }
+}    
     console.log('sortOptions:', sortOptions);
 
     // filtro de búsqueda
@@ -80,6 +82,7 @@ router.get('/', async (req, res) => {
       prevLink: prevLink,
       nextLink: nextLink,
     };
+
     res.json(response);
   } catch (error) {
     res.status(500).json({ error: 'Error al obtener los productos' });
@@ -188,7 +191,6 @@ router.put('/:pid', async (req, res) => {
       message: 'Producto actualizado correctamente',
       data: updatedProduct,
     });
-
   } catch (error) {
     res.status(500).json({ error: 'Error al actualizar el producto' });
   }
@@ -196,9 +198,8 @@ router.put('/:pid', async (req, res) => {
 
 // Eliminar un producto por id
 router.delete('/:pid', async (req, res) => {
-
   const _id = req.params.pid;
-  
+
   try {
     // Guardo el producto por si se eliminó por error
     const product = await productManager.getProductsById(_id);
@@ -213,7 +214,6 @@ router.delete('/:pid', async (req, res) => {
       status: 'success',
       message: 'El producto ha sido eliminado correctamente',
     });
-    
   } catch (error) {
     res.status(500).json({ error: 'Error al eliminar el producto' });
   }

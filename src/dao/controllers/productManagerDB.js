@@ -7,7 +7,7 @@ class ProductManager {
     try {
       const paginationOptions = {
         ...options,
-        sort: sortOptions, // Incluir el ordenamiento aquí
+        sort: sortOptions,
       };
 
       const result = await productsModel.paginate(filter, paginationOptions);
@@ -22,7 +22,6 @@ class ProductManager {
         hasPrevPage: result.hasPrevPage,
       };
     } catch (error) {
-      console.error(error);
       throw new Error('Error al obtener los productos paginados');
     }
   }
@@ -56,7 +55,6 @@ class ProductManager {
         return result;
       }
     } catch (error) {
-      console.error(error);
       throw Error('Error al crear el producto');
     }
   }

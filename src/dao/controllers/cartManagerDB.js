@@ -4,7 +4,6 @@ class CartManager {
   constructor() {}
 
   async createCart(cartData) {
-    // console.log('Datos del carrito recibidos:', cartData);
     try {
       const newCart = new cartsModel(cartData);
       await newCart.save();
@@ -13,7 +12,6 @@ class CartManager {
 
       return newCart;
     } catch (error) {
-      console.error('Error al crear el carrito:', error);
       throw new Error('Error al crear el carrito');
     }
   }
@@ -23,7 +21,6 @@ class CartManager {
       const carts = await cartsModel.find().lean();
       return carts;
     } catch (error) {
-      console.error('Error al obtener los carritos:', error);
       throw new Error('Error al obtener los carritos');
     }
   }
@@ -34,19 +31,17 @@ class CartManager {
         .findById(cartId)
         .populate('products.product')
         .lean();
-      console.log(cart);
       return cart;
     } catch (error) {
-      console.error('Error al obtener el carrito:', error);
       throw new Error('Error al obtener el carrito');
     }
   }
 
   async addProductToCart(cartId, product) {
     try {
-      console.log('ID del carrito:', cartId);
-      console.log('Producto a agregar:', product);
-
+      // console.log('ID del carrito:', cartId);
+      // console.log('Producto a agregar:', product);
+      
       const cart = await cartsModel.findByIdAndUpdate(
         cartId,
         { $push: { products: product } },
@@ -57,7 +52,6 @@ class CartManager {
 
       return cart;
     } catch (error) {
-      console.error('Error al agregar el producto al carrito:', error);
       throw new Error('Error al agregar el producto al carrito');
     }
   }
@@ -74,7 +68,6 @@ class CartManager {
       }
       return cart;
     } catch (error) {
-      console.error('Error al eliminar el producto del carrito:', error);
       throw new Error('Error al eliminar el producto del carrito');
     }
   }
@@ -83,7 +76,6 @@ class CartManager {
     try {
       await cartsModel.findByIdAndRemove(cartId);
     } catch (error) {
-      console.error('Error al eliminar el carrito:', error);
       throw new Error('Error al eliminar el carrito');
     }
   }

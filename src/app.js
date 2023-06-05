@@ -1,6 +1,5 @@
 import express, { json, urlencoded } from 'express';
 import __dirname from './utils.js';
-// import { Server } from 'socket.io';
 import { engine } from 'express-handlebars';
 import productsRouter from './router/products.routes.js';
 import morgan from 'morgan';
@@ -29,27 +28,6 @@ const server = app.listen(PORT, (err) => {
   }
   console.log(`Listen on port ${PORT}`);
 });
-// // Server Socket.io
-// const io = new Server(server);
-
-// io.on('connection', (socket) => {
-//   console.log('Socket connected');
-
-//   socket.on('message', async (data) => {
-//     try {
-//       // Persistence in mongoDB
-//       const chat = await ChatManager.saveChat(data.user, data.message);
-//       const chats = await chatModel.find();
-//       io.emit('messageLogs', chats);
-//     } catch (error) {
-//       console.error('Error handling message:', error);
-//     }
-//   });
-
-//   socket.on('authenticated', (data) => {
-//     socket.broadcast.emit('newUserConnected', data);
-//   });
-// });
 
 // Handlebars
 app.engine(
@@ -64,8 +42,6 @@ app.engine(
 app.set('views', __dirname + '/views');
 app.set('view engine', 'handlebars');
 
-// Router express
-// app.use('/', index);
 // file system
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);

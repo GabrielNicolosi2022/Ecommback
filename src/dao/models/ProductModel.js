@@ -1,7 +1,5 @@
 import mongoose from 'mongoose';
-
 import mongoosePaginate from 'mongoose-paginate-v2';
-
 import db from './dbConnection.js';
 
 const productCollection = 'products';

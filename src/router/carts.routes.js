@@ -1,5 +1,4 @@
 import Router from 'express';
-
 import CartManager from '../dao/controllers/cartManagerDB.js';
 
 const router = Router();
@@ -36,7 +35,6 @@ router.get('/:cid', async (req, res) => {
       data: cart,
     });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: 'Error al obtener el carrito', error });
   }
 });
@@ -63,8 +61,6 @@ router.post('/', async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: 'Error al crear el carrito', error });
-
-    console.log('El error es: ', error);
   }
 });
 

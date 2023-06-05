@@ -91,6 +91,10 @@ router.get('/product/:pid', async (req, res) => {
   }
 });
 
+router.get('/cart', (req, res) => {
+  res.render('cart', { title: 'EcommBack' });
+})
+
 router.get('/cart/:cid', async (req, res) => {
   try {
     const cartId = req.params.cid;

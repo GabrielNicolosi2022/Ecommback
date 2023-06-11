@@ -1,8 +1,11 @@
 import express, { json, urlencoded } from 'express';
 import __dirname from './utils.js';
 import { engine } from 'express-handlebars';
-import productsRouter from './router/products.routes.js';
 import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
+import productsRouter from './router/products.routes.js';
 import cartsRouter from './router/carts.routes.js';
 import router from './router/carts.routes.js';
 import viewsRouter from './router/views.routes.js'
@@ -14,6 +17,25 @@ const app = express();
 app.use(json()); // Middleware para parsear JSON
 app.use(urlencoded({ extended: true }));
 app.use(express.static(`${__dirname}/public`));
+app.use(cookieParser());
+
+// Session con MongoStore
+app.use(
+  session({
+    store: MongoStore.create({
+      mongoUrl:
+        'mongodb+srv://gabianp:PrIntMdb23@ecommerce.hwzuuds.mongodb.net/?retryWrites=true&w=majority',
+      mongoOptions: {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      },
+      // ttl: 15,
+    }),
+    secret: '5ecretC0dE',
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 
 // Morgan
 app.use(morgan('dev'));
@@ -46,8 +68,8 @@ app.set('view engine', 'handlebars');
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
 // mongoDB
-app.use('/', viewsRouter);
 app.use('api/products', productsRouter);
 app.use('api/carts', cartsRouter);
+app.use('/', viewsRouter);
 
 export default app;

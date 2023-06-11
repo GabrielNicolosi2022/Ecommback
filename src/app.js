@@ -53,16 +53,16 @@ const server = app.listen(PORT, (err) => {
 
 // Handlebars
 app.engine(
-  'handlebars',
+  '.hbs',
   engine({
     defaultLayout: 'main',
     layoutsDir: router.get(__dirname / 'views/layouts'),
     partialsDir: router.get(__dirname / 'views/partials'),
-    extname: '.handlebars',
+    extname: '.hbs',
   })
 );
 app.set('views', __dirname + '/views');
-app.set('view engine', 'handlebars');
+app.set('view engine', '.hbs');
 
 // file system
 app.use('/api/products', productsRouter);

@@ -1,0 +1,40 @@
+<h1>{{view}}</h1>
+<div class='row'>
+  <div class='container'>
+    <div class='col'>
+      <form action='/api/sessions/register' method='post'>
+        <input
+          type='text'
+          name='first_name'
+          id='first_name'
+          placeholder='Nombre'
+        />
+        <input
+          type='text'
+          name='last_name'
+          id='last_name'
+          placeholder='Apellido'
+        />
+        <input type='email' name='email' id='email' placeholder='Correo' />
+        <input
+          type='number'
+          name='age'
+          id='age'
+          placeholder='Edad'
+          step='1'
+          min='1'
+        />
+        <input
+          type='password'
+          name='password'
+          id='password'
+          placeholder='Contraseña'
+        />
+        <button type='submit'>Registrarse</button>
+      </form>
+      <div>
+        <a href='http://localhost:8080/login'>Ya estoy registrado</a>
+      </div>
+    </div>
+  </div>
+</div>

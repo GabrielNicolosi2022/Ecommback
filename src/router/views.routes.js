@@ -5,8 +5,53 @@ import CartManager from '../dao/controllers/cartManagerDB.js';
 const router = Router();
 const cartManager = new CartManager();
 
-router.get('/', (req, res) => {
-  res.render('index', { title: 'EcommBack' });
+// Middleware para verificar si la ruta es pública
+const isPublic = (req, res, next) => {
+  if (req.session && req.session.user) {
+    // Hay una sesión activa, redirigir al perfil
+    res.redirect('/profile');
+  } else {
+    // No hay sesión activa, permitir el acceso
+    next();
+  }
+};
+
+// Middleware para verificar si la ruta es privada
+const isPrivate = (req, res, next) => {
+  if (req.session && req.session.user) {
+    // Hay una sesión activa, permitir el acceso
+    next();
+  } else {
+    // No hay sesión activa, redirigir al login
+    res.redirect('/login');
+  }
+};
+
+// Rutas
+router.get('/', isPublic, (req, res) => {
+  res.redirect('/login');
+});
+
+router.get('/register', isPublic, (req, res) => {
+  res.render('register', {
+    title: 'Registro de usuario',
+    view: 'Crear usuario',
+  });
+});
+
+router.get('/login', isPublic, (req, res) => {
+  res.render('login', {
+    title: 'Login de usuario',
+    view: 'Login',
+  });
+});
+
+router.get('/profile', isPrivate, (req, res) => {
+  res.render('profile', {
+    title: 'Profile de usuario',
+    view: 'Perfil',
+    userSession: req.session.user,
+  });
 });
 
 router.get('/products', async (req, res) => {
@@ -67,6 +112,7 @@ router.get('/products', async (req, res) => {
       nextPage,
       prevLink,
       nextLink,
+      user: req.session.user,
     });
   } catch (error) {
     console.error('Error al obtener los productos', error);
@@ -93,7 +139,7 @@ router.get('/product/:pid', async (req, res) => {
 
 router.get('/cart', (req, res) => {
   res.render('cart', { title: 'EcommBack' });
-})
+});
 
 router.get('/cart/:cid', async (req, res) => {
   try {

@@ -8,6 +8,7 @@ import MongoStore from 'connect-mongo';
 import productsRouter from './router/products.routes.js';
 import cartsRouter from './router/carts.routes.js';
 import router from './router/carts.routes.js';
+import sessionRouter from './router/sessions.routes.js'
 import viewsRouter from './router/views.routes.js'
 
 /* CONFIGURATIONS */
@@ -29,7 +30,7 @@ app.use(
         useNewUrlParser: true,
         useUnifiedTopology: true,
       },
-      // ttl: 15,
+      ttl: 300,
     }),
     secret: '5ecretC0dE',
     resave: false,
@@ -70,6 +71,7 @@ app.use('/api/carts', cartsRouter);
 // mongoDB
 app.use('api/products', productsRouter);
 app.use('api/carts', cartsRouter);
+app.use('/api/sessions', sessionRouter);
 app.use('/', viewsRouter);
 
 export default app;

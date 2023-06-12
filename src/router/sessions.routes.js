@@ -2,7 +2,6 @@ import { Router } from 'express';
 import UserModel from '../dao/models/UserModel.js';
 
 const router = Router();
-
 // Registrar un usuario
 router.post('/register', async (req, res) => {
   try {
@@ -41,11 +40,6 @@ router.post('/login', async (req, res) => {
 
     // Verificar la contraseña del usuario
     if (foundUser.password !== password) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: '401 - Contraseña incorrecta',
-      });
       return res.redirect('/login');
     }
 
@@ -79,4 +73,5 @@ router.get('/logout', (req, res) => {
     res.redirect('/login');
   });
 });
+
 export default router;

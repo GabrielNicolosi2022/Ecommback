@@ -1,4 +1,17 @@
-<p class='pb-3 fw-bold'>Bienvenido {{user.firstname}} {{user.lastname}}</p>
+<div class='row'>
+  <div class='container d-'>
+    <div class='col-12'>
+      <p class='pb-3 fw-bold'>Bienvenido
+        {{user.firstname}}
+        {{user.lastname}}, tienes rol de
+        {{user.role}}</p>
+      <a href='http://localhost:8080/api/sessions/logout'>
+        <button class='btn btn-outline-danger'>Cerrar sesion</button>
+      </a>
+    </div>
+  </div>
+</div>
+
 <h1 class='text-center pb-3'>{{pageTitle}}</h1>
 <div class='row'>
   <div class='container'>
@@ -16,7 +29,11 @@
           {{! Opción 2: Botón para agregar al carrito directamente }}
           <form action='/cart/add' method='POST'>
             <input type='hidden' name='productId' value='{{_id}}' />
-            <input class="btn btn-primary mt-3" type='submit' value='Agregar al carrito' />
+            <input
+              class='btn btn-primary mt-3'
+              type='submit'
+              value='Agregar al carrito'
+            />
           </form>
         </div>
       {{/each}}
@@ -32,12 +49,14 @@
         {{#if totalPages}}
           {{#if prevLink}}
             <div>
-              <a class='btn btn-outline-primary me-4' href='{{prevLink}}'>Página Anterior</a>
+              <a class='btn btn-outline-primary me-4' href='{{prevLink}}'>Página
+                Anterior</a>
             </div>
           {{/if}}
           {{#if nextLink}}
-            <div >
-              <a class='btn btn-outline-primary' href={{nextLink}}>Página Siguiente</a>
+            <div>
+              <a class='btn btn-outline-primary' href={{nextLink}}>Página
+                Siguiente</a>
             </div>
           {{/if}}
         {{/if}}

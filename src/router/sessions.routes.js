@@ -7,7 +7,6 @@ router.post('/register', async (req, res) => {
   try {
     console.log('req.body: ', req.body);
     const { first_name, last_name, email, age, password } = req.body;
-    const role = email === 'adminCoder@coder.com' ? 'admin' : 'user';
 
     // Crear un nuevo usuario en la base de datos
     const newUser = new UserModel({
@@ -16,7 +15,7 @@ router.post('/register', async (req, res) => {
       email,
       age,
       password,
-      role,
+      role: 'user',
     });
     await newUser.save();
 
@@ -31,15 +30,25 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    const foundUser = await UserModel.findOne({ email });
+    // verificar si es un usuario administrador
+    if (email === 'adminCoder@coder.com' && password === 'adminCod3r123') {
+      // Generar el objeto 'user' en req.session para el usuario administrador
+      const userSession = {
+        email: email,
+        role: 'admin',
+      };
 
-    //  Buscar al usuario en la base de datos
-    if (!foundUser) {
-      return res.redirect('/login');
+      req.session.user = userSession;
+
+      // Rendireccionar a la vista de productos
+      return res.redirect('/products');
     }
 
-    // Verificar la contraseña del usuario
-    if (foundUser.password !== password) {
+    //  Buscar al usuario en la base de datos
+    const foundUser = await UserModel.findOne({ email });
+
+    // Verificar si el usuario existe y la contraseña es correcta
+    if (!foundUser || foundUser.password !== password) {
       return res.redirect('/login');
     }
 
@@ -50,7 +59,7 @@ router.post('/login', async (req, res) => {
       lastname: foundUser.lastname,
       email: foundUser.email,
       age: foundUser.age,
-      role: foundUser.email === 'adminCoder@coder.com' ? 'admin' : 'user', // Agregar el campo 'role' según el correo electrónico
+      role: 'user',
     };
 
     req.session.user = userSession;

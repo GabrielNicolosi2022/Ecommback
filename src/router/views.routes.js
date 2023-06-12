@@ -27,6 +27,17 @@ const isPrivate = (req, res, next) => {
   }
 };
 
+// Middleware para verificar si el usuario tiene el rol 'admin' o 'user'
+const isAuthorized = (req, res, next) => {
+  if (req.session.user && req.session.user.role === 'admin') {
+    // El usuario tiene el rol de administrador, permitir el acceso
+    next();
+  } else {
+    // El usuario no tiene el rol adecuado, redirigir a una página de acceso denegado
+    res.redirect('/access-denied');
+  }
+};
+
 // Rutas
 router.get('/', isPublic, (req, res) => {
   res.redirect('/login');
@@ -51,10 +62,11 @@ router.get('/profile', isPrivate, (req, res) => {
     title: 'Profile de usuario',
     view: 'Perfil',
     userSession: req.session.user,
+    isAdmin: req.session.user.role === 'admin', // Agregar una variable 'isAdmin' según el rol del usuario
   });
 });
 
-router.get('/products', async (req, res) => {
+router.get('/products', isPrivate, async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 5;
     const page = parseInt(req.query.page) || 1;
@@ -120,7 +132,7 @@ router.get('/products', async (req, res) => {
   }
 });
 
-router.get('/product/:pid', async (req, res) => {
+router.get('/product/:pid', isPrivate, async (req, res) => {
   try {
     const productId = req.params.pid;
     const product = await productsModel.findById(productId).lean();
@@ -137,11 +149,11 @@ router.get('/product/:pid', async (req, res) => {
   }
 });
 
-router.get('/cart', (req, res) => {
+router.get('/cart', isPrivate, (req, res) => {
   res.render('cart', { title: 'EcommBack' });
 });
 
-router.get('/cart/:cid', async (req, res) => {
+router.get('/cart/:cid', isPrivate, async (req, res) => {
   try {
     const cartId = req.params.cid;
     const cart = await cartManager.getCartById(cartId);

@@ -1,7 +1,16 @@
 <h1>{{view}}</h1>
+
 <div class='row'>
   <div class='container'>
     <div class='col'>
+      {{! Mostrar contenido solo para usuarios con rol de administrador }}
+      <div>
+        {{#if isAdmin}}
+          <h3>Panel de administración</h3>
+          <!-- ... contenido específico para administradores -->
+          <hr />
+        {{/if}}
+      </div>
       <div>
         <table>
           <tr>

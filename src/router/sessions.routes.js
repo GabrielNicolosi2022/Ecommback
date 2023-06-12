@@ -8,6 +8,8 @@ router.post('/register', async (req, res) => {
   try {
     console.log('req.body: ', req.body);
     const { first_name, last_name, email, age, password } = req.body;
+    const role = email === 'adminCoder@coder.com' ? 'admin' : 'user';
+
     // Crear un nuevo usuario en la base de datos
     const newUser = new UserModel({
       firstname: first_name,
@@ -15,6 +17,7 @@ router.post('/register', async (req, res) => {
       email,
       age,
       password,
+      role,
     });
     await newUser.save();
 
@@ -38,6 +41,11 @@ router.post('/login', async (req, res) => {
 
     // Verificar la contraseña del usuario
     if (foundUser.password !== password) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: '401 - Contraseña incorrecta',
+      });
       return res.redirect('/login');
     }
 
@@ -48,6 +56,7 @@ router.post('/login', async (req, res) => {
       lastname: foundUser.lastname,
       email: foundUser.email,
       age: foundUser.age,
+      role: foundUser.email === 'adminCoder@coder.com' ? 'admin' : 'user', // Agregar el campo 'role' según el correo electrónico
     };
 
     req.session.user = userSession;

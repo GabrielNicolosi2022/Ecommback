@@ -64,7 +64,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Actualizar el carrito nuevos productos
+// Actualizar el carrito con nuevos productos
 router.put('/:cid', async (req, res) => {
   try {
     const cartId = req.params.cid;

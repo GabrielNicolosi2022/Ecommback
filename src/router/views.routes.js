@@ -50,12 +50,31 @@ router.get('/register', isPublic, (req, res) => {
   });
 });
 
+router.get('/failregister', isPublic, async (req, res) => {
+  console.log('Failed Strategy');
+  res.render('register', {
+    title: 'Registro de usuario',
+    view: 'Crear usuario',
+    message: 'El email ya se encuentra en uso',
+  });
+});
+
 router.get('/login', isPublic, (req, res) => {
   res.render('login', {
     title: 'Login de usuario',
     view: 'Login',
   });
 });
+
+router.get('/faillogin', async (req, res) => {
+  console.log('Failed Login');
+  res.render('login', {
+    title: 'Login de usuario',
+    view: 'Login',
+    message:'Inicio de sesión incorrecto'
+  });
+});
+
 
 router.get('/profile', isPrivate, (req, res) => {
   res.render('profile', {

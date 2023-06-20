@@ -4,12 +4,16 @@ import { engine } from 'express-handlebars';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
+// import flash from 'connect-flash';
+import flash from 'express-flash';
 import MongoStore from 'connect-mongo';
 import productsRouter from './router/products.routes.js';
 import cartsRouter from './router/carts.routes.js';
 import router from './router/carts.routes.js';
-import sessionRouter from './router/sessions.routes.js'
-import viewsRouter from './router/views.routes.js'
+import sessionRouter from './router/sessions.routes.js';
+import viewsRouter from './router/views.routes.js';
+import passport from 'passport';
+import initializePassport from './config/passport.config.js';
 
 /* CONFIGURATIONS */
 
@@ -38,6 +42,14 @@ app.use(
   })
 );
 
+// Passport
+initializePassport();
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Flash
+app.use(flash());
+
 // Morgan
 app.use(morgan('dev'));
 
@@ -57,8 +69,8 @@ app.engine(
   '.hbs',
   engine({
     defaultLayout: 'main',
-    layoutsDir: router.get(__dirname / 'views/layouts'),
-    partialsDir: router.get(__dirname / 'views/partials'),
+    layoutsDir: router.get(__dirname + '/views/layouts'),
+    partialsDir: router.get(__dirname + '/views/partials'),
     extname: '.hbs',
   })
 );
@@ -69,8 +81,8 @@ app.set('view engine', '.hbs');
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
 // mongoDB
-app.use('api/products', productsRouter);
-app.use('api/carts', cartsRouter);
+app.use('/api/products', productsRouter);
+app.use('/api/carts', cartsRouter);
 app.use('/api/sessions', sessionRouter);
 app.use('/', viewsRouter);
 

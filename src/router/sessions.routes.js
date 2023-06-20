@@ -1,76 +1,66 @@
 import { Router } from 'express';
+import passport from 'passport';
 import UserModel from '../dao/models/UserModel.js';
+import { createHash, isValidPassword } from '../utils.js';
 
 const router = Router();
 // Registrar un usuario
-router.post('/register', async (req, res) => {
-  try {
-    console.log('req.body: ', req.body);
-    const { first_name, last_name, email, age, password } = req.body;
-
-    // Crear un nuevo usuario en la base de datos
-    const newUser = new UserModel({
-      firstname: first_name,
-      lastname: last_name,
-      email,
-      age,
-      password,
-      role: 'user',
-    });
-    await newUser.save();
-
-    res.redirect('/login');
-  } catch (error) {
-    console.error('Error al registrar el usuario', error);
-    res.status(500).json({ error: 'Error al registrar el usuario' });
+router.post(
+  '/register',
+  passport.authenticate('local-register', {
+    // successRedirect:'/login',
+    failureRedirect: '/failregister',
+    failureFlash: true,
+    successFlash: true,
+  }),
+  async (req, res) => {
+    /* INSERTAR UN ALERTA ANTES DE PASAR AL LOGIN */
+    req.flash('success', 'Registro exitoso. Inicia sesión para continuar.');
+    res.render('login');
   }
-});
+);
 
-// Login de usuario
-router.post('/login', async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    // verificar si es un usuario administrador
-    if (email === 'adminCoder@coder.com' && password === 'adminCod3r123') {
-      // Generar el objeto 'user' en req.session para el usuario administrador
-      const userSession = {
-        email: email,
-        role: 'admin',
-      };
-
-      req.session.user = userSession;
-
-      // Rendireccionar a la vista de productos
-      return res.redirect('/products');
+// Login de usuario mediante app
+router.post(
+  '/login',
+  passport.authenticate('local-login', {
+    failureRedirect: '/login',
+    failureFlash: true,
+    successFlash: true,
+  }),
+  async (req, res) => {
+    if (!req.user) {
+      req.flash('failure', 'Correo electrónico o contraseña incorrectos.');
+      return res.render('login', { failureFlash: true });
     }
-
-    //  Buscar al usuario en la base de datos
-    const foundUser = await UserModel.findOne({ email });
-
-    // Verificar si el usuario existe y la contraseña es correcta
-    if (!foundUser || foundUser.password !== password) {
-      return res.redirect('/login');
-    }
-
     // Generar el objeto 'user' en req.session
-    const userSession = {
-      id: foundUser._id,
-      firstname: foundUser.firstname,
-      lastname: foundUser.lastname,
-      email: foundUser.email,
-      age: foundUser.age,
-      role: 'user',
+    req.session.user = {
+      first_name: req.user.first_name,
+      last_name: req.user.last_name,
+      age: req.user.age,
+      email: req.user.email,
     };
-
-    req.session.user = userSession;
-
-    // Rendireccionar a la vista de productos
+    req.flash('success', 'Inicio de sesión exitoso.');
     res.redirect('/products');
-  } catch (error) {
-    console.error('Error al iniciar sesión', error);
-    return res.status(500).json({ error: 'Error al iniciar sesión' });
   }
-});
+);
+
+// Login de usuario mediante GitHub
+router.get(
+  '/github',
+  passport.authenticate('githubpass', { scope: ['user:email'] }),
+  async (req, res) => {}
+);
+
+router.get(
+  '/githubcallback',
+  passport.authenticate('githubpass', { failureRedirect: '/login' }),
+  async (req, res) => {
+    // agregar el usuario a la sesión
+    req.session.user = req.user;
+    res.redirect('/products');
+  }
+);
 
 // Cerrar sesión de usuario
 router.get('/logout', (req, res) => {

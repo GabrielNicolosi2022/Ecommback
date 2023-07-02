@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import cartsModel from './CartModel.js';
 
 const userCollection = 'User';
 
@@ -29,6 +30,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ['user'],
     default: 'user',
+  },
+  cart: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: cartsModel,
   },
 });
 

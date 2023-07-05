@@ -52,8 +52,6 @@ const initializePassport = () => {
       { usernameField: 'email', passReqToCallback: true },
       async (req, email, password, done) => {
         try {
-          // const { email, password } = req.body;
-          console.log(email, password);
           // verificar si es un usuario administrador
           if (
             email === 'adminCoder@coder.com' &&
@@ -62,10 +60,11 @@ const initializePassport = () => {
             // Generar el objeto 'user' en req.session para el usuario administrador
             const userSession = {
               id: 'admin',
+              first_name: 'Administrador',
               email: email,
               role: 'admin',
             };
-            console.log('userSession', userSession);
+            console.log('userSession: ', userSession);
             req.login(userSession, (err) => {
               if (err) {
                 return done(err);
@@ -123,10 +122,6 @@ const initializePassport = () => {
               email: profile._json.email,
               password: '',
             };
-            // Autocompletar los campos faltantes
-            // if (!newUser.last_name) {
-            //   newUser.last_name = 'Predeterminado';
-            // }
             if (!newUser.password) {
               newUser.password = '';
             }

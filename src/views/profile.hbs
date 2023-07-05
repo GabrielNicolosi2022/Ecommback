@@ -12,18 +12,20 @@
         {{/if}}
       </div>
       <div>
-        <table>
+        <table class='text-center'>
           <tr>
             <th>Nombre</th>
             <th>Apellido</th>
             <th>Email</th>
             <th>Edad</th>
+            <th>Rol</th>
           </tr>
           <tr>
-            <td>{{userSession.firstname}}</td>
-            <td>{{userSession.lastname}}</td>
+            <td>{{userSession.first_name}}</td>
+            <td>{{userSession.last_name}}</td>
             <td>{{userSession.email}}</td>
             <td>{{userSession.age}}</td>
+            <td>{{userSession.role}}</td>
           </tr>
         </table>
       </div>

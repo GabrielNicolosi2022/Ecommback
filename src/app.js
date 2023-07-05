@@ -4,7 +4,6 @@ import { engine } from 'express-handlebars';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
-// import flash from 'connect-flash';
 import flash from 'express-flash';
 import MongoStore from 'connect-mongo';
 import productsRouter from './router/products.routes.js';
@@ -14,6 +13,7 @@ import sessionRouter from './router/sessions.routes.js';
 import viewsRouter from './router/views.routes.js';
 import passport from 'passport';
 import initializePassport from './config/passport.config.js';
+import jwt from 'jsonwebtoken';
 
 /* CONFIGURATIONS */
 

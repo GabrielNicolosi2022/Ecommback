@@ -1,3 +1,5 @@
+import 'dotenv/config';
+import config from './config/config.js';
 import express, { json, urlencoded } from 'express';
 import __dirname from './utils.js';
 import { engine } from 'express-handlebars';
@@ -13,12 +15,13 @@ import sessionRouter from './router/sessions.routes.js';
 import viewsRouter from './router/views.routes.js';
 import passport from 'passport';
 import initializePassport from './config/passport.config.js';
-import jwt from 'jsonwebtoken';
 
 /* CONFIGURATIONS */
+const app = express();
+const PORT = process.env.PORT || config.server.port;
+const MONGO_DB = config.db.mongodb;
 
 // Express
-const app = express();
 app.use(json()); // Middleware para parsear JSON
 app.use(urlencoded({ extended: true }));
 app.use(express.static(`${__dirname}/public`));
@@ -28,8 +31,7 @@ app.use(cookieParser());
 app.use(
   session({
     store: MongoStore.create({
-      mongoUrl:
-        'mongodb+srv://gabianp:PrIntMdb23@ecommerce.hwzuuds.mongodb.net/?retryWrites=true&w=majority',
+      mongoUrl: MONGO_DB,
       mongoOptions: {
         useNewUrlParser: true,
         useUnifiedTopology: true,
@@ -54,14 +56,12 @@ app.use(flash());
 app.use(morgan('dev'));
 
 // Server HTTP
-const PORT = process.env.PORT || 8080;
-
 const server = app.listen(PORT, (err) => {
   if (err) {
     console.log('Connection Error: ', err);
     return;
   }
-  console.log(`Listen on port ${PORT}`);
+  console.log(`Running on port ${PORT}`);
 });
 
 // Handlebars

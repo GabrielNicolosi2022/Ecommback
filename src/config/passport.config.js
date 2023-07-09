@@ -1,3 +1,4 @@
+import config from './config.js';
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import gitHubStrategy from 'passport-github2';
@@ -54,8 +55,8 @@ const initializePassport = () => {
         try {
           // verificar si es un usuario administrador
           if (
-            email === 'adminCoder@coder.com' &&
-            password === 'adminCod3r123'
+            email === config.admin.username &&
+            password === config.admin.password
           ) {
             // Generar el objeto 'user' en req.session para el usuario administrador
             const userSession = {
@@ -102,9 +103,9 @@ const initializePassport = () => {
     'githubpass',
     new gitHubStrategy(
       {
-        clientID: 'Iv1.a3325d0fc13144e7',
-        clientSecret: '7a9e605a79f4d59a7a324da98953b0a6ef1c10a6',
-        callbackURL: 'http://localhost:8080/api/sessions/githubcallback',
+        clientID: config.github.clientID,
+        clientSecret: config.github.clientSecret,
+        callbackURL: config.github.callbackURL,
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
@@ -155,7 +156,7 @@ const initializePassport = () => {
     if (id === 'admin') {
       const user = {
         id: 'admin',
-        email: 'adminCoder@coder.com',
+        email: config.admin.username,
         role: 'admin',
       };
       return done(null, user);

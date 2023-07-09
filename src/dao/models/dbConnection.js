@@ -1,12 +1,10 @@
 import mongoose from 'mongoose';
+import config from '../../config/config.js';
 
 const connection = mongoose
-  .connect(
-    `mongodb+srv://gabianp:PrIntMdb23@ecommerce.hwzuuds.mongodb.net/?retryWrites=true&w=majority`,
-    {
-      dbName: 'ecommerce',
-    }
-  )
+  .connect(config.db.mongodb, {
+    dbName: 'ecommerce',
+  })
   .catch((err) => console.log(err));
 
 const db = mongoose.connection;

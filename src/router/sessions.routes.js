@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import passport from 'passport';
 import UserModel from '../dao/models/UserModel.js';
-import { createHash, isValidPassword } from '../utils.js';
 
 const router = Router();
 // Registrar un usuario

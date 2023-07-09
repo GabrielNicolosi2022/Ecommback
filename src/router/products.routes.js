@@ -1,6 +1,6 @@
 import Router from 'express';
 import ProductManager from '../dao/controllers/productManagerDB.js';
-import { uploader } from '../utils.js';
+import { uploader } from '../middlewares/multer.js';
 
 const router = Router();
 

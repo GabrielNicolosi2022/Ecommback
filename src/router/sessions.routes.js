@@ -40,7 +40,7 @@ router.post(
       role: req.user.role,
     };
     req.flash('success', 'Inicio de sesión exitoso.');
-    res.redirect('/products');
+    res.redirect('/product');
   }
 );
 
@@ -57,7 +57,7 @@ router.get(
   async (req, res) => {
     // agregar el usuario a la sesión
     req.session.user = req.user;
-    res.redirect('/products');
+    res.redirect('/product');
   }
 );
 

@@ -1,5 +1,5 @@
-// ! Reestructurar
 import productsModel from '../models/ProductModel.js';
+import * as logica from '../../services/logicaProd.js';
 
 const products = async (req, res) => {
   try {
@@ -8,37 +8,16 @@ const products = async (req, res) => {
     const sort = req.query.sort;
     const query = req.query;
 
-    let products = await productsModel.find().lean();
-
-    // Lógica para ordenar los productos si se proporciona sort
-    if (sort) {
-      if (sort === 'asc') {
-        products = products.sort((a, b) => a.price - b.price);
-      } else if (sort === 'desc') {
-        products = products.sort((a, b) => b.price - a.price);
-      }
-    }
-
-    // Lógica para filtrar los productos si se proporciona query
-    if (query) {
-      if (query.category) {
-        products = products.filter(
-          (product) => product.category === query.category
-        );
-      }
-      if (query.status) {
-        products = products.filter(
-          (product) => product.status === query.status
-        );
-      }
-    }
-
-    // Lógica de paginación
-    const totalProducts = products.length;
-    const totalPages = Math.ceil(totalProducts / limit);
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
-    const currentProducts = products.slice(startIndex, endIndex);
+    // ordenar los productos si se proporciona sort
+    let products = await logica.getSortedProducts(sort);
+    // filtrar los productos si se proporciona query
+    products = logica.getFilteredProducts(products, query);
+    // paginación
+    const { currentProducts, totalPages } = logica.paginateProducts(
+      products,
+      page,
+      limit
+    );
 
     // Enlaces de paginación
     const prevPage = page > 1 ? page - 1 : null;
@@ -49,7 +28,7 @@ const products = async (req, res) => {
     const nextLink = nextPage
       ? `/products?page=${nextPage}&limit=${limit}`
       : null;
-
+ 
     res.render('products', {
       title: 'EcommBack',
       pageTitle: 'Lista de Productos',

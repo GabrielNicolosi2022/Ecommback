@@ -19,7 +19,7 @@ router.get('/faillogin', userControllers.faillogin);
 
 router.get('/profile', isPrivate, userControllers.profile);
 
-router.get('/products', isPrivate, prodControllers.products);
+router.get('/product', isPrivate, prodControllers.products);
 
 router.get('/product/:pid', isPrivate, prodControllers.productsById);
 

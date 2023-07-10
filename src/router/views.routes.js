@@ -1,28 +1,30 @@
 import { Router } from 'express';
-import * as viewsControllers from '../dao/controllers/views.controllers.js';
+import * as userControllers from '../dao/controllers/user.controller.js';
+import * as prodControllers from '../dao/controllers/prod.controller.js';
+import * as cartControllers from '../dao/controllers/cart.controller.js';
 import { isPublic, isPrivate, isAuthorized } from '../middlewares/auth.js';
 
 const router = Router();
 
 // Rutas
-router.get('/', isPublic, viewsControllers.root);
+router.get('/', isPublic, userControllers.root);
 
-router.get('/register', isPublic, viewsControllers.register);
+router.get('/register', isPublic, userControllers.register);
 
-router.get('/failregister', isPublic, viewsControllers.failregister);
+router.get('/failregister', isPublic, userControllers.failregister);
 
-router.get('/login', isPublic, viewsControllers.login);
+router.get('/login', isPublic, userControllers.login);
 
-router.get('/faillogin', viewsControllers.faillogin);
+router.get('/faillogin', userControllers.faillogin);
 
-router.get('/profile', isPrivate, viewsControllers.profile);
+router.get('/profile', isPrivate, userControllers.profile);
 
-router.get('/products', isPrivate, viewsControllers.products);
+router.get('/products', isPrivate, prodControllers.products);
 
-router.get('/product/:pid', isPrivate, viewsControllers.productsById);
+router.get('/product/:pid', isPrivate, prodControllers.productsById);
 
-router.get('/cart', isPrivate, viewsControllers.cart);
+router.get('/cart', isPrivate, cartControllers.cart);
 
-router.get('/cart/:cid', isPrivate, viewsControllers.cartById);
+router.get('/cart/:cid', isPrivate, cartControllers.cartById);
 
 export default router;

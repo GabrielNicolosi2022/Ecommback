@@ -1,5 +1,5 @@
-import productsModel from '../models/ProductModel.js';
-import * as logica from '../../services/logicaProd.js';
+import productsModel from '../../models/ProductModel.js';
+import * as logica from '../../../services/views/logicaProd.js';
 
 const products = async (req, res) => {
   try {
@@ -28,7 +28,7 @@ const products = async (req, res) => {
     const nextLink = nextPage
       ? `/products?page=${nextPage}&limit=${limit}`
       : null;
- 
+
     res.render('products', {
       title: 'EcommBack',
       pageTitle: 'Lista de Productos',

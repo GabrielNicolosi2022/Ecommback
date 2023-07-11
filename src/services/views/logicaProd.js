@@ -1,5 +1,6 @@
-import productsModel from '../dao/models/ProductModel.js';
+import productsModel from '../../dao/models/ProductModel.js';
 
+/* Utilizado en prod.controllers.js */
 // Lógica para ordenar los productos si se proporciona sort
 const getSortedProducts = async (sort) => {
   let products = await productsModel.find().lean();

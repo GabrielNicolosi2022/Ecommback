@@ -15,23 +15,16 @@ router.get('/', async (req, res) => {
     const sort = req.query.sort;
     const query = req.query;
 
-    // opciones de paginación
-    const options = {
-      limit: limit,
-      page: page,
-    };
-
     // opciones de ordenamiento
     console.log('sort:', sort);
-
     const sortOptions = {};
-if (sort) {
-  if (sort === 'asc') {
-    sortOptions.price = 1;
-  } else if (sort === 'desc') {
-    sortOptions.price = -1;
-  }
-}    
+    if (sort) {
+      if (sort === 'asc') {
+        sortOptions.price = 1;
+      } else if (sort === 'desc') {
+        sortOptions.price = -1;
+      }
+    }
     console.log('sortOptions:', sortOptions);
 
     // filtro de búsqueda
@@ -46,6 +39,12 @@ if (sort) {
         filter.$or.push({ status: query.status });
       }
     }
+
+    // opciones de paginación
+    const options = {
+      limit: limit,
+      page: page,
+    };
 
     // Cargo los productos utilizando mongoose-paginate-v2
     const {

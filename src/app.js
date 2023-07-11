@@ -38,7 +38,7 @@ app.use(
       },
       ttl: 300,
     }),
-    secret: '5ecretC0dE',
+    secret: config.session.secret,
     resave: false,
     saveUninitialized: false,
   })

@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import config from '../../config/config.js';
 
+// console.log(config.db.mongodb);
 const connection = mongoose
   .connect(config.db.mongodb, {
     dbName: 'ecommerce',

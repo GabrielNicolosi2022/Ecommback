@@ -1,4 +1,5 @@
 import Router from 'express';
+import * as prodControllers from '../dao/controllers/routes/prod.controller.js';
 import ProductManager from '../dao/controllers/productManagerDB.js';
 import { uploader } from '../middlewares/multer.js';
 
@@ -7,108 +8,10 @@ const router = Router();
 const productManager = new ProductManager();
 
 // Obtener todos los productos paginados, filtrados y ordenados
-router.get('/', async (req, res) => {
-  try {
-    // Obtener los query params
-    const limit = parseInt(req.query.limit) || 10;
-    const page = parseInt(req.query.page) || 1;
-    const sort = req.query.sort;
-    const query = req.query;
-
-    // opciones de ordenamiento
-    console.log('sort:', sort);
-    const sortOptions = {};
-    if (sort) {
-      if (sort === 'asc') {
-        sortOptions.price = 1;
-      } else if (sort === 'desc') {
-        sortOptions.price = -1;
-      }
-    }
-    console.log('sortOptions:', sortOptions);
-
-    // filtro de búsqueda
-    const filter = {};
-
-    if (query) {
-      if (query.category) {
-        filter.$or = [{ category: query.category }];
-      }
-      if (query.status) {
-        filter.$or = filter.$or || [];
-        filter.$or.push({ status: query.status });
-      }
-    }
-
-    // opciones de paginación
-    const options = {
-      limit: limit,
-      page: page,
-    };
-
-    // Cargo los productos utilizando mongoose-paginate-v2
-    const {
-      docs,
-      totalPages,
-      prevPage,
-      nextPage,
-      Page,
-      hasNextPage,
-      hasPrevPage,
-    } = await productManager.getAllProductsPaginated(
-      options,
-      filter,
-      sortOptions
-    );
-    // enlaces a página previa y siguiente
-    const prevLink = hasPrevPage
-      ? `/products?page=${prevPage}&limit=${limit}`
-      : null;
-    const nextLink = hasNextPage
-      ? `/products?page=${nextPage}&limit=${limit}`
-      : null;
-
-    // objeto para respuesta
-    const response = {
-      status: 'success',
-      payload: docs,
-      totalPages: totalPages,
-      prevPage: prevPage,
-      nextPage: nextPage,
-      page: page,
-      hasPrevPage: hasPrevPage,
-      hasNextPage: hasNextPage,
-      prevLink: prevLink,
-      nextLink: nextLink,
-    };
-
-    res.json(response);
-  } catch (error) {
-    res.status(500).json({ error: 'Error al obtener los productos' });
-  }
-});
+router.get('/', prodControllers.getProducts);
 
 // Obtener un producto por id
-router.get('/:pid', async (req, res) => {
-  try {
-    // Obtengo el valor del parámetro de ruta 'pid'
-    const _id = req.params.pid;
-
-    // Cargo el producto utilizando el método getProductsById()
-    const product = await productManager.getProductsById(_id);
-
-    if (!product) {
-      return res.status(404).json({ error: 'Producto no encontrado' });
-    }
-    return res.json({
-      status: 'success',
-      message: 'Producto encontrado',
-      data: product,
-    });
-  } catch (error) {
-    res.status(500).json({ error: 'Error al obtener el producto' });
-  }
-});
+router.get('/:pid', prodControllers.getProductById);
 
 // Crear un nuevo producto
 router.post('/', uploader.array('thumbnails', 5), async (req, res) => {

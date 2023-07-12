@@ -1,4 +1,4 @@
-import cartsModel from '../models/CartModel.js';
+import cartsModel from '../../models/CartModel.js';
 
 class CartManager {
   constructor() {}
@@ -41,7 +41,7 @@ class CartManager {
     try {
       // console.log('ID del carrito:', cartId);
       // console.log('Producto a agregar:', product);
-      
+
       const cart = await cartsModel.findByIdAndUpdate(
         cartId,
         { $push: { products: product } },

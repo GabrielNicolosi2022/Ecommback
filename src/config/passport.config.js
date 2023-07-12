@@ -3,7 +3,7 @@ import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import gitHubStrategy from 'passport-github2';
 import { createHash, isValidPassword } from '../middlewares/hash.js';
-import UserModel from '../dao/models/UserModel.js';
+import UserModel from '../models/UserModel.js';
 
 const initializePassport = () => {
   // Estrategia de registro local
@@ -140,7 +140,7 @@ const initializePassport = () => {
     )
   );
 
-// Serialización
+  // Serialización
   passport.serializeUser((user, done) => {
     // Si el usuario es el administrador, simplemente serializar el id "admin"
     if (user.id === 'admin') {

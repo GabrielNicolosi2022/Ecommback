@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
-import db from './DAO/dbConnection.js';
+import db from '../models/DAO/dbConnection.js';
 import productsModel from './ProductModel.js';
 const cartCollection = 'carts';
 

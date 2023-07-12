@@ -1,4 +1,4 @@
-import productsModel from '../../dao/models/ProductModel.js';
+import productsModel from '../../models/ProductModel.js';
 
 /* Utilizado en views/prod.controllers.js */
 

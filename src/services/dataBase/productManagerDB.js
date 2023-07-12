@@ -4,6 +4,8 @@ class ProductManager {
   constructor() {}
 
   async getAllProductsPaginated(options, filter, sortOptions) {
+    // Recibe 3 parametros desde prod.controller.js
+    console.log('estoy en getAllProductsPaginated');
     try {
       const paginationOptions = {
         ...options,
@@ -26,7 +28,9 @@ class ProductManager {
     }
   }
 
-  async getAllProducts() {
+  async getAllProducts() { // ! No se está utilizando en products.routes.js
+    console.log('estoy en getAllProducts');
+
     try {
       const products = await productsModel.find().lean();
       return products;
@@ -36,6 +40,7 @@ class ProductManager {
   }
 
   async getProductsById(_id) {
+    console.log('estoy en getProductsById');
     try {
       const product = await productsModel.findById(_id);
       return product;
@@ -45,16 +50,20 @@ class ProductManager {
   }
 
   async createProduct(productsData) {
+    console.log('ahora estoy en createProduct del manager');
     try {
       if (Array.isArray(productsData)) {
+        console.log('entre en el if del manager')
         const result = await productsModel.insertMany(productsData);
         return result;
       } else {
+        console.log('entré en el else del manager')
         const newProduct = new productsModel(productsData);
         const result = await newProduct.save();
         return result;
       }
     } catch (error) {
+      console.error(error);
       throw Error('Error al crear el producto');
     }
   }
@@ -66,6 +75,7 @@ class ProductManager {
       });
       return product;
     } catch (error) {
+      console.error(error);
       throw new Error('Error al actualizar el producto');
     }
   }

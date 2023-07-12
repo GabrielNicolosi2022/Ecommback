@@ -1,6 +1,6 @@
+/* Utilizado en views/prod.controllers.js */
 import productsModel from '../../models/ProductModel.js';
 
-/* Utilizado en views/prod.controllers.js */
 
 // Lógica para ordenar los productos si se proporciona sort
 const getSortedProducts = async (sort) => {

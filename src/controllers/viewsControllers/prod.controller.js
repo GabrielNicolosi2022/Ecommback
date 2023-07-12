@@ -1,5 +1,5 @@
-import productsModel from '../../../models/ProductModel.js';
-import * as logica from '../../../services/views/logicaProd.js';
+import productsModel from '../../models/ProductModel.js';
+import * as logica from '../../utils/views/logicaProd.js';
 
 const products = async (req, res) => {
   try {

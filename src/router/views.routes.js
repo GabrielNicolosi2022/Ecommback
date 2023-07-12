@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import * as userControllers from '../dao/controllers/views/user.controller.js';
-import * as prodControllers from '../dao/controllers/views/prod.controller.js';
-import * as cartControllers from '../dao/controllers/views/cart.controller.js';
+import * as userControllers from '../controllers/viewsControllers/user.controller.js';
+import * as prodControllers from '../controllers/viewsControllers/prod.controller.js';
+import * as cartControllers from '../controllers/viewsControllers/cart.controller.js';
 import { isPublic, isPrivate, isAuthorized } from '../middlewares/auth.js';
 
 const router = Router();

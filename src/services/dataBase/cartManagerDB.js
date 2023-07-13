@@ -7,8 +7,7 @@ class CartManager {
     try {
       const newCart = new cartsModel(cartData);
       await newCart.save();
-
-      console.log('Carrito guardado en la base de datos:', newCart);
+      // console.log('Carrito guardado en la base de datos:', newCart);
 
       return newCart;
     } catch (error) {
@@ -31,9 +30,25 @@ class CartManager {
         .findById(cartId)
         .populate('products.product')
         .lean();
+        // console.log('getCartById: ', cart.products.product);
       return cart;
     } catch (error) {
       throw new Error('Error al obtener el carrito');
+    }
+  }
+
+  async updateCart(cartId, product) {
+    try {
+      const cart = await cartsModel.findById(cartId);
+      if (!cart) {
+        throw new Error('Carrito no encontrado');
+      }
+      cart.products.push(product);
+      await cart.save();
+      return cart;
+    } catch (error) {
+      console.error(error);
+      throw new Error('Error al actualizar el carrito');
     }
   }
 

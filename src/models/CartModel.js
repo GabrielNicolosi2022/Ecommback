@@ -16,7 +16,7 @@ const cartProductSchema = new mongoose.Schema({
 });
 
 const cartSchema = new mongoose.Schema({
-  products: [cartProductSchema],
+  products: [cartProductSchema], // Este array products recibe los objetos(product) del modelo de arriba.
 });
 cartSchema.plugin(mongoosePaginate);
 

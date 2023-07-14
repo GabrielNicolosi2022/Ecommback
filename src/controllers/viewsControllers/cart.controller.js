@@ -1,4 +1,4 @@
-import CartManager from '../../services/dataBase/cartManagerDB.js';
+import CartManager from '../../services/dataBase/cartServicesDB.js';
 const cartManager = new CartManager();
 
 const cart = (req, res) => {

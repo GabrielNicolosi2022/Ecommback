@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import passport from 'passport';
-import UserModel from '../models/UserModel.js';
+import UserModel from '../models/schemas/UserModel.js';
 
 const router = Router();
 // Registrar un usuario

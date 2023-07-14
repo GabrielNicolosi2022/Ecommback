@@ -1,5 +1,5 @@
 import * as logic from '../../utils/cartLogic.js';
-import CartManager from '../../services/dataBase/cartManagerDB.js';
+import CartManager from '../../services/dataBase/cartServicesDB.js';
 const cartManager = new CartManager();
 
 const getCarts = async (req, res) => {
@@ -46,7 +46,7 @@ const createCart = async (req, res) => {
   }
 };
 
-const updateCart = async (req, res) => {
+const updateCart = async (req, res) => { // ! Revisar error
   try {
     const cartId = req.params.cid;
     const { products } = req.body;
@@ -66,7 +66,7 @@ const updateCart = async (req, res) => {
   }
 };
 
-const updateProdOfCart = async (req, res) => {
+const updateProdOfCart = async (req, res) => { // * Falta separar lógica
   try {
     const cartId = req.params.cid;
     const productId = req.params.pid;
@@ -103,7 +103,7 @@ const updateProdOfCart = async (req, res) => {
   }
 };
 
-const deleteProdOfCart = async (req, res) => {
+const deleteProdOfCart = async (req, res) => { // * Falta separar lógica
   try {
     const cartId = req.params.cid;
     const productId = req.params.pid;
@@ -133,7 +133,7 @@ const deleteProdOfCart = async (req, res) => {
   }
 };
 
-const deleteCart = async (req, res) => {
+const deleteCart = async (req, res) => { // * Falta separar lógica
   try {
     const _id = req.params.cid;
 

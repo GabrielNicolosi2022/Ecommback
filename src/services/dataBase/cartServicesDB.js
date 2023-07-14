@@ -1,4 +1,4 @@
-import cartsModel from '../../models/CartModel.js';
+import cartsModel from '../../models/schemas/CartModel.js';
 
 class CartManager {
   constructor() {}
@@ -30,7 +30,7 @@ class CartManager {
         .findById(cartId)
         .populate('products.product')
         .lean();
-        // console.log('getCartById: ', cart.products.product);
+      // console.log('getCartById: ', cart.products.product);
       return cart;
     } catch (error) {
       throw new Error('Error al obtener el carrito');

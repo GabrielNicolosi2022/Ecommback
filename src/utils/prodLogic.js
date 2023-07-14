@@ -1,5 +1,5 @@
 /* Utilizado en routes/prod.controllers.js */
-import ProductManager from '../services/dataBase/productManagerDB.js';
+import ProductManager from '../services/dataBase/prodServicesDB.js';
 const productManager = new ProductManager();
 
 // Lógica para ordenar si se proporciona sort

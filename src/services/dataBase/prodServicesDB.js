@@ -1,4 +1,4 @@
-import productsModel from '../../models/ProductModel.js';
+import productsModel from '../../models/schemas/ProdModel.js';
 
 class ProductManager {
   constructor() {}
@@ -28,7 +28,8 @@ class ProductManager {
     }
   }
 
-  async getAllProducts() { // ! No se está utilizando en products.routes.js
+  async getAllProducts() {
+    // ! No se está utilizando en products.routes.js
     console.log('estoy en getAllProducts');
 
     try {
@@ -53,11 +54,11 @@ class ProductManager {
     console.log('ahora estoy en createProduct del manager');
     try {
       if (Array.isArray(productsData)) {
-        console.log('entre en el if del manager')
+        console.log('entre en el if del manager');
         const result = await productsModel.insertMany(productsData);
         return result;
       } else {
-        console.log('entré en el else del manager')
+        console.log('entré en el else del manager');
         const newProduct = new productsModel(productsData);
         const result = await newProduct.save();
         return result;

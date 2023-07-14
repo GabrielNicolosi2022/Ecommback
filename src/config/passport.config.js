@@ -3,7 +3,7 @@ import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import gitHubStrategy from 'passport-github2';
 import { createHash, isValidPassword } from '../middlewares/hash.js';
-import UserModel from '../models/UserModel.js';
+import UserModel from '../models/schemas/UserModel.js';
 
 const initializePassport = () => {
   // Estrategia de registro local

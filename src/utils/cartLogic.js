@@ -1,4 +1,4 @@
-import CartManager from '../services/dataBase/cartManagerDB.js';
+import CartManager from '../services/dataBase/cartServicesDB.js';
 const cartManager = new CartManager();
 
 const getCarts = async (req) => {
@@ -55,6 +55,7 @@ const createCart = async (products) => {
 };
 
 const updateCart = async (cartId, products) => {
+  // ! Revisar error
   try {
     const cart = await cartManager.getCartById(cartId);
     // console.log('cart del manager: ',cart)
@@ -76,18 +77,24 @@ const updateCart = async (cartId, products) => {
   }
 };
 
-// const updateProdOfCart =
+const updateProdOfCart = () => {
+  console.log('TO DO');
+};
 
-// const deleteProdOfCart =
+const deleteProdOfCart = () => {
+  console.log('TO DO');
+};
 
-// const deleteCart =
+const deleteCart = () => {
+  console.log('TO DO');
+};
 
 export {
   getCarts,
   getCartById,
   createCart,
   updateCart,
-  // updateProdOfCart,
-  // deleteProdOfCart,
-  // deleteCart,
+  updateProdOfCart,
+  deleteProdOfCart,
+  deleteCart,
 };

@@ -1,4 +1,4 @@
- import * as logica from '../../utils/logicaPr.js';
+ import * as logica from '../../utils/prodLogic.js';
 
 const getProducts = async (req, res) => {
   try {

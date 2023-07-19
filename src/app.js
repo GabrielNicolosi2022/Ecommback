@@ -19,7 +19,7 @@ import initializePassport from './config/passport.config.js';
 /* CONFIGURATIONS */
 const app = express();
 const PORT = process.env.PORT || config.server.port;
-const MONGO_DB = config.db.mongodb;
+const MONGO_DB = config.db.cs;
 
 // Express
 app.use(json()); // Middleware para parsear JSON
@@ -27,7 +27,7 @@ app.use(urlencoded({ extended: true }));
 app.use(express.static(`${__dirname}/public`));
 app.use(cookieParser());
 
-// Session con MongoStore
+// Session whit MongoStore
 app.use(
   session({
     store: MongoStore.create({
@@ -58,7 +58,7 @@ app.use(morgan('dev'));
 // Server HTTP
 const server = app.listen(PORT, (err) => {
   if (err) {
-    console.log('Connection Error: ', err);
+    console.error('Connection Error: ', err);
     return;
   }
   console.log(`Running on port ${PORT}`);

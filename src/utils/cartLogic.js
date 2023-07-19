@@ -1,10 +1,10 @@
-import CartManager from '../services/dataBase/cartServicesDB.js';
-const cartManager = new CartManager();
+import cartServices from '../services/dataBase/cartServicesDB.js';
+const cartManager = new cartServices();
 
-const getCarts = async (req) => {
+/* const getCarts = async (req) => {
   try {
     const limit = parseInt(req.query.limit);
-    const carts = await cartManager.getAllCarts();
+    const carts = await cartServices.getAllCarts();
 
     if (limit && !isNaN(limit) && limit > 0) {
       return carts.slice(0, limit);
@@ -15,8 +15,8 @@ const getCarts = async (req) => {
     throw new Error('Error al obtener los carritos');
   }
 };
-
-const getCartById = async (_id) => {
+ */
+/* const getCartById = async (_id) => {
   try {
     const cart = await cartManager.getCartById(_id);
 
@@ -31,8 +31,9 @@ const getCartById = async (_id) => {
     throw new Error('Error al obtener el carrito');
   }
 };
+ */
 
-const createCart = async (products) => {
+/* const createCart = async (products) => {
   try {
     if (!products) {
       throw new Error('No se han enviado productos para cargar en el carrito');
@@ -50,12 +51,12 @@ const createCart = async (products) => {
     ) {
       throw error;
     }
+    console.error(error);
     throw new Error('Error al crear el carrito');
   }
 };
-
-const updateCart = async (cartId, products) => {
-  // ! Revisar error
+ */
+/* const updateCart = async (cartId, products) => {
   try {
     const cart = await cartManager.getCartById(cartId);
     // console.log('cart del manager: ',cart)
@@ -76,8 +77,9 @@ const updateCart = async (cartId, products) => {
     throw new Error('Error al actualizar el carrito');
   }
 };
+ */
 
-const updateProdOfCart = () => {
+/* const updateProdOfCart = () => {
   console.log('TO DO');
 };
 
@@ -88,13 +90,13 @@ const deleteProdOfCart = () => {
 const deleteCart = () => {
   console.log('TO DO');
 };
-
+ */
 export {
-  getCarts,
-  getCartById,
-  createCart,
-  updateCart,
-  updateProdOfCart,
-  deleteProdOfCart,
-  deleteCart,
+  // getCarts,
+  // getCartById,
+  // createCart,
+  // updateCart,
+  // updateProdOfCart,
+  // deleteProdOfCart,
+  // deleteCart,
 };

@@ -1,4 +1,4 @@
- import * as logica from '../../utils/prodLogic.js';
+import * as logica from '../../utils/prodLogic.js';
 
 const getProducts = async (req, res) => {
   try {
@@ -51,7 +51,11 @@ const getProducts = async (req, res) => {
       nextLink: nextLink,
     };
 
-    res.json(response);
+    res.json({
+      status: 'success',
+      message: 'Productos encontrados',
+      data: response,
+    });
   } catch (error) {
     res.status(500).json({ error: 'Error al obtener los productos' });
   }
@@ -102,7 +106,9 @@ const createProducts = async (req, res) => {
         const createdProduct = await logica.createProduct(productData);
         createdProducts.push(createdProduct);
       } catch (error) {
-        return res.status(400).json({ error: error.message });
+        return res
+          .status(400)
+          .json({ error: error.message || 'Error al guardar el producto' });
       }
     };
 
@@ -110,15 +116,19 @@ const createProducts = async (req, res) => {
       for (const productData of productsData) {
         await processProduct(productData);
       }
+      res.send({
+        status: 'success',
+        message: 'Nuevos productos guardados correctamente',
+        data: createdProducts,
+      });
     } else {
       await processProduct(productsData);
+      res.send({
+        status: 'success',
+        message: 'Nuevo producto guardado correctamente',
+        data: createdProducts,
+      });
     }
-
-    res.send({
-      status: 'success',
-      message: 'Nuevos productos cargados correctamente',
-      data: createdProducts,
-    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: 'Error al guardar los productos' });

@@ -1,6 +1,6 @@
 /* Utilizado en routes/prod.controllers.js */
-import ProductManager from '../services/dataBase/prodServicesDB.js';
-const productManager = new ProductManager();
+import ProductServices from '../services/dataBase/prodServicesDB.js';
+const productServices = new ProductServices();
 
 // Lógica para ordenar si se proporciona sort
 const getSorted = async (sort) => {
@@ -44,7 +44,7 @@ const getPaginateProducts = async (options, filter, sortOptions) => {
     Page,
     hasNextPage,
     hasPrevPage,
-  } = await productManager.getAllProductsPaginated(
+  } = await productServices.getAllProductsPaginated(
     options,
     filter,
     sortOptions
@@ -63,12 +63,8 @@ const getPaginateProducts = async (options, filter, sortOptions) => {
 
 // Lógica para obtener un producto por su ID
 const getProductById = async (_id) => {
-  try {
-    const product = await productManager.getProductsById(_id);
-    return product;
-  } catch (error) {
-    throw new Error('Error al obtener el producto');
-  }
+  const product = await productServices.getProductsById(_id);
+  return product;
 };
 
 const createProduct = async (productData) => {
@@ -107,19 +103,19 @@ const createProduct = async (productData) => {
     thumbnails: thumbnails || [],
   };
 
-  const createdProduct = await productManager.createProduct(newProduct);
+  const createdProduct = await productServices.createProduct(newProduct);
   return createdProduct;
 };
 
 const updateProduct = async (_id, updatedData) => {
   try {
     // Guardo el producto por si se modificó por error
-    const product = await productManager.getProductsById(_id);
+    const product = await productServices.getProductsById(_id);
 
     if (!product) {
       throw new Error('Producto no encontrado');
     }
-    const updatedProduct = await productManager.updateProduct(_id, updatedData);
+    const updatedProduct = await productServices.updateProduct(_id, updatedData);
 
     return updatedProduct;
   } catch (error) {
@@ -134,12 +130,12 @@ const updateProduct = async (_id, updatedData) => {
 const deleteProduct = async (_id) => {
   try {
     // Guardo el producto por si se eliminó por error
-    const product = await productManager.getProductsById(_id);
+    const product = await productServices.getProductsById(_id);
 
     if (!product) {
       throw new Error('Producto no encontrado');
     }
-    await productManager.deleteProduct(_id);
+    await productServices.deleteProduct(_id);
   } catch (error) {
     if (error.message === 'Producto no encontrado') {
       throw error;

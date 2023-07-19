@@ -1,72 +1,100 @@
-import * as logic from '../../utils/cartLogic.js';
-import CartManager from '../../services/dataBase/cartServicesDB.js';
-const cartManager = new CartManager();
+// import * as logic from '../../utils/cartLogic.js';
+import CartServices from '../../services/dataBase/cartServicesDB.js';
+const cartServices = new CartServices();
 
 const getCarts = async (req, res) => {
   try {
-    const carts = await logic.getCarts(req);
+    const limit = parseInt(req.query.limit);
+    const carts = await cartServices.getAllCarts();
+
+    if (limit && !isNaN(limit) && limit > 0) {
+      return carts.slice(0, limit);
+    }
     return res.json({
       status: 'success',
       message: 'Carritos encontrados',
       data: carts,
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res
+      .status(500)
+      .json({ status: 'error', error: 'Error al obtener los carritos' });
   }
 };
 
 const getCartById = async (req, res) => {
   try {
     const _id = req.params.cid;
-    const cart = await logic.getCartById(_id);
+    const cart = await cartServices.getCartById(_id);
 
-    res.json({
+    if (!cart) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Carrito no encontrado',
+      });
+    }
+    res.status(200).json({
       status: 'success',
       message: 'Carrito encontrado',
       data: cart,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({
+      status: 'error',
+      message: 'Error al obtener el carrito',
+    });
   }
 };
 
 const createCart = async (req, res) => {
   try {
     const { products } = req.body;
-
-    const nuevoCarrito = await logic.createCart(products);
-
-    res.send({
+    console.log({ products });
+    if (!products) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'No se han enviado productos para cargar en el carrito',
+      });
+    }
+    const nuevoCarrito = {
+      products: products,
+    };
+    console.log(nuevoCarrito);
+    await cartServices.createCart(nuevoCarrito);
+    return res.status(200).json({
       status: 'success',
       message: 'Nuevo carrito creado correctamente',
       data: nuevoCarrito,
     });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ error: 'Error al crear el carrito' });
   }
 };
 
-const updateCart = async (req, res) => { // ! Revisar error
+const updateCart = async (req, res) => {
   try {
     const cartId = req.params.cid;
     const { products } = req.body;
-    console.log('req.params.cid: ', req.params.cid,'req.body: ', req.body);
 
-    const cart = await logic.updateCart(cartId, products);
+    const cart = await cartServices.updateCart(cartId, products);
 
-    res
-      .status(200)
-      .json({
-        status: 'success',
-        message: 'Carrito actualizado correctamente',
-        data: cart,
-      });
+    if (!cart) {
+      res
+        .status(404)
+        .json({ status: 'error', message: 'Carrito no encontrado' });
+    }
+    res.status(200).json({
+      status: 'success',
+      message: 'Carrito actualizado correctamente',
+      data: cart,
+      products,
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Error al actualizar el carrito' });
   }
 };
 
-const updateProdOfCart = async (req, res) => { // * Falta separar lógica
+const updateProdOfCart = async (req, res) => {
   try {
     const cartId = req.params.cid;
     const productId = req.params.pid;
@@ -103,7 +131,7 @@ const updateProdOfCart = async (req, res) => { // * Falta separar lógica
   }
 };
 
-const deleteProdOfCart = async (req, res) => { // * Falta separar lógica
+const deleteProdOfCart = async (req, res) => {
   try {
     const cartId = req.params.cid;
     const productId = req.params.pid;
@@ -133,7 +161,7 @@ const deleteProdOfCart = async (req, res) => { // * Falta separar lógica
   }
 };
 
-const deleteCart = async (req, res) => { // * Falta separar lógica
+const deleteCart = async (req, res) => {
   try {
     const _id = req.params.cid;
 

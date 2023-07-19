@@ -5,7 +5,7 @@ config.server = {
 }
 
 config.db = {
-    mongodb: process.env.MONGO_URI
+    cs: process.env.MONGO_URI
 }
 
 config.session = {

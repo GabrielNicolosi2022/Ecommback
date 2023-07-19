@@ -1,61 +1,23 @@
 import cartsModel from '../../models/schemas/CartModel.js';
 
-class CartManager {
+class CartServices {
   constructor() {}
 
-  async createCart(cartData) {
-    try {
-      const newCart = new cartsModel(cartData);
-      await newCart.save();
-      // console.log('Carrito guardado en la base de datos:', newCart);
+  getAllCarts = async () => await cartsModel.find().lean();
 
-      return newCart;
-    } catch (error) {
-      throw new Error('Error al crear el carrito');
-    }
-  }
+  getCartById = async (_Id) =>
+    await cartsModel.findById(_Id).populate('products.product').lean();
 
-  async getAllCarts() {
-    try {
-      const carts = await cartsModel.find().lean();
-      return carts;
-    } catch (error) {
-      throw new Error('Error al obtener los carritos');
-    }
-  }
+  createCart = async (cartData) => await cartsModel.create(cartData);
 
-  async getCartById(cartId) {
-    try {
-      const cart = await cartsModel
-        .findById(cartId)
-        .populate('products.product')
-        .lean();
-      // console.log('getCartById: ', cart.products.product);
-      return cart;
-    } catch (error) {
-      throw new Error('Error al obtener el carrito');
-    }
-  }
-
-  async updateCart(cartId, product) {
-    try {
-      const cart = await cartsModel.findById(cartId);
-      if (!cart) {
-        throw new Error('Carrito no encontrado');
-      }
-      cart.products.push(product);
-      await cart.save();
-      return cart;
-    } catch (error) {
-      console.error(error);
-      throw new Error('Error al actualizar el carrito');
-    }
-  }
+  updateCart = async (cartId, products) =>
+    await cartsModel
+      .findByIdAndUpdate(cartId, { products }, { new: true })
+      .populate('products.product')
+      .lean();
 
   async addProductToCart(cartId, product) {
     try {
-      // console.log('ID del carrito:', cartId);
-      // console.log('Producto a agregar:', product);
 
       const cart = await cartsModel.findByIdAndUpdate(
         cartId,
@@ -95,5 +57,6 @@ class CartManager {
     }
   }
 }
+//  ! Cambiar class por functions
 
-export default CartManager;
+export default CartServices;

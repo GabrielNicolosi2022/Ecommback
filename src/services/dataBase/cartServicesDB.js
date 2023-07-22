@@ -1,39 +1,27 @@
 import cartsModel from '../../models/schemas/CartModel.js';
 
-class CartServices {
-  constructor() {}
+const getAllCarts = async () => await cartsModel.find().lean();
 
-  getAllCarts = async () => await cartsModel.find().lean();
+const getCartById = async (cartId) =>
+  await cartsModel.findById(cartId).populate('products.product').lean();
 
-  getCartById = async (_Id) =>
-    await cartsModel.findById(_Id).populate('products.product').lean();
+const createCart = async (newCart) => await cartsModel.create(newCart);
 
-  createCart = async (cartData) => await cartsModel.create(cartData);
+const addProductToCart = async (cartId, products) =>
+  await cartsModel.findByIdAndUpdate(
+    cartId,
+    { $push: { products: products } },
+    { new: true }
+  );
 
-  updateCart = async (cartId, products) =>
-    await cartsModel
-      .findByIdAndUpdate(cartId, { products }, { new: true })
-      .populate('products.product')
-      .lean();
+// ! Sobreescribe los productos del carrito
+const updateCart = async (cartId, products) =>
+  await cartsModel
+    .findByIdAndUpdate(cartId, { products }, { new: true })
+    .populate('products.product')
+    .lean();
 
-  async addProductToCart(cartId, product) {
-    try {
-
-      const cart = await cartsModel.findByIdAndUpdate(
-        cartId,
-        { $push: { products: product } },
-        { new: true }
-      );
-
-      console.log('Carrito actualizado:', cart);
-
-      return cart;
-    } catch (error) {
-      throw new Error('Error al agregar el producto al carrito');
-    }
-  }
-
-  async removeProductFromCart(cartId, productId) {
+/*   removeProductFromCart = async (cartId, productId) => {
     try {
       const cart = await cartsModel.findById(cartId);
       const index = cart.products.findIndex(
@@ -47,16 +35,14 @@ class CartServices {
     } catch (error) {
       throw new Error('Error al eliminar el producto del carrito');
     }
-  }
+  };
+ */
+const deleteCart = async (cartId) => await cartsModel.findByIdAndRemove(cartId);
 
-  async deleteCart(cartId) {
-    try {
-      await cartsModel.findByIdAndRemove(cartId);
-    } catch (error) {
-      throw new Error('Error al eliminar el carrito');
-    }
-  }
-}
-//  ! Cambiar class por functions
-
-export default CartServices;
+export  {
+  getAllCarts,
+  getCartById,
+  createCart,
+  addProductToCart,
+  deleteCart
+};

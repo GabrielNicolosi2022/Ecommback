@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import * as userControllers from '../controllers/viewsControllers/user.controller.js';
-import * as prodControllers from '../controllers/viewsControllers/prod.controller.js';
-import * as cartControllers from '../controllers/viewsControllers/cart.controller.js';
+import * as userControllers from '../controllers/user.controller.js';
+import * as prodControllers from '../controllers/prod.controller.js';
+import * as cartControllers from '../controllers/cart.controller.js';
 import { isPublic, isPrivate, isAuthorized } from '../middlewares/auth.js';
 
 const router = Router();
@@ -23,8 +23,8 @@ router.get('/product', isPrivate, prodControllers.products);
 
 router.get('/product/:pid', isPrivate, prodControllers.productsById);
 
-router.get('/cart', isPrivate, cartControllers.cart);
+router.get('/cart', isPrivate, cartControllers.viewCart);
 
-router.get('/cart/:cid', isPrivate, cartControllers.cartById);
+router.get('/cart/:cid', isPrivate, cartControllers.viewCartById);
 
 export default router;

@@ -4,7 +4,7 @@ import { v4 } from 'uuid';
 
 import ProductManager from '../dao/fileSystem/productManager.js';
 
-import { uploader } from '../middlewares/multer.js';
+import { uploader } from '../../middlewares/multer.js';
 
 const router = Router();
 

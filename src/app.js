@@ -2,17 +2,15 @@ import 'dotenv/config';
 import config from './config/config.js';
 import express, { json, urlencoded } from 'express';
 import __dirname from './utils.js';
+import cors from 'cors';
 import { engine } from 'express-handlebars';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import flash from 'express-flash';
 import MongoStore from 'connect-mongo';
-import productsRouter from './router/products.routes.js';
-import cartsRouter from './router/carts.routes.js';
+import indexRouter from './router/Index.routes.js';
 import router from './router/carts.routes.js';
-import sessionRouter from './router/sessions.routes.js';
-import viewsRouter from './router/views.routes.js';
 import passport from 'passport';
 import initializePassport from './config/passport.config.js';
 
@@ -77,13 +75,6 @@ app.engine(
 app.set('views', __dirname + '/views');
 app.set('view engine', '.hbs');
 
-// file system
-app.use('/api/products', productsRouter);
-app.use('/api/carts', cartsRouter);
-// mongoDB
-app.use('/api/products', productsRouter);
-app.use('/api/carts', cartsRouter);
-app.use('/api/sessions', sessionRouter);
-app.use('/', viewsRouter);
+app.use(indexRouter);
 
 export default app;

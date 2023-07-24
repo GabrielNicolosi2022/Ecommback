@@ -4,27 +4,27 @@ import * as prodControllers from '../controllers/viewsControllers/prod.controlle
 import * as cartControllers from '../controllers/viewsControllers/cart.controller.js';
 import { isPublic, isPrivate, isAuthorized } from '../middlewares/auth.js';
 
-const router = Router();
+const viewsRouter = Router();
 
 // Rutas
-router.get('/', isPublic, userControllers.root);
+viewsRouter.get('/', isPublic, userControllers.root);
 
-router.get('/register', isPublic, userControllers.register);
+viewsRouter.get('/register', isPublic, userControllers.register);
 
-router.get('/failregister', isPublic, userControllers.failregister);
+viewsRouter.get('/failregister', isPublic, userControllers.failregister);
 
-router.get('/login', isPublic, userControllers.login);
+viewsRouter.get('/login', isPublic, userControllers.login);
 
-router.get('/faillogin', userControllers.faillogin);
+viewsRouter.get('/faillogin', userControllers.faillogin);
 
-router.get('/profile', isPrivate, userControllers.profile);
+viewsRouter.get('/profile', isPrivate, userControllers.profile);
 
-router.get('/product', isPrivate, prodControllers.products);
+viewsRouter.get('/product', isPrivate, prodControllers.products);
 
-router.get('/product/:pid', isPrivate, prodControllers.productsById);
+viewsRouter.get('/product/:pid', isPrivate, prodControllers.productsById);
 
-router.get('/cart', isPrivate, cartControllers.cart);
+viewsRouter.get('/cart', isPrivate, cartControllers.cart);
 
-router.get('/cart/:cid', isPrivate, cartControllers.cartById);
+viewsRouter.get('/cart/:cid', isPrivate, cartControllers.cartById);
 
-export default router;
+export default viewsRouter;

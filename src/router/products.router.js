@@ -1,17 +1,13 @@
-import Router from 'express';
-
+import { Router } from 'express';
 import { v4 } from 'uuid';
-
-import ProductManager from '../dao/fileSystem/productManager.js';
-
+import ProductManager from '../services/fileSystem/productManager.js';
 import { uploader } from '../middlewares/multer.js';
 
-const router = Router();
-
+const productsRouterFs = Router();
 const productManager = new ProductManager();
 
 // Obtener todos los productos
-router.get('/', async (req, res) => {
+productsRouterFs.get('/', async (req, res) => {
   try {
     // Obtengo el valor del query param 'limit' y lo convierto a un número entero
     const limit = parseInt(req.query.limit);
@@ -29,7 +25,7 @@ router.get('/', async (req, res) => {
 });
 
 // Obtener un producto por id
-router.get('/:pid', async (req, res) => {
+productsRouterFs.get('/:pid', async (req, res) => {
   try {
     // Obtengo el valor del parámetro de ruta 'pid'
     const pid = parseInt(req.params.pid);
@@ -51,7 +47,7 @@ router.get('/:pid', async (req, res) => {
 });
 
 // Agregar un nuevo producto
-router.post('/',uploader.array('thumbnails', 5), async (req, res) => {
+productsRouterFs.post('/', uploader.array('thumbnails', 5), async (req, res) => {
   try {
     const {
       title,
@@ -101,7 +97,7 @@ router.post('/',uploader.array('thumbnails', 5), async (req, res) => {
 });
 
 // Actualizar un producto por id
-router.put('/:pid', async (req, res) => {
+productsRouterFs.put('/:pid', async (req, res) => {
   try {
     // Obtener el valor del parámetro de ruta 'pid'
     const pid = parseInt(req.params.pid);
@@ -151,7 +147,7 @@ router.put('/:pid', async (req, res) => {
 });
 
 // Eliminar un producto por id
-router.delete('/:pid', async (req, res) => {
+productsRouterFs.delete('/:pid', async (req, res) => {
   try {
     // Obtener el valor del parámetro de ruta 'pid'
     const pid = parseInt(req.params.pid);
@@ -175,4 +171,4 @@ router.delete('/:pid', async (req, res) => {
   }
 });
 
-export default router;
+export default productsRouterFs;

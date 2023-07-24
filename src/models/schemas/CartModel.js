@@ -1,13 +1,13 @@
 import mongoose from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
-import db from '../../config/dbConnection.js';
-import productsModel from './ProdModel.js';
+import db from '../models/DAO/dbConnection.js';
+import productsModel from './ProductModel.js';
 const cartCollection = 'carts';
 
 const cartProductSchema = new mongoose.Schema({
   product: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: productsModel,
+    ref: 'products',
   },
   quantity: {
     type: Number,

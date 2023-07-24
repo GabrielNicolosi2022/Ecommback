@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import cartsModel from './CartModel.js';
 
 const userCollection = 'User';
 
@@ -33,7 +32,7 @@ const userSchema = new mongoose.Schema({
   },
   cart: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: cartsModel,
+    ref: 'carts',
   },
 });
 

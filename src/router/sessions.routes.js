@@ -2,9 +2,9 @@ import { Router } from 'express';
 import passport from 'passport';
 import UserModel from '../models/schemas/UserModel.js';
 
-const router = Router();
+const sessionsRouter = Router();
 // Registrar un usuario
-router.post(
+sessionsRouter.post(
   '/register',
   passport.authenticate('local-register', {
     failureRedirect: '/failregister',
@@ -19,7 +19,7 @@ router.post(
 );
 
 // Login de usuario mediante app
-router.post(
+sessionsRouter.post(
   '/login',
   passport.authenticate('local-login', {
     failureRedirect: '/login',
@@ -45,13 +45,13 @@ router.post(
 );
 
 // Login de usuario mediante GitHub
-router.get(
+sessionsRouter.get(
   '/github',
   passport.authenticate('githubpass', { scope: ['user:email'] }),
   async (req, res) => {}
 );
 
-router.get(
+sessionsRouter.get(
   '/githubcallback',
   passport.authenticate('githubpass', { failureRedirect: '/login' }),
   async (req, res) => {
@@ -62,7 +62,7 @@ router.get(
 );
 
 // Perfil de usuario
-router.get('/current', async (req, res) => {
+sessionsRouter.get('/current', async (req, res) => {
   try {
     // Verificar si hay un usuario en la sesión actual
     if (req.session.user) {
@@ -89,7 +89,7 @@ router.get('/current', async (req, res) => {
 });
 
 // Cerrar sesión de usuario
-router.get('/logout', (req, res) => {
+sessionsRouter.get('/logout', (req, res) => {
   req.session.destroy((err) => {
     if (err) {
       console.error('Error al destruir la sesión', err);
@@ -99,4 +99,4 @@ router.get('/logout', (req, res) => {
   });
 });
 
-export default router;
+export default sessionsRouter;

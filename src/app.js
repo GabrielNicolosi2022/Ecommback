@@ -24,6 +24,7 @@ app.use(json()); // Middleware para parsear JSON
 app.use(urlencoded({ extended: true }));
 app.use(express.static(`${__dirname}/public`));
 app.use(cookieParser());
+app.use(cors());
 
 // Session whit MongoStore
 app.use(

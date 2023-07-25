@@ -10,9 +10,9 @@ import cartsRouter from './carts.routes.js';
 
 const indexRouter = Router();
 
-indexRouter.use('v1/', viewsRouter);
-indexRouter.use('v1/api/sessions', sessionsRouter);
-indexRouter.use('v1/api/products', productsRouter);
-indexRouter.use('v1/api/carts', cartsRouter);
+indexRouter.use('/', viewsRouter);
+indexRouter.use('/api/sessions', sessionsRouter);
+indexRouter.use('/api/products', productsRouter);
+indexRouter.use('/api/carts', cartsRouter);
 
 export default indexRouter;

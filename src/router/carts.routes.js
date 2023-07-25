@@ -1,5 +1,6 @@
 import Router from 'express';
 import * as controllers from '../controllers/cart.controller.js';
+import { checkRole } from '../middlewares/auth.js';
 
 const cartsRouter = Router();
 
@@ -13,10 +14,11 @@ cartsRouter.get('/:cid', controllers.getCartById);
 cartsRouter.post('/', controllers.createCart);
 
 // Actualizar el carrito con nuevos productos
-cartsRouter.put('/:cid', controllers.updateCart);
+cartsRouter.put('/:cid', checkRole('user'), controllers.updateCart);
 
 // Actualizar cantidad de ejemplares de un producto en un carrito
-cartsRouter.put('/:cid/products/:pid', controllers.updateProdOfCart);
+cartsRouter.put('/:cid/products/:pid', checkRole('user'), controllers.updateProdOfCart
+);
 
 // Eliminar un producto del carrito
 cartsRouter.delete('/:cid/products/:pid', controllers.deleteProdOfCart);

@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
 import db from '../../config/dbConnection.js';
+
 const cartCollection = 'carts';
 
 const cartProductSchema = new mongoose.Schema({

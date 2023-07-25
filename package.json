@@ -29,7 +29,8 @@
     "nodemon": "^2.0.22",
     "passport": "^0.6.0",
     "passport-github2": "^0.1.12",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "socket.io": "^4.7.1"
   },
   "devDependencies": {
     "uuid": "^9.0.0"

@@ -1,0 +1,28 @@
+<nav class='navbar navbar-light bg-warning'>
+  <a href='#' class='navbar-brand mx-auto'>chat-app</a>
+</nav>
+
+<div class='container'>
+  <div class='row'>
+    <div class='col-md-6 mt-4'>
+      <div class='card'>
+        <div class='card-header'>
+          <h4>Conversación</h4>
+        </div>
+        <form id="message-form" class='card-footer'>
+          <div class='input-group'>
+            <input id='chatbox' type='text' class='form-control' />
+            <div class='input-group-append'>
+              <input type='submit' class='btn btn-warning' />
+            </div>
+          </div>
+        </form>
+        <div id='messageLogs' class='card-body'></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src='//cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+<script src='/socket.io/socket.io.js'></script>
+<script src='/js/chat.js'></script>

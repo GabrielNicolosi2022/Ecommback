@@ -23,8 +23,8 @@ viewsRouter.get('/product', isPrivate, prodControllers.products);
 
 viewsRouter.get('/product/:pid', isPrivate, prodControllers.productsById);
 
-viewsRouter.get('/cart', isPrivate, cartControllers.cart);
+viewsRouter.get('/cart', isPrivate, cartControllers.viewCart);
 
-viewsRouter.get('/cart/:cid', isPrivate, cartControllers.cartById);
+viewsRouter.get('/cart/:cid', isPrivate, cartControllers.viewCartById);
 
 export default viewsRouter;

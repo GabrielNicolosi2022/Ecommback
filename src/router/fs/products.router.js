@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { v4 } from 'uuid';
-import ProductManager from '../services/fileSystem/productManager.js';
-import { uploader } from '../middlewares/multer.js';
+import ProductManager from '../../services/fileSystem/prodServicesFS.js'
+import { uploader } from '../../middlewares/multer.js';
 
 const productsRouterFs = Router();
 const productManager = new ProductManager();

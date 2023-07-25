@@ -27,13 +27,17 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['user'],
+    enum: ['user', 'admin'],
     default: 'user',
   },
   cart: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'carts',
   },
+  orders: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Tickets'
+  }
 });
 
 const UserModel = mongoose.model(userCollection, userSchema);

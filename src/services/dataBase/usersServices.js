@@ -1,19 +1,14 @@
-import UserModel from '../../models/schemas/UserModel.js';
+import users from '../../models/schemas/UserModel.js';
 
-const getAll = async () => await UserModel.find().lean();
+const getAll = async () => await users.find().lean();
 
-const getUserById = async (id) => await UserModel.findOne({ _id: id }).lean();
+const getUserById = async (id) => await users.findOne({ _id: id }).lean();
 
-const create = async (info) => await UserModel.create(info).lean();
+const create = async (info) => await users.create(info).lean();
 
-const updateUserById = async (id, info) =>
-  await UserModel.updateOne({ _id: id }, { $set: info }).lean();
+const updateUserById = async (id, info) => await users.updateOne({ _id: id }, { $set: info }).lean();
 
-const updateTicketByUserId = async (id, ticketId) =>
-  await UserModel.updateOne(
-    { _id: id },
-    { $push: { tickets: ticketId } }
-  ).lean();
+const updateTicketByUserId = async (id, ticketId) => await users.updateOne({ _id: id },{ $push: { tickets: ticketId }}).lean();
  
 export {
   getAll,

@@ -2,12 +2,20 @@ import { Router } from 'express';
 import * as userControllers from '../controllers/user.controller.js';
 import * as prodControllers from '../controllers/prod.controller.js';
 import * as cartControllers from '../controllers/cart.controller.js';
-import { isPublic, isPrivate, isAuthorized } from '../middlewares/auth.js';
+import {
+  isPublic,
+  isPrivate,
+  isAuthorized,
+  checkRole,
+} from '../middlewares/auth.js';
+import { chat } from '../controllers/chat.controller.js';
 
 const viewsRouter = Router();
 
 // Rutas
 viewsRouter.get('/', isPublic, userControllers.root);
+
+viewsRouter.get('/chat', isPrivate, checkRole('user'), chat);
 
 viewsRouter.get('/register', isPublic, userControllers.register);
 

@@ -17,8 +17,10 @@ cartsRouter.post('/', controllers.createCart);
 cartsRouter.put('/:cid', checkRole('user'), controllers.updateCart);
 
 // Actualizar cantidad de ejemplares de un producto en un carrito
-cartsRouter.put('/:cid/products/:pid', checkRole('user'), controllers.updateProdOfCart
-);
+cartsRouter.put('/:cid/products/:pid', checkRole('user'), controllers.updateProdOfCart);
+
+// Finalizar el proceso de compra del carrito
+cartsRouter.post('/:cid/purchase', controllers.purchase);
 
 // Eliminar un producto del carrito
 cartsRouter.delete('/:cid/products/:pid', controllers.deleteProdOfCart);

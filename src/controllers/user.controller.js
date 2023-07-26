@@ -1,4 +1,5 @@
-import UserModel from '../models/schemas/UserModel.js';
+import users from '../models/schemas/UserModel.js';
+import { userDTO } from '../DTO/currentUser.js';
 
 const root = (req, res) => {
   res.redirect('/login');
@@ -92,14 +93,6 @@ const profile = (req, res) => {
   });
 };
 
-// DTO para el usuario que contiene solo la información necesaria
-const userDTO = (user) => ({
-  first_name: user.first_name,
-  last_name: user.last_name,
-  email: user.email,
-  role: user.role,
-});
-
 const currentUser = async (req, res) => {
   try {
     // Si el usuario es el administrador, responder directamente con el objeto del usuario administrador
@@ -112,7 +105,7 @@ const currentUser = async (req, res) => {
       const userSession = req.session.user;
 
       // Buscar el usuario en la base de datos utilizando el ID
-      const user = await UserModel.findOne(userSession);
+      const user = await users.findOne(userSession);
 
       if (!user) {
         return res.status(404).json({ error: 'Usuario no encontrado' });

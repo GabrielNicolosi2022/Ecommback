@@ -184,6 +184,55 @@ const deleteCart = async (req, res) => {
   }
 };
 
+const purchase = async (req, res) => {
+try {
+  const cartId = req.params.cid;
+
+  // Obtener el carrito por ID
+  const cart = await cartServices.getCartById(cartId);
+
+  if (!cart) {
+    return res.status(404).json({ message: 'Carrito no encontrado' });
+  }
+
+  // Validar el stock de los productos en el carrito
+  for (const product of cart.products) {
+    const productId = product._id;
+    const quantityInCart = product.quantity;
+
+    // Obtener el producto por ID desde la base de datos
+    const productFromDB = await productService.getProductById(productId);
+
+    if (!productFromDB) {
+      return res
+        .status(404)
+        .json({ message: `Producto con ID ${productId} no encontrado` });
+    }
+
+    // Verificar si hay suficiente stock para la cantidad en el carrito
+    if (productFromDB.stock < quantityInCart) {
+      return res.status(400).json({
+        message: `No hay suficiente stock para el producto con ID ${productId}`,
+        availableStock: productFromDB.stock,
+      });
+    }
+
+    // Restar la cantidad comprada del stock del producto
+    productFromDB.stock -= quantityInCart;
+
+    // Guardar los cambios en el producto en la base de datos
+    await productFromDB.save();
+  }
+
+  /*  
+  TODO: Al final, utilizar el servicio de Tickets para poder generar un ticket con los datos de la compra. En caso de existir una compra no completada, devolver el arreglo con los ids de los productos que no pudieron procesarse. Una vez finalizada la compra, el carrito asociado al usuario que compró deberá contener sólo los productos que no pudieron comprarse. Es decir, se filtran los que sí se compraron y se quedan aquellos que no tenían disponibilidad.
+ */
+
+  res.status(200).json({ message: 'Compra realizada exitosamente' });
+} catch (error) {
+  res.status(500).json({ message: 'Error al realizar la compra', error });
+} }
+
 // VISTAS
 const viewCart = (req, res) => {
   res.render('cart', {
@@ -221,4 +270,5 @@ export {
   deleteCart,
   viewCart,
   viewCartById,
+  purchase
 };

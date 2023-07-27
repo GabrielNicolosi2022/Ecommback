@@ -8,6 +8,7 @@ const chatbox = document.getElementById('chatbox');
 Swal.fire({
   title: 'Identifícate',
   input: 'text',
+  inputPlaceholder: 'username',
   text: 'Ingresa el usuario para identificarte en el chat',
   inputValidator: (value) => {
     return (
@@ -16,7 +17,10 @@ Swal.fire({
     );
   },
   allowOutsideClick: false,
+  allowEscapeKey: true,
+  allowEnterKey: true,
 }).then((result) => {
+  console.log('result: ', result);
   user = result.value;
   socket.emit('authenticated', user);
 });

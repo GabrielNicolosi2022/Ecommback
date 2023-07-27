@@ -2,7 +2,7 @@ import 'dotenv/config';
 import config from './config/config.js';
 import express, { json, urlencoded } from 'express';
 import __dirname from './utils.js';
-import {configSocket} from './config/socket.config.js';
+import { configSocket } from './config/socket.config.js';
 import cors from 'cors';
 import { engine } from 'express-handlebars';
 import morgan from 'morgan';
@@ -64,7 +64,7 @@ const server = app.listen(PORT, (err) => {
   console.log(`Running on port ${PORT}`);
 });
 
-configSocket(server) 
+configSocket(server);
 
 // Handlebars
 app.engine(

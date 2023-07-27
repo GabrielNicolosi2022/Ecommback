@@ -10,9 +10,10 @@ export const configSocket = (server) => {
     console.log('Socket connected');
 
     socket.on('message', async (data) => {
+      console.log('data:', data);
       try {
         // Persistence in mongoDB
-        const chat = await saveChat.saveChat(data.user, data.message);
+        const chat = await saveChat(data.user, data.message);
         const chats = await chatModel.find();
         io.emit('messageLogs', chats);
       } catch (error) {
@@ -25,5 +26,3 @@ export const configSocket = (server) => {
     });
   });
 };
-
-

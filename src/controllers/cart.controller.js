@@ -1,4 +1,6 @@
+import mongoose from 'mongoose';
 import * as cartServices from '../services/dataBase/cartServicesDB.js';
+
 
 // Traer todos los carritos
 const getCarts = async (req, res) => {
@@ -48,7 +50,7 @@ const getCartById = async (req, res) => {
 const createCart = async (req, res) => {
   try {
     const { products } = req.body;
-    console.log({ products });
+    // console.log({ products });
     if (!products) {
       return res.status(400).json({
         status: 'error',
@@ -69,29 +71,53 @@ const createCart = async (req, res) => {
     res.status(500).json({ error: 'Error al crear el carrito' });
   }
 };
-// Agregar mas productos al carrito
+
+// Actualizar el carrito
 const updateCart = async (req, res) => {
   try {
     const cartId = req.params.cid;
     const { products } = req.body;
-
-    const cart = await cartServices.addProductToCart(cartId, products);
+    // console.log('products: ', products);
+    // Buscar el carrito por su ID
+    const cart = await cartServices.getCartById(cartId);
 
     if (!cart) {
-      res.status(404).json({ error: 'Carrito no encontrado' });
+      return res.status(404).json({ message: 'Carrito no encontrado' });
     }
+    // Iterar sobre los productos del body
+    for (const product of products) {
+      const productInCart = cart.products.find((p) =>
+        p.product.equals(new mongoose.Types.ObjectId(product.product))
+      );
+      // console.log('productInCart: ', productInCart);
+
+      // Si el producto ya existe en el carrito, actualizar la cantidad
+      if (productInCart) {
+        productInCart.quantity = product.quantity;
+      } else {
+        // Si el producto no existe en el carrito, agregarlo
+        cart.products.push({
+          product: new mongoose.Types.ObjectId(product.product),
+          quantity: product.quantity,
+        });
+      }
+    }
+    // Guardar el nuevo carrito en la base de datos
+    await cartServices.updateCart(cartId, cart.products);
+
     res.status(200).json({
       status: 'success',
       message: 'Carrito actualizado correctamente',
       data: cart,
-      products,
     });
   } catch (error) {
-    res.status(500).json({ error: 'Error al agregar el producto al carrito' });
+    console.error('Error al actualizar el carrito:', error);
+    res.status(500).json({ message: 'Error al actualizar el carrito', error });
   }
 };
-// Actualizar un producto en el carrito
-const updateProdOfCart = async (req, res) => {
+
+// Actualizar un producto en el carrito (reemplazado por updateCart)
+/* const updateProdOfCart = async (req, res) => {
   // * Modificar método en service
   try {
     const cartId = req.params.cid;
@@ -128,8 +154,11 @@ const updateProdOfCart = async (req, res) => {
     });
   }
 };
+ */
+
 // Borrar un producto en el carrito
-const deleteProdOfCart = async (req, res) => { // !Buscar error
+const deleteProdOfCart = async (req, res) => {
+  // !Buscar error
   try {
     const cartId = req.params.cid;
     const productId = req.params.pid;
@@ -184,54 +213,56 @@ const deleteCart = async (req, res) => {
   }
 };
 
+// todo: Falta segmentar el método de purchase dentro del controller de carts. SOLO en ese método estas mezclando responsabilidades del controller y del servicio.
 const purchase = async (req, res) => {
-try {
-  const cartId = req.params.cid;
+  try {
+    const cartId = req.params.cid;
 
-  // Obtener el carrito por ID
-  const cart = await cartServices.getCartById(cartId);
+    // Obtener el carrito por ID
+    const cart = await cartServices.getCartById(cartId);
 
-  if (!cart) {
-    return res.status(404).json({ message: 'Carrito no encontrado' });
-  }
-
-  // Validar el stock de los productos en el carrito
-  for (const product of cart.products) {
-    const productId = product._id;
-    const quantityInCart = product.quantity;
-
-    // Obtener el producto por ID desde la base de datos
-    const productFromDB = await productService.getProductById(productId);
-
-    if (!productFromDB) {
-      return res
-        .status(404)
-        .json({ message: `Producto con ID ${productId} no encontrado` });
+    if (!cart) {
+      return res.status(404).json({ message: 'Carrito no encontrado' });
     }
 
-    // Verificar si hay suficiente stock para la cantidad en el carrito
-    if (productFromDB.stock < quantityInCart) {
-      return res.status(400).json({
-        message: `No hay suficiente stock para el producto con ID ${productId}`,
-        availableStock: productFromDB.stock,
-      });
+    // Validar el stock de los productos en el carrito
+    for (const product of cart.products) {
+      const productId = product._id;
+      const quantityInCart = product.quantity;
+
+      // Obtener el producto por ID desde la base de datos
+      const productFromDB = await productService.getProductById(productId);
+
+      if (!productFromDB) {
+        return res
+          .status(404)
+          .json({ message: `Producto con ID ${productId} no encontrado` });
+      }
+
+      // Verificar si hay suficiente stock para la cantidad en el carrito
+      if (productFromDB.stock < quantityInCart) {
+        return res.status(400).json({
+          message: `No hay suficiente stock para el producto con ID ${productId}`,
+          availableStock: productFromDB.stock,
+        });
+      }
+
+      // Restar la cantidad comprada del stock del producto
+      productFromDB.stock -= quantityInCart;
+
+      // Guardar los cambios en el producto en la base de datos
+      await productFromDB.save();
     }
 
-    // Restar la cantidad comprada del stock del producto
-    productFromDB.stock -= quantityInCart;
-
-    // Guardar los cambios en el producto en la base de datos
-    await productFromDB.save();
-  }
-
-  /*  
+    /*  
   TODO: Al final, utilizar el servicio de Tickets para poder generar un ticket con los datos de la compra. En caso de existir una compra no completada, devolver el arreglo con los ids de los productos que no pudieron procesarse. Una vez finalizada la compra, el carrito asociado al usuario que compró deberá contener sólo los productos que no pudieron comprarse. Es decir, se filtran los que sí se compraron y se quedan aquellos que no tenían disponibilidad.
  */
 
-  res.status(200).json({ message: 'Compra realizada exitosamente' });
-} catch (error) {
-  res.status(500).json({ message: 'Error al realizar la compra', error });
-} }
+    res.status(200).json({ message: 'Compra realizada exitosamente' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al realizar la compra', error });
+  }
+};
 
 // VISTAS
 const viewCart = (req, res) => {
@@ -265,10 +296,10 @@ export {
   getCartById,
   createCart,
   updateCart,
-  updateProdOfCart,
+  // updateProdOfCart,
   deleteProdOfCart,
   deleteCart,
   viewCart,
   viewCartById,
-  purchase
+  purchase,
 };

@@ -109,7 +109,7 @@ const initializePassport = () => {
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
-          console.log(profile);
+          // console.log('profile: ', profile);
           const user = await UserModel.findOne({ email: profile._json.email });
           //Si el usuario no existe en la base de datos, agregarlo.
           if (!user) {

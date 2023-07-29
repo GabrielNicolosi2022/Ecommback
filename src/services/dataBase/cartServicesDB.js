@@ -1,11 +1,20 @@
 import cartsModel from '../../models/schemas/CartModel.js';
 
+// Trae todos todos los carritos
 const getAllCarts = async () => await cartsModel.find().lean();
 
+// Trae un carrito por id, se utiliza para traer el carrito a modificar en el controller y/o solo para buscar un carrito por id
 const getCartById = async (cartId) =>
-  await cartsModel.findById(cartId).populate('products.product').lean();
+  await cartsModel.findById(cartId).populate('products.product').exec();
 
-const createCart = async (newCart) => await cartsModel.create(newCart);
+// Solo se utiliza cuando el user se hace login por primera vez
+const createCart = async (userId, cartData) => {
+  const newCart = {
+    ...cartData,
+    user: userId,
+  };
+  return await cartsModel.create(newCart);
+};
 
 const addProductToCart = async (cartId, products) =>
   await cartsModel.findByIdAndUpdate(
@@ -14,11 +23,10 @@ const addProductToCart = async (cartId, products) =>
     { new: true }
   );
 
-// ! Sobreescribe los productos del carrito
+  // Se utiliza para agregar productos o modificar las cantidades de los mismos 
 const updateCart = async (cartId, products) =>
   await cartsModel
-    .findByIdAndUpdate(cartId, { products }, { new: true })
-    .populate('products.product')
+    .findByIdAndUpdate(cartId, { $set: { products } }, { new: true })
     .lean();
 
 /*   removeProductFromCart = async (cartId, productId) => {
@@ -37,12 +45,14 @@ const updateCart = async (cartId, products) =>
     }
   };
  */
+
 const deleteCart = async (cartId) => await cartsModel.findByIdAndRemove(cartId);
 
-export  {
+export {
   getAllCarts,
   getCartById,
   createCart,
+  updateCart,
   addProductToCart,
-  deleteCart
+  deleteCart,
 };

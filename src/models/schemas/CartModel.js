@@ -6,7 +6,7 @@ const cartCollection = 'carts';
 
 const cartProductSchema = new mongoose.Schema({
   product: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: mongoose.SchemaTypes.ObjectId,
     ref: 'products',
   },
   quantity: {
@@ -17,7 +17,12 @@ const cartProductSchema = new mongoose.Schema({
 
 const cartSchema = new mongoose.Schema({
   products: [cartProductSchema], // Este array products recibe los objetos(product) del modelo de arriba.
+  user: {
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: 'User',
+  },
 });
+
 cartSchema.plugin(mongoosePaginate);
 
 const cartsModel = db.model(cartCollection, cartSchema);

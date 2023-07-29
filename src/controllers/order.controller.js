@@ -26,6 +26,8 @@ const getOrderById = async (req, res) => {
 };
 
 const createOrder = (req, res) => { 
+  // const {user, cart }
+  
     try {
         const {userId, cartId, products} = 
     } catch (error) {

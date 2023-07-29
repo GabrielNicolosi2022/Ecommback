@@ -13,11 +13,11 @@ cartsRouter.get('/:cid', controllers.getCartById);
 // Agregar un nuevo carrito
 cartsRouter.post('/', controllers.createCart);
 
-// Actualizar el carrito con nuevos productos
+// Actualizar el carrito con nuevos productos y/o cantidad de ejemplares de un producto en un carrito
 cartsRouter.put('/:cid', checkRole('user'), controllers.updateCart);
 
 // Actualizar cantidad de ejemplares de un producto en un carrito
-cartsRouter.put('/:cid/products/:pid', checkRole('user'), controllers.updateProdOfCart);
+// cartsRouter.put('/:cid/products/:pid', checkRole('user'), controllers.updateProdOfCart);
 
 // Finalizar el proceso de compra del carrito
 cartsRouter.post('/:cid/purchase', controllers.purchase);

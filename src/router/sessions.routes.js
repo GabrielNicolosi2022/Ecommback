@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import passport from 'passport';
-import { currentUser, logout, userLogin, userRegister } from '../controllers/user.controller.js';
+import { currentUser, getUsers, getUserById, logout, userLogin, userRegister } from '../controllers/user.controller.js';
 
 const sessionsRouter = Router();
 
@@ -42,6 +42,12 @@ sessionsRouter.get(
     res.redirect('/product');
   }
 );
+
+// Listar todos los usuarios
+sessionsRouter.get('/users', getUsers)
+
+// buscar usuario por Id
+sessionsRouter.get('/users/:id', getUserById)
 
 // Perfil de usuario
 sessionsRouter.get('/current', currentUser);

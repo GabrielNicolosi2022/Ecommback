@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const orderCollection = 'Orders';
+const orderCollection = 'Order';
 
 const orderSchema = new mongoose.Schema({
   code: {
@@ -12,7 +12,7 @@ const orderSchema = new mongoose.Schema({
     // deberá guardar la fecha y hora exacta en la cual se formalizó la compra
     Type: 'date',
     required: true,
-    default: Date.now,
+    default: new Date(),
   },
   products: {
     type: 'array', // productos en el carrito

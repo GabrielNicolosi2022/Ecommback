@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import * as cartServices from '../services/dataBase/cartServicesDB.js';
 
 
-// Traer todos los carritos
+// Obtener todos los carritos
 const getCarts = async (req, res) => {
   try {
     const limit = parseInt(req.query.limit);
@@ -22,7 +22,7 @@ const getCarts = async (req, res) => {
       .json({ status: 'error', error: 'Error al obtener los carritos' });
   }
 };
-// Traer un carrito por Id
+// Obtener un carrito por Id
 const getCartById = async (req, res) => {
   try {
     const cartId = req.params.cid;
@@ -44,6 +44,28 @@ const getCartById = async (req, res) => {
       status: 'error',
       message: 'Error al obtener el carrito',
     });
+  }
+};
+// Obtener el carrito del usuario
+const getMyCart = async (req, res) => {
+  try {
+    const userId = req.params.uid;
+    console.log('userId', userId);
+
+    // Obtener el carrito del usuario desde la base de datos
+    const cart = await cartServices.getCartByUserId(userId);
+
+    if (!cart) {
+      return res.status(404).json({ message: 'Carrito no encontrado para este usuario' });
+    }
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Carrito del usuario encontrado',
+      data: cart,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener el carrito del usuario', error });
   }
 };
 // Crear un nuevo carrito
@@ -294,6 +316,7 @@ const viewCartById = async (req, res) => {
 export {
   getCarts,
   getCartById,
+  getMyCart,
   createCart,
   updateCart,
   // updateProdOfCart,

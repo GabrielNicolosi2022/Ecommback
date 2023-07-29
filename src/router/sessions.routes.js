@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import passport from 'passport';
 import { currentUser, getUsers, getUserById, logout, userLogin, userRegister } from '../controllers/user.controller.js';
+import { isAuthorized, isPrivate } from '../middlewares/auth.js';
 
 const sessionsRouter = Router();
 
@@ -44,13 +45,13 @@ sessionsRouter.get(
 );
 
 // Listar todos los usuarios
-sessionsRouter.get('/users', getUsers)
+sessionsRouter.get('/users',isAuthorized, getUsers)
 
 // buscar usuario por Id
 sessionsRouter.get('/users/:id', getUserById)
 
 // Perfil de usuario
-sessionsRouter.get('/current', currentUser);
+sessionsRouter.get('/current',isPrivate, currentUser);
 
 // Cerrar sesión de usuario
 sessionsRouter.get('/logout', logout);

@@ -18,6 +18,7 @@ const userRegister = async (req, res) => {
 };
 
 // Login de usuario
+// * no me deja hacer login como admin porque req.user.save is not a function, admin no tiene persistencia en db.
 const userLogin = async (req, res) => {
   try {
        // Inicio de session por postman
@@ -86,9 +87,9 @@ const userLogin = async (req, res) => {
   }
   } catch (err) {
     console.error(err);
-    res.status(500).json({
+    return res.status(500).json({
       message: 'Error al iniciar session',
-      err,
+      err: err.message,
     });
   }
 

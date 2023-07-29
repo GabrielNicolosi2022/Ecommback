@@ -7,6 +7,13 @@ const getAllCarts = async () => await cartsModel.find().lean();
 const getCartById = async (cartId) =>
   await cartsModel.findById(cartId).populate('products.product').exec();
 
+  // Obtener el carrito del usuario por su ID de usuario
+  const getCartByUserId = async (userId) =>
+    await cartsModel
+      .findOne({ user: userId })
+      .populate('products.product')
+      .lean();
+
 // Solo se utiliza cuando el user se hace login por primera vez
 const createCart = async (userId, cartData) => {
   const newCart = {
@@ -16,6 +23,7 @@ const createCart = async (userId, cartData) => {
   return await cartsModel.create(newCart);
 };
 
+// no se utiliza
 const addProductToCart = async (cartId, products) =>
   await cartsModel.findByIdAndUpdate(
     cartId,
@@ -29,6 +37,7 @@ const updateCart = async (cartId, products) =>
     .findByIdAndUpdate(cartId, { $set: { products } }, { new: true })
     .lean();
 
+    // ! Revisar método
 /*   removeProductFromCart = async (cartId, productId) => {
     try {
       const cart = await cartsModel.findById(cartId);
@@ -51,6 +60,7 @@ const deleteCart = async (cartId) => await cartsModel.findByIdAndRemove(cartId);
 export {
   getAllCarts,
   getCartById,
+  getCartByUserId,
   createCart,
   updateCart,
   addProductToCart,

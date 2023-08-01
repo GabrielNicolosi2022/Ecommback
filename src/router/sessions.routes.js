@@ -45,7 +45,7 @@ sessionsRouter.get(
 );
 
 // Listar todos los usuarios
-sessionsRouter.get('/users',isAuthorized, getUsers)
+sessionsRouter.get('/users', getUsers)
 
 // buscar usuario por Id
 sessionsRouter.get('/users/:id', getUserById)

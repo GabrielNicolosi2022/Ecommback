@@ -23,6 +23,6 @@ config.github = {
   callbackURL: process.env.CALLBACK_URL,
 };
 
-// console.log(config)
+// console.log(config);
 
 export default config;

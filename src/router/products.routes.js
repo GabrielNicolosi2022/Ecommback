@@ -2,6 +2,7 @@ import { Router } from 'express';
 import * as prodControllers from '../controllers/prod.controller.js';
 import { uploader } from '../middlewares/multer.js';
 import { checkRole } from '../middlewares/auth.js';
+import { generateMockingProducts } from '../test/products.test.js';
 
 const productsRouter = Router();
 
@@ -23,5 +24,7 @@ productsRouter.put('/:pid', checkRole('admin'), prodControllers.updateProduct);
 
 // Eliminar un producto por id
 productsRouter.delete('/:pid', checkRole('admin'), prodControllers.deleteProduct);
+
+productsRouter.post('/mockingproducts',  generateMockingProducts)
 
 export default productsRouter;

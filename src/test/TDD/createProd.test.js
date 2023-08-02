@@ -43,14 +43,13 @@ const createProducts = (data) => {
 // Escenarios
 let testPasados = 0;
 let testTotales = 4;
-console.log('Create Product Test')
+console.log('Create Product Test');
 // Test 1: La función debe devolver < No se proporcionaron productos válidos >
 console.log(
   'Test 1: La función debe devolver < No se proporcionaron productos válidos >'
 );
-let result1 =
-  createProducts();
-  /* {products:[{
+let result1 = createProducts();
+/* {products:[{
   title: 'Refinado Metal Pelota',
   description: 'Doloremque velit maxime ratione asperiores.',
   code: 'x4moRopa9A',
@@ -69,7 +68,7 @@ if (result1 === 'No se proporcionaron productos válidos') {
     '* Test 1 fail: se esperaba < No se proporcionaron productos válidos > y se obtuvo',
     result1
   );
-    console.log(result1)
+  console.log(result1);
 }
 console.log('----------------------------------------------------------------');
 // Test 2: La función debe devolver < Faltan campos obligatorios >
@@ -167,5 +166,8 @@ if (testPasados === testTotales) {
     `*** ${testTotales - testPasados} de ${testTotales} han fallado ***`
   );
 }
+console.log(
+  '________________________________________________________________________________________________________________________________'
+);
 
 export default createProducts;

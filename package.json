@@ -7,7 +7,9 @@
   "scripts": {
     "start": "src/app.js",
     "dev": "nodemon src/app.js",
-    "open": "open http://localhost:8080"
+    "open": "open http://localhost:8080",
+    "test": "node src/test/TDD/package.test.js"
+
   },
   "author": "Gabriel Nicolosi",
   "license": "ISC",

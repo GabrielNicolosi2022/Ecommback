@@ -15,7 +15,6 @@ import router from './router/carts.routes.js';
 import passport from 'passport';
 import initializePassport from './config/passport.config.js';
 import packageTest from './test/TDD/package.test.js';
-// import createProducts from './test/TDD/prod.test.js';
 
 /* CONFIGURATIONS */
 const app = express();

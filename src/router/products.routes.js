@@ -15,7 +15,7 @@ productsRouter.get('/:pid', prodControllers.getProductById);
 // Crear un nuevo producto
 productsRouter.post(
   '/',
-  uploader.array('thumbnails', 5), checkRole('admin'),
+  uploader.array('thumbnails', 5),
   prodControllers.createProducts
 );
 
@@ -23,8 +23,12 @@ productsRouter.post(
 productsRouter.put('/:pid', checkRole('admin'), prodControllers.updateProduct);
 
 // Eliminar un producto por id
-productsRouter.delete('/:pid', checkRole('admin'), prodControllers.deleteProduct);
+productsRouter.delete(
+  '/:pid',
+  checkRole('admin'),
+  prodControllers.deleteProduct
+);
 
-productsRouter.post('/mockingproducts',  generateMockingProducts)
+productsRouter.post('/mockingproducts', generateMockingProducts);
 
 export default productsRouter;

@@ -1,4 +1,7 @@
 import * as prodServices from '../services/dataBase/prodServicesDB.js';
+import customError from '../services/errors/customError.js';
+import { EErrors, PErrors } from '../services/errors/enums.js';
+import { createProductPropsErrorInfo } from '../services/errors/info.js';
 
 // Traer todos los productos
 const getProducts = async (req, res) => {
@@ -110,12 +113,11 @@ const getProductById = async (req, res) => {
 };
 
 const createProducts = async (req, res) => {
-  try {
-    const productsData = req.body;
-    const createdProducts = [];
-    // console.log(productsData);
+  const productsData = req.body;
+  const createdProducts = [];
 
-    // Verificar que se proporcionen productos válidos
+  try {
+    // Verificar que se proporcione un formato de producto válido
     if (
       !(Array.isArray(productsData) && productsData.length > 0) &&
       !(
@@ -127,50 +129,71 @@ const createProducts = async (req, res) => {
         .json({ error: 'No se proporcionaron productos válidos' });
     }
 
-    const processProduct = async (productData) => {
-      try {
-        const {
-          title,
-          description,
-          code,
-          price,
-          status,
-          stock,
-          category,
-          thumbnails,
-        } = productData;
+    // Validar campos obligatorios para todos los productos antes de crearlos
+    for (const productData of productsData) {
+      const {
+        title,
+        description,
+        code,
+        price,
+        status,
+        stock,
+        category,
+        thumbnails,
+      } = productData;
 
-        // Verificar campos obligatorios
-        if (
-          !title ||
-          !description ||
-          !code ||
-          !price ||
-          !status ||
-          !stock ||
-          !category
-        ) {
-          return res
-            .status(400)
-            .json({ message: 'Faltan campos obligatorios' });
-        }
-
-        const newProduct = {
-          title,
-          description,
-          code,
-          price,
-          status: status || true,
-          stock,
-          category,
-          thumbnails: thumbnails || [],
-        };
-
-        const createdProduct = await prodServices.createProduct(newProduct);
-        createdProducts.push(createdProduct);
-      } catch (error) {
-        return res.status(500).json({ message: 'Error al crear el producto' });
+      if (
+        !title ||
+        !description ||
+        !code ||
+        !price ||
+        !status ||
+        !stock ||
+        !category
+      ) {
+        customError.createError({
+          //! Luego de enviar el mensaje de error salta al catch, ademas no esta enviando al postman la custom res, sino la res del catch.
+          name: 'Product creation error', // respuesta (res.json(message)) - sale por Postman
+          cause: createProductPropsErrorInfo({
+            title,
+            description,
+            code,
+            price,
+            status,
+            stock,
+            category,
+          }), // respuesta por Terminal
+          message: 'Error intentando crear el Producto',
+          code: EErrors.INVALID_TYPES_ERROR,
+        });
       }
+    }
+
+    const processProduct = async (productData) => {
+      const {
+        title,
+        description,
+        code,
+        price,
+        status,
+        stock,
+        category,
+        thumbnails,
+      } = productData;
+
+      const newProduct = {
+        title,
+        description,
+        code,
+        price,
+        status: status || true,
+        stock,
+        category,
+        thumbnails: thumbnails || [],
+      };
+
+      const createdProduct = await prodServices.createProduct(newProduct);
+      createdProducts.push(createdProduct);
     };
 
     if (Array.isArray(productsData)) {
@@ -190,9 +213,8 @@ const createProducts = async (req, res) => {
         data: createdProducts,
       });
     }
-    console.log('createdProducts: ', createdProducts);
   } catch (error) {
-    console.log(error);
+    console.error(error); //! si quito el clg no de muestra el custom en la consola
     return res.status(500).json({ message: 'Error al guardar los productos' });
   }
 };
@@ -285,7 +307,6 @@ const products = async (req, res) => {
     };
 
     products = getFilteredProducts(products, query);
-    
 
     // Lógica de paginación
     const paginateProducts = (products, page, limit) => {
@@ -294,7 +315,7 @@ const products = async (req, res) => {
       const startIndex = (page - 1) * limit;
       const endIndex = startIndex + limit;
       const currentProducts = products.slice(startIndex, endIndex);
-      
+
       return {
         currentProducts,
         totalPages,

@@ -14,6 +14,11 @@ import indexRouter from './router/Index.routes.js';
 import router from './router/carts.routes.js';
 import passport from 'passport';
 import initializePassport from './config/passport.config.js';
+import { devLog, prodLog } from './config/customLogger.js';
+
+let log;
+config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
+
 
 /* CONFIGURATIONS */
 const app = express();
@@ -36,7 +41,7 @@ app.use(
         useNewUrlParser: true,
         useUnifiedTopology: true,
       },
-      ttl: 300,
+      ttl: 60*10,
     }),
     secret: config.session.secret,
     resave: false,
@@ -58,10 +63,10 @@ app.use(morgan('dev'));
 // Server HTTP
 const server = app.listen(PORT, (err) => {
   if (err) {
-    console.error('Connection Error: ', err);
+    log.fatal('Connection Error: ', err.message);
     return;
   }
-  console.log(`Running on port ${PORT}`);
+  log.info(`Running on port ${PORT}, in ${config.environment.env} environment`);
 });
 
 configSocket(server);

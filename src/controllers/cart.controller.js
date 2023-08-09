@@ -1,6 +1,10 @@
 import mongoose from 'mongoose';
 import * as cartServices from '../services/dataBase/cartServicesDB.js';
+import config from '../config/config.js';
+import { devLog, prodLog } from '../config/customLogger.js';
 
+let log;
+config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
 
 // Obtener todos los carritos
 const getCarts = async (req, res) => {
@@ -17,6 +21,7 @@ const getCarts = async (req, res) => {
       data: carts,
     });
   } catch (error) {
+    log.fatal('Error al obtener los carritos. ' + error.message);
     res
       .status(500)
       .json({ status: 'error', error: 'Error al obtener los carritos' });
@@ -29,6 +34,7 @@ const getCartById = async (req, res) => {
     const cart = await cartServices.getCartById(cartId);
 
     if (!cart) {
+      log.error(`Carrito con id ${cartId} no encontrado`);
       return res.status(404).json({
         status: 'error',
         message: 'Carrito no encontrado',
@@ -40,6 +46,7 @@ const getCartById = async (req, res) => {
       data: cart,
     });
   } catch (error) {
+    log.fatal('Error al obtener el carrito. ' + error.message);
     return res.status(500).json({
       status: 'error',
       message: 'Error al obtener el carrito',
@@ -56,7 +63,10 @@ const getMyCart = async (req, res) => {
     const cart = await cartServices.getCartByUserId(userId);
 
     if (!cart) {
-      return res.status(404).json({ message: 'Carrito no encontrado para este usuario' });
+      log.error(`Carrito del usuario ${userId} no encontrado`);
+      return res
+        .status(404)
+        .json({ message: 'Carrito no encontrado para este usuario' });
     }
 
     res.status(200).json({
@@ -65,7 +75,10 @@ const getMyCart = async (req, res) => {
       data: cart,
     });
   } catch (error) {
-    res.status(500).json({ message: 'Error al obtener el carrito del usuario', error });
+    log.fatal('Error al obtener el carrito del usuario. ', error.message);
+    res
+      .status(500)
+      .json({ message: 'Error al obtener el carrito del usuario. ', error });
   }
 };
 // Crear un nuevo carrito
@@ -74,6 +87,7 @@ const createCart = async (req, res) => {
     const { products } = req.body;
     // console.log({ products });
     if (!products) {
+      log.error('No se han enviado productos para cargar en el carrito');
       return res.status(400).json({
         status: 'error',
         message: 'No se han enviado productos para cargar en el carrito',
@@ -90,6 +104,7 @@ const createCart = async (req, res) => {
       data: newCart,
     });
   } catch (error) {
+    log.fatal('Error al crear el carrito. ' + error.message);
     res.status(500).json({ error: 'Error al crear el carrito' });
   }
 };
@@ -104,6 +119,7 @@ const updateCart = async (req, res) => {
     const cart = await cartServices.getCartById(cartId);
 
     if (!cart) {
+      log.error(`Carrito con id ${cartId} no encontrado`);
       return res.status(404).json({ message: 'Carrito no encontrado' });
     }
     // Iterar sobre los productos del body
@@ -111,8 +127,6 @@ const updateCart = async (req, res) => {
       const productInCart = cart.products.find((p) =>
         p.product.equals(new mongoose.Types.ObjectId(product.product))
       );
-      // console.log('productInCart: ', productInCart);
-
       // Si el producto ya existe en el carrito, actualizar la cantidad
       if (productInCart) {
         productInCart.quantity = product.quantity;
@@ -133,7 +147,7 @@ const updateCart = async (req, res) => {
       data: cart,
     });
   } catch (error) {
-    console.error('Error al actualizar el carrito:', error);
+    log.fatal('Error al actualizar el carrito. ', error.message);
     res.status(500).json({ message: 'Error al actualizar el carrito', error });
   }
 };
@@ -188,17 +202,19 @@ const deleteProdOfCart = async (req, res) => {
     // console.log('productId es:', typeof productId, productId);
     const cart = await cartServices.getCartById(cartId);
     if (!cart) {
+      log.error(`Carrito con id ${cartId} no encontrado`);
       return res.status(404).json({ message: 'Carrito no encontrado' });
     }
 
-    // console.log(cart.products);
+    // log.info(cart.products);
     // ! No encuentra el product._id, en lugar de tomar products.product._id toma products._id
     const existingProductIndex = cart.products.findIndex(
       (p) => p._id.toString() === productId.toString()
     );
-    // console.log(existingProductIndex)
-    // console.log(cart.products.product._id)
+    // log.info(existingProductIndex)
+    // log.info(cart.products.product._id)
     if (existingProductIndex === -1) {
+      log.error(`Producto con id ${productId} no encontrado en el carrito`);
       return res
         .status(404)
         .json({ message: 'Producto no encontrado en el carrito' });
@@ -210,6 +226,7 @@ const deleteProdOfCart = async (req, res) => {
 
     res.status(200).json({ message: 'Producto removido correctamente', cart });
   } catch (error) {
+    log.fatal('Error al eliminar el producto del carrito. ' + error.message);
     res
       .status(500)
       .json({ message: 'Error al eliminar el producto del carrito' });
@@ -222,6 +239,7 @@ const deleteCart = async (req, res) => {
 
     const cart = await cartServices.getCartById(_id);
     if (!cart) {
+      log.error(`Carrito con id ${_id} no encontrado`);
       return res.status(404).json({ message: 'Carrito no encontrado' });
     }
     await cartServices.deleteCart(cart);
@@ -231,6 +249,7 @@ const deleteCart = async (req, res) => {
       data: cart,
     });
   } catch (error) {
+    log.fatal('Error al eliminar el carrito. ' + error.message);
     res.status(500).json({ message: 'Error al eliminar el carrito' });
   }
 };
@@ -244,6 +263,7 @@ const purchase = async (req, res) => {
     const cart = await cartServices.getCartById(cartId);
 
     if (!cart) {
+      log.error(`Carrito con id ${cartId} no encontrado`);
       return res.status(404).json({ message: 'Carrito no encontrado' });
     }
 
@@ -256,6 +276,7 @@ const purchase = async (req, res) => {
       const productFromDB = await productService.getProductById(productId);
 
       if (!productFromDB) {
+        log.error(`Producto con id ${productId} no encontrado`);
         return res
           .status(404)
           .json({ message: `Producto con ID ${productId} no encontrado` });
@@ -263,6 +284,9 @@ const purchase = async (req, res) => {
 
       // Verificar si hay suficiente stock para la cantidad en el carrito
       if (productFromDB.stock < quantityInCart) {
+        log.warn(
+          `No hay suficiente stock para el producto con ID ${productId}`
+        );
         return res.status(400).json({
           message: `No hay suficiente stock para el producto con ID ${productId}`,
           availableStock: productFromDB.stock,
@@ -282,6 +306,7 @@ const purchase = async (req, res) => {
 
     res.status(200).json({ message: 'Compra realizada exitosamente' });
   } catch (error) {
+    log.fatal('Error al realizar la compra. ', error.message);
     res.status(500).json({ message: 'Error al realizar la compra', error });
   }
 };

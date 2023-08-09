@@ -1,8 +1,12 @@
 import users from '../models/schemas/UserModel.js';
-import * as usersServices from '../services/dataBase/usersServices.js'
+import * as usersServices from '../services/dataBase/usersServices.js';
 import { userDTO } from '../DTO/currentUser.js';
 import { createCart } from '../services/dataBase/cartServicesDB.js';
+import config from '../config/config.js';
+import { devLog, prodLog } from '../config/customLogger.js';
 
+let log;
+config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
 
 const root = (req, res) => {
   res.redirect('/login');
@@ -21,78 +25,72 @@ const userRegister = async (req, res) => {
 // * no me deja hacer login como admin porque req.user.save is not a function, admin no tiene persistencia en db.
 const userLogin = async (req, res) => {
   try {
-       // Inicio de session por postman
-  if (req.get('User-Agent').includes('Postman')) {
-    if (!req.user) {
-      return res
-        .status(400)
-        .json({ error: 'Correo electrónico o contraseña incorrectos.' });
+    // Inicio de session por postman
+    if (req.get('User-Agent').includes('Postman')) {
+      // Generar el objeto 'user' en req.session
+      req.session.user = {
+        userId: req.user._id,
+        first_name: req.user.first_name,
+        last_name: req.user.last_name,
+        age: req.user.age,
+        email: req.user.email,
+        role: req.user.role,
+      };
+      // Verificar si el usuario ya tiene un carrito asignado
+      if (!req.user.cart) {
+        // Si no tiene un carrito asignado, crear uno nuevo y asociarlo al usuario
+        const newCart = await createCart(req.user._id, { products: [] });
+
+        // Asignar el ID del nuevo carrito al campo 'cart' del usuario
+        req.user.cart = newCart._id;
+
+        // Guardar los cambios en el usuario en la base de datos
+        await req.user.save();
+      }
+      res.status(200).json({
+        status: 'success',
+        message: 'Inicio de sesión exitoso.',
+        user: req.session.user,
+        cart: req.user.cart,
+      });
     }
-    // Generar el objeto 'user' en req.session
-    req.session.user = {
-      userId: req.user._id,
-      first_name: req.user.first_name,
-      last_name: req.user.last_name,
-      age: req.user.age,
-      email: req.user.email,
-      role: req.user.role,
-    };
-    // Verificar si el usuario ya tiene un carrito asignado
-    if (!req.user.cart) {
-      // Si no tiene un carrito asignado, crear uno nuevo y asociarlo al usuario
-      const newCart = await createCart(req.user._id, { products: [] });
+    // Inicio de session por vistas
+    else {
+      if (!req.user) {
+        log.warn('Correo electrónico o contraseña incorrectos.');
+        req.flash('failure', 'Correo electrónico o contraseña incorrectos.');
+        return res.render('login', { failureFlash: true });
+      }
+      // Generar el objeto 'user' en req.session
+      req.session.user = {
+        first_name: req.user.first_name,
+        last_name: req.user.last_name,
+        age: req.user.age,
+        email: req.user.email,
+        role: req.user.role,
+      };
 
-      // Asignar el ID del nuevo carrito al campo 'cart' del usuario
-      req.user.cart = newCart._id;
-      
-      // Guardar los cambios en el usuario en la base de datos
-      await req.user.save();
+      // Verificar si el usuario ya tiene un carrito asignado
+      if (!req.user.cart) {
+        // Si no tiene un carrito asignado, crear uno nuevo y asociarlo al usuario
+        const newCart = await createCart(req.user._id, { products: [] });
+
+        // Asignar el ID del nuevo carrito al campo 'cart' del usuario
+        req.user.cart = newCart._id;
+
+        // Guardar los cambios en el usuario en la base de datos
+        await req.user.save();
+      }
+      req.flash('success', 'Inicio de sesión exitoso.');
+      res.redirect('/product');
     }
-
-    res.status(200).json({
-      status: 'success',
-      message: 'Inicio de sesión exitoso.',
-      user: req.session.user,
-      cart: req.user.cart
-    });
-  }
-  // Inicio de session por vistas
-  else {
-    if (!req.user) {
-      req.flash('failure', 'Correo electrónico o contraseña incorrectos.');
-      return res.render('login', { failureFlash: true });
-    }
-    // Generar el objeto 'user' en req.session
-    req.session.user = {
-      first_name: req.user.first_name,
-      last_name: req.user.last_name,
-      age: req.user.age,
-      email: req.user.email,
-      role: req.user.role,
-    };
-
-    // Verificar si el usuario ya tiene un carrito asignado
-    if (!req.user.cart) {
-      // Si no tiene un carrito asignado, crear uno nuevo y asociarlo al usuario
-      const newCart = await createCart(req.user._id, { products: [] });
-
-      // Asignar el ID del nuevo carrito al campo 'cart' del usuario
-      req.user.cart = newCart._id;
-
-      // Guardar los cambios en el usuario en la base de datos
-      await req.user.save();
-    }
-    req.flash('success', 'Inicio de sesión exitoso.');
-    res.redirect('/product');
-  }
   } catch (err) {
-    console.error(err);
+    log.fatal(err.message);
     return res.status(500).json({
       message: 'Error al iniciar session',
       err: err.message,
     });
   }
-
 };
 
 // Traer todos los usuarios
@@ -110,10 +108,10 @@ const getUsers = async (req, res) => {
       data: users,
     });
   } catch (error) {
-    console.error(error);
+    log.fatal('Error al obtener los usuarios. ' + error.message);
     res
       .status(500)
-      .json({ status: 'error', error: 'Error al obtener los carritos' });
+      .json({ status: 'error', error: 'Error al obtener los usuarios' });
   }
 };
 
@@ -123,7 +121,7 @@ const getUserById = async (req, res) => {
     const userId = req.params.id;
     const user = await usersServices.getUserById(userId);
     if (!user) {
-      // console.error(error);
+      log.error('Usuario no encontrado');
       return res.status(404).json({
         status: 'error',
         message: 'Usuario no encontrado',
@@ -135,7 +133,7 @@ const getUserById = async (req, res) => {
       data: user,
     });
   } catch (error) {
-    console.error(error.message);
+    log.fatal('Error al obtener el usuario. ' + error.message);
     return res.status(500).json({
       status: 'error',
       message: 'Error al obtener el usuario',
@@ -240,5 +238,5 @@ export {
   getUserById,
   profile,
   currentUser,
-  logout
+  logout,
 };

@@ -4,6 +4,10 @@ import { Strategy as LocalStrategy } from 'passport-local';
 import gitHubStrategy from 'passport-github2';
 import { createHash, isValidPassword } from '../middlewares/hash.js';
 import UserModel from '../models/schemas/UserModel.js';
+import { devLog, prodLog } from '../config/customLogger.js';
+
+let log;
+config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
 
 const initializePassport = () => {
   // Estrategia de registro local
@@ -12,13 +16,13 @@ const initializePassport = () => {
     new LocalStrategy(
       { passReqToCallback: true, usernameField: 'email' },
       async (req, username, password, done) => {
-        // console.log(req.body);
         const { first_name, last_name, age } = req.body;
 
         // Verificar si todos los campos requeridos están presentes
         if (!first_name || !last_name || !username || !age || !password) {
+          log.error('All fields are required');
           return done(null, false, {
-            message: 'Todos los campos son requeridos',
+            message: 'All fields are required',
           });
         }
 
@@ -26,6 +30,7 @@ const initializePassport = () => {
           const user = await UserModel.findOne({ email: username });
           // Si el user existe
           if (user) {
+            log.error('User already exists');
             return done(null, false, { message: 'User already exists' });
           }
           // Si el user no existe
@@ -37,9 +42,10 @@ const initializePassport = () => {
             password: createHash(password),
           };
           const result = await UserModel.create(newUser);
+          log.info('New user created');
           return done(null, result, { message: 'User created' });
         } catch (error) {
-          console.error('Error al obtener el usuario: ' + error);
+          log.fatal('Error al obtener el usuario: ' + error.message);
           return done('Error al obtener el usuario: ' + error);
         }
       }
@@ -65,7 +71,6 @@ const initializePassport = () => {
               email: email,
               role: 'admin',
             };
-            console.log('userSession: ', userSession);
             req.login(userSession, (err) => {
               if (err) {
                 return done(err);
@@ -76,22 +81,22 @@ const initializePassport = () => {
             const user = await UserModel.findOne({ email });
 
             if (!user) {
+              log.error('Incorrect credentials');
               return done(null, false, {
-                message: 'Correo electrónico incorrecto',
+                message: 'Incorrect credentials',
               });
             }
-
             const passwordMatch = isValidPassword(user, password); //isValidPassword está utilizando el compare de bcrypt
-            console.log('passwordMatch: ', passwordMatch);
-
+            log.info('passwordMatch: ' + passwordMatch);
             if (!passwordMatch) {
-              return done(null, false, { message: 'Contraseña incorrecta' });
+              log.error('Incorrect password');
+              return done(null, false, { message: 'Incorrect password' });
             }
-
+            log.info(`user ${user._id} successfully logged in`);
             return done(null, user);
           }
         } catch (error) {
-          console.error('Error al obtener el usuario:' + error);
+          log.fatal('Error getting user:' + error);
           return done(error);
         }
       }
@@ -109,7 +114,6 @@ const initializePassport = () => {
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
-          // console.log('profile: ', profile);
           const user = await UserModel.findOne({ email: profile._json.email });
           //Si el usuario no existe en la base de datos, agregarlo.
           if (!user) {

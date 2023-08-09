@@ -1,38 +1,21 @@
 import mongoose from 'mongoose';
 import config from './config.js';
+import { devLog, prodLog } from '../config/customLogger.js';
 
-// console.log(config.db.mongodb);
+let log;
+config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
+
  const connection = mongoose
   .connect(config.db.cs, {
     dbName: 'ecommerce',
   })
-  .catch((err) => console.log(err));
+  .catch((err) => log.fatal(err));
 
 const db = mongoose.connection;
 
-db.on('error', console.error.bind(console, 'Error to connect MongoDB:'));
+db.on('error', console.error.bind(console, 'Error to connect MongoDB:')); // no puedo customizar el log
 db.once('open', () => {
-  console.log('Connection successfully to mongoDB');
+  log.info('Connection successfully to mongoDB');
 });
 
 export default db;
-/*
-export default class MongoSingleton {
-  static #instance;
-
-  constructor() {
-    mongoose.connect(config.db.mongodb);
-  }
-
-  static getInstance() {
-    if (this.#instance) {
-      console.log('Already connected to MongoDB');
-      return this.#instance;
-    }
-
-    this.#instance = new MongoSingleton();
-    console.log('Connected to MongoDB');
-    return this.#instance;
-  }
-}
- */

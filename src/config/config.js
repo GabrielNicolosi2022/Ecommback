@@ -1,4 +1,15 @@
+import dotenv from 'dotenv';
 let config = {};
+
+const environment = 'development'; // cambiar environment: 'production' / 'development'
+
+dotenv.config({
+  path: environment === 'development' ? '.env.development' : '.env.production',
+});
+
+config.environment = {
+  env: process.env.NODE_ENV 
+}
 
 config.server = {
   port: process.env.PORT,

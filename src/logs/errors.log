@@ -1,0 +1,10 @@
+error: User already exists {"timestamp":"2023-08-09T01:37:11.666Z"}
+error: Incorrect credentials {"timestamp":"2023-08-09T01:38:07.570Z"}
+error: Incorrect password {"timestamp":"2023-08-09T01:38:28.459Z"}
+fatal: req.user.save is not a function {"timestamp":"2023-08-09T01:39:27.056Z"}
+error: Usuario no encontrado {"timestamp":"2023-08-09T01:39:59.575Z"}
+fatal: Error al obtener el usuario. Cast to ObjectId failed for value "649229224" (type string) at path "_id" for model "User" {"timestamp":"2023-08-09T01:40:05.391Z"}
+error: Producto con id 647bb555772098d69e1e8210 no encontrado {"timestamp":"2023-08-09T01:41:25.597Z"}
+fatal: Error al obtener el producto. Cast to ObjectId failed for value "647bb5557" (type string) at path "_id" for model "products" {"timestamp":"2023-08-09T01:41:31.824Z"}
+fatal: Error intentando crear el Producto {"timestamp":"2023-08-09T01:42:16.521Z"}
+error: No se proporcionaron productos válidos {"timestamp":"2023-08-09T01:42:26.436Z"}

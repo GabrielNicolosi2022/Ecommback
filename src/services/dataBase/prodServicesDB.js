@@ -28,7 +28,7 @@ const getAllProductsPaginated = async (options, filter, sortOptions) => {
 
 const getAllProducts = async () => await productsModel.find().lean();
 
-const getProductsById = async (_id) => await productsModel.findById(_id).lean();
+const getProductsById = async (_id) => await productsModel.findById(_id).exec();
 
 const createProduct = async (productsData) => await productsModel.create(productsData);
 

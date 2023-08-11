@@ -4,22 +4,23 @@ const orderCollection = 'Order';
 
 const orderSchema = new mongoose.Schema({
   code: {
-    type: String,
+    // debe auto generarse y ser único
+    type: Number,
     unique: true,
     required: true,
   },
   purchase_datetime: {
     // deberá guardar la fecha y hora exacta en la cual se formalizó la compra
-    Type: 'date',
+    Type: Date,
     required: true,
     default: new Date(),
   },
   products: {
-    type: 'array', // productos en el carrito
+    type: Array, // productos en el carrito
   },
   amount: {
     // total de la compra
-    type: 'number',
+    type: Number,
     required: true,
   },
   purchaser: {
@@ -27,7 +28,9 @@ const orderSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
-  status: { type: 'String' },
+  status: {
+    type: String
+  },
 });
 
 const order = mongoose.model(ticketCollection, ticketSchema);

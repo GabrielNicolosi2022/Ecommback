@@ -3,36 +3,30 @@ import mongoose from 'mongoose';
 const orderCollection = 'Order';
 
 const orderSchema = new mongoose.Schema({
+  // debe auto generarse y ser único
   code: {
-    // debe auto generarse y ser único
     type: Number,
     unique: true,
     required: true,
   },
+  // deberá guardar la fecha y hora exacta en la cual se formalizó la compra
   purchase_datetime: {
-    // deberá guardar la fecha y hora exacta en la cual se formalizó la compra
-    Type: Date,
+    type: Date,
     required: true,
     default: new Date(),
   },
-  products: {
-    type: Array, // productos en el carrito
-  },
+  // total de la compra
   amount: {
-    // total de la compra
     type: Number,
     required: true,
   },
+  // correo del usuario asociado al carrito
   purchaser: {
-    type: mongoose.SchemaTypes.email, // correo del usuario asociado al carrito
-    ref: 'User',
+    type: String,
     required: true,
-  },
-  status: {
-    type: String
   },
 });
 
-const order = mongoose.model(ticketCollection, ticketSchema);
+const order = mongoose.model(orderCollection, orderSchema);
 
 export default order;

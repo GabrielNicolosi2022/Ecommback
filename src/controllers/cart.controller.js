@@ -1,6 +1,9 @@
 import mongoose from 'mongoose';
 import * as cartServices from '../services/dataBase/cartServicesDB.js';
 import * as prodServices from '../services/dataBase/prodServicesDB.js';
+import { getUserById } from '../services/dataBase/usersServices.js';
+import { generateUniqueCode } from '../utils/generateCode.utils.js';
+import { create as createOrder } from '../services/dataBase/orderServices.js';
 import config from '../config/config.js';
 import { devLog, prodLog } from '../config/customLogger.js';
 
@@ -216,11 +219,9 @@ const deleteCart = async (req, res) => {
 const purchase = async (req, res) => {
   try {
     const cartId = req.params.cid;
-    // log.info('cartId: ' + cartId);
     // Obtener el carrito por ID
     const cart = await cartServices.getCartById(cartId);
-    // log.info('cart: ' + cart)
-    // log.info('cart.products: ' + cart.products)
+    log.info('cart: ' + cart);
     if (!cart) {
       log.error(`Carrito con id ${cartId} no encontrado`);
       throw new Error('Carrito no encontrado');
@@ -234,11 +235,11 @@ const purchase = async (req, res) => {
       const quantityInCart = product.quantity;
       // Obtener el producto por ID desde la base de datos
       const productFromDB = await prodServices.getProductsById(productId);
-      // log.info('productFromDb: ' + productFromDB._id);
-      
       if (!productFromDB) {
         productsNotProcessed.push(productId);
-        log.error(`Producto con id ${productId._id} no encontrado en la base de datos`);
+        log.error(
+          `Producto con id ${productId._id} no encontrado en la base de datos`
+        );
       } else if (productFromDB.stock >= quantityInCart) {
         productsToProcess.push({ productFromDB, quantityInCart });
         log.info(`Producto con id ${productId._id} será procesado`);
@@ -247,11 +248,7 @@ const purchase = async (req, res) => {
         log.warn(`Producto con id ${productId._id} no tiene suficiente stock`);
       }
     }
-    // console.log('-------------------------------------------------------');
-    // log.info('ProductToProcess: ' + productsToProcess);
-    // log.info('ProductNotProcessed: ' + productsNotProcessed._id);
-    // console.log('-------------------------------------------------------');
-    
+
     const processedProducts = [];
     for (const { productFromDB, quantityInCart } of productsToProcess) {
       // Restar la cantidad comprada del stock del producto
@@ -264,19 +261,14 @@ const purchase = async (req, res) => {
         quantity: quantityInCart,
       });
     }
-    // log.info('processedProducts: ' + processedProducts.product);
-    // console.log('-------------------------------------------------------');
-    
+
     // Actualizar el carrito en base a los productos procesados
     const remainingProducts = cart.products.filter(
       (prod) => productsNotProcessed.includes(prod.product) //?sino probar con processProducts
     );
     cart.products = remainingProducts;
     await cart.save();
-    // log.info('productsNotProcessed: ' + productsNotProcessed);
-    // log.info('Remaining products: ' + remainingProducts);
-    // console.log('-------------------------------------------------------');
-    
+
     let response = {
       message: 'Compra realizada exitosamente',
       processedProducts: processedProducts,
@@ -284,18 +276,37 @@ const purchase = async (req, res) => {
     };
 
     if (productsNotProcessed.length > 0) {
-      log.warn('Algunos productos no pudieron ser procesados. ', remainingProducts);
+      log.warn(
+        'Algunos productos no pudieron ser procesados. ',
+        remainingProducts
+      );
       response.message = 'Algunos productos no pudieron ser procesados';
     }
-    log.info('Compra realizada exitosamente.');
-    res.status(200).json(response);
+
+    // calcular total de la compra
+    const totalAmount = processedProducts.reduce((total, product) => {
+      return total + product.product.price * product.quantity;
+    }, 0);
+
+    const code = await generateUniqueCode();
+    const {email} = await getUserById(cart.user);
+    
+    // crear ticket con los datos de la compra
+    const orderInfo = {
+      code: code,
+      purchase_datetime: new Date(),
+      amount: totalAmount,
+      purchaser: email,
+    };
+
+    const newOrder = await createOrder(orderInfo);
+
+    log.info('Compra realizada exitosamente.' + newOrder);
+    res.status(200).json({ response: response, order: newOrder });
   } catch (error) {
     log.fatal('Error al realizar la compra. ' + error.message);
     res.status(500).send('Error al realizar la compra');
   }
-  /*  
-TODO: Al final, utilizar el servicio de Tickets para poder generar un ticket con los datos de la compra. 
-*/
 };
 
 // VISTAS
@@ -331,7 +342,6 @@ export {
   getMyCart,
   createCart,
   updateCart,
-  // updateProdOfCart,
   deleteProdOfCart,
   deleteCart,
   viewCart,

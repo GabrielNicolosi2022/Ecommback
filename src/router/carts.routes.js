@@ -13,8 +13,8 @@ cartsRouter.get('/:cid', checkRole('admin'), controllers.getCartById);
 // Obtener el carrito del usuario actual
 cartsRouter.get(
   '/user/:uid',
-    isPrivate,
-    checkRole('user'),
+  isPrivate,
+  checkRole('user'),
   controllers.getMyCart
 );
 
@@ -22,16 +22,21 @@ cartsRouter.get(
 cartsRouter.post('/', isPrivate, controllers.createCart);
 
 // Actualizar el carrito con nuevos productos y/o cantidad de ejemplares de un producto en un carrito
+// cartsRouter.put('/:cid', checkRole('user'), controllers.updateCart);
 cartsRouter.put('/:cid', checkRole('user'), controllers.updateCart);
 
 // Actualizar cantidad de ejemplares de un producto en un carrito
 // cartsRouter.put('/:cid/products/:pid', checkRole('user'), controllers.updateProdOfCart);
 
 // Eliminar un producto del carrito
-cartsRouter.delete('/:cid/products/:pid', controllers.deleteProdOfCart);
+cartsRouter.delete(
+  '/:cid/products/:pid',
+  checkRole('user'),
+  controllers.deleteProdOfCart
+);
 
 // Finalizar el proceso de compra del carrito
-cartsRouter.post('/:cid/purchase', controllers.purchase);
+cartsRouter.post('/:cid/purchase', checkRole('user'), controllers.purchase);
 
 // Eliminar un carrito
 cartsRouter.delete('/:cid', checkRole('admin'), controllers.deleteCart);

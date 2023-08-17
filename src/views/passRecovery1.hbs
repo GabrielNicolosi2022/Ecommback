@@ -1,0 +1,27 @@
+<h1 class='mb-3'>{{view}}</h1>
+
+{{#if message}}
+  <div class='alert alert-danger' role='alert'>
+    {{message}}
+  </div>
+{{/if}}
+
+<p class='mb-3'>Por favor, introduce tu nueva contraseña:</p>
+<div class='row'>
+  <div class='container'>
+    <div class='col-6'>
+      <form method='POST' action='api/sessions/users/passwordrecover'>
+        <label for='email'>Email:</label>
+        <input
+          class='form-control mb-3'
+          type='email'
+          name='email'
+          placeholder='introduzca su email'
+          required
+        />
+        <button class='btn btn-outline-primary' type='submit'>Restablecer
+          Contraseña</button>
+      </form>
+    </div>
+  </div>
+</div>

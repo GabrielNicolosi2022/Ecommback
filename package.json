@@ -9,7 +9,6 @@
     "dev": "nodemon src/app.js",
     "open": "open http://localhost:8080",
     "test": "node src/test/TDD/package.test.js"
-
   },
   "author": "Gabriel Nicolosi",
   "license": "ISC",
@@ -25,15 +24,18 @@
     "express-flash": "^0.0.2",
     "express-handlebars": "^7.0.7",
     "express-session": "^1.17.3",
+    "jsonwebtoken": "^9.0.1",
     "mongoose": "^7.1.1",
     "mongoose-paginate-v2": "^1.7.1",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.4",
     "nodemon": "^2.0.22",
     "passport": "^0.6.0",
     "passport-github2": "^0.1.12",
     "passport-local": "^1.0.0",
-    "socket.io": "^4.7.1"
+    "socket.io": "^4.7.1",
+    "winston": "^3.10.0"
   },
   "devDependencies": {
     "uuid": "^9.0.0"

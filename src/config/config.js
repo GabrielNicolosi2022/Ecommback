@@ -8,8 +8,8 @@ dotenv.config({
 });
 
 config.environment = {
-  env: process.env.NODE_ENV 
-}
+  env: process.env.NODE_ENV,
+};
 
 config.server = {
   port: process.env.PORT,
@@ -32,6 +32,22 @@ config.github = {
   clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
   callbackURL: process.env.CALLBACK_URL,
+};
+
+config.jwt = {
+  token: process.env.jwtToken,
+};
+
+config.mail = {
+  relay: process.env.relay,
+  mailPort: process.env.mailPort,
+  mailUser: process.env.mailUser,
+  mailPass: process.env.mailPass,
+};
+
+config.url = {
+  baseUrl: process.env.baseUrl,
+  recoverPassword: process.env.recoverPassword,
 };
 
 // console.log(config);

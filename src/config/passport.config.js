@@ -2,7 +2,7 @@ import config from './config.js';
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import gitHubStrategy from 'passport-github2';
-import { createHash, isValidPassword } from '../middlewares/hash.js';
+import { createHash, isValidPassword } from '../utils/validations.utils.js';
 import UserModel from '../models/schemas/UserModel.js';
 import { devLog, prodLog } from '../config/customLogger.js';
 

@@ -22,7 +22,7 @@ config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
 
 /* CONFIGURATIONS */
 const app = express();
-const PORT = process.env.PORT || config.server.port;
+const PORT = config.server.port;
 const MONGO_DB = config.db.cs;
 
 // Express
@@ -47,7 +47,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
   })
-);
+  );
 
 // Passport
 initializePassport();

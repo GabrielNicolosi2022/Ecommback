@@ -18,9 +18,13 @@ viewsRouter.get('/failregister', isPublic, userControllers.failregister);
 
 viewsRouter.get('/login', isPublic, userControllers.login);
 
-viewsRouter.get('/faillogin',isPublic, userControllers.faillogin);
+viewsRouter.get('/faillogin', isPublic, userControllers.faillogin);
 
 viewsRouter.get('/profile', isPrivate, userControllers.profile);
+
+viewsRouter.get('/passwordrecover', userControllers.passwordRecoverView);
+
+viewsRouter.get('/recoverpassword', userControllers.recoverPassword);
 
 viewsRouter.get('/product', isPublic, prodControllers.products);
 

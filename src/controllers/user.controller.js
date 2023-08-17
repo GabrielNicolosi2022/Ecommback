@@ -1,5 +1,12 @@
 import users from '../models/schemas/UserModel.js';
 import * as usersServices from '../services/dataBase/usersServices.js';
+import { sendRecoverPassword } from '../utils/mail.utils.js';
+import {
+  isSamePassword,
+  createHash,
+  generateToken,
+  validateToken,
+} from '../utils/validations.utils.js';
 import { userDTO } from '../DTO/currentUser.js';
 import { createCart } from '../services/dataBase/cartServicesDB.js';
 import config from '../config/config.js';
@@ -115,6 +122,75 @@ const getUsers = async (req, res) => {
   }
 };
 
+const passwordRecover = async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(404).send('Correo no enviado');
+  }
+  try {
+    const user = await usersServices.getUserByEmail(email);
+    if (!user) {
+      return res.status(404).send('Usuario no existente!');
+    }
+
+    const token = generateToken(email);
+    sendRecoverPassword(email, token);
+    res.status(200).send('Reset de contraseña enviada');
+  } catch (error) {
+    log.error('Error: ' + error.message);
+    return res.status(500).send('Error interno');
+  }
+};
+
+const recoverPassword = (req, res) => {
+  const { token } = req.query;
+  const { email } = req.body;
+  try {
+    const checkToken = validateToken(token);
+    if (!checkToken) {
+      console.log('Invalid token');
+      return res.status(401).send('Acceso denegado!');
+    }
+
+    const newToken = generateToken(email);
+
+    // enviarlo dentro de un json y tomarlo en la pagina donde se recupera la contraseña
+    res
+      .status(200)
+      .send(
+        `Enviar a la pagina para hacer reset la contraseña!, token: ${newToken}`
+      );
+  } catch (error) {
+    console.error('Error', error);
+    res.status(500).send('Error interno');
+  }
+};
+
+const resetPassword = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await usersServices.getUserByEmail(email);
+    if (!user) {
+      return res.status(404).send('Usuario inexistente!');
+    }
+    // Verificar si la nueva contraseña es igual a la contraseña actual
+    const isSame = await isSamePassword(password, user.password);
+    if (isSame) {
+      return res.status(400).send('No puedes usar la misma contraseña actual!');
+    }
+
+    const hashedPassword = await createHash(password);
+    await usersServices.updatePasswordByEmail(email, hashedPassword);
+    console.log('Contraseña modificada correctamente');
+    res.status(200).send('Contraseña modificada correctamente');
+  } catch (error) {
+    console.error('Error: ', error);
+    res.status(500).send('Error interno');
+  }
+};
+
 // Traer un usuario por Id
 const getUserById = async (req, res) => {
   try {
@@ -183,6 +259,22 @@ const profile = (req, res) => {
   });
 };
 
+// Renderizar vista passwordrecover
+const passwordRecoverView = (req, res) => {
+  res.render('passRecovery1', {
+    title: 'Recuperar Contraseña',
+    view: 'Recuperar Contraseña',
+  });
+};
+
+// Renderizar vista passwordrecover
+const recoverPasswordView = (req, res) => {
+  res.render('passRecovery2', {
+    title: 'Recuperar Contraseña',
+    view: 'Recuperar Contraseña',
+  });
+};
+
 const currentUser = async (req, res) => {
   try {
     // Si el usuario es el administrador, responder directamente con el objeto del usuario administrador
@@ -239,4 +331,9 @@ export {
   profile,
   currentUser,
   logout,
+  passwordRecover,
+  recoverPassword,
+  resetPassword,
+  passwordRecoverView,
+  recoverPasswordView,
 };

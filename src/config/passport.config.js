@@ -1,10 +1,11 @@
 import config from './config.js';
+import { devLog, prodLog } from '../config/customLogger.js';
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import gitHubStrategy from 'passport-github2';
 import { createHash, isValidPassword } from '../utils/validations.utils.js';
 import UserModel from '../models/schemas/UserModel.js';
-import { devLog, prodLog } from '../config/customLogger.js';
+import { updateUserPermissions } from '../utils/permissions.utils.js';
 
 let log;
 config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
@@ -16,10 +17,10 @@ const initializePassport = () => {
     new LocalStrategy(
       { passReqToCallback: true, usernameField: 'email' },
       async (req, username, password, done) => {
-        const { first_name, last_name, age } = req.body;
+        const { first_name, last_name, age, role, permissions } = req.body;
 
         // Verificar si todos los campos requeridos están presentes
-        if (!first_name || !last_name || !username || !age || !password) {
+        if (!first_name || !last_name || !username || !age || !password) { 
           log.error('All fields are required');
           return done(null, false, {
             message: 'All fields are required',
@@ -40,8 +41,15 @@ const initializePassport = () => {
             email: username,
             age,
             password: createHash(password),
+            role,
+            permissions
           };
           const result = await UserModel.create(newUser);
+
+          if (result.role === 'premium') {
+            await updateUserPermissions(result._id, { createProducts: true });
+          }
+
           log.info('New user created');
           return done(null, result, { message: 'User created' });
         } catch (error) {

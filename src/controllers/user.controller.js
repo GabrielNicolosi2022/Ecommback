@@ -175,7 +175,7 @@ const recoverPassword = (req, res) => {
   try {
     const checkToken = validateToken(token);
     if (!checkToken) {
-      console.log('Invalid token');
+      log.error('Invalid token');
       return res.status(401).send('Acceso denegado!');
     }
 
@@ -186,7 +186,7 @@ const recoverPassword = (req, res) => {
       token: newToken,
     });
   } catch (error) {
-    console.error('Error', error);
+    log.error('Error'+ error.message);
     res.status(500).send('Error interno');
   }
 };
@@ -225,7 +225,7 @@ const register = (req, res) => {
 
 // Renderizar vista fail registro
 const failregister = async (req, res) => {
-  console.log('Failed Strategy');
+  log.error('Failed Strategy');
   res.render('register', {
     title: 'Registro de usuario',
     view: 'Crear usuario',

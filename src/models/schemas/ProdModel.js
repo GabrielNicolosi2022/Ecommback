@@ -40,6 +40,13 @@ const productSchema = new mongoose.Schema({
     type: [String],
     required: false,
   },
+  owner: {
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: 'User',
+    required: false,
+    enum: ['premium', 'admin'],
+    default: 'admin',
+  },
 });
 productSchema.plugin(mongoosePaginate);
 

@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['user', 'admin'],
+    enum: ['user', 'premium', 'admin'],
     default: 'user',
   },
   cart: {
@@ -36,8 +36,8 @@ const userSchema = new mongoose.Schema({
   },
   orders: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Order'
-  }
+    ref: 'Order',
+  },
 });
 
 const users = mongoose.model(userCollection, userSchema);

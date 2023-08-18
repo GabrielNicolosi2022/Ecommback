@@ -1,3 +1,5 @@
+import config from '../config/config.js';
+import { devLog, prodLog } from '../config/customLogger.js';
 import users from '../models/schemas/UserModel.js';
 import * as usersServices from '../services/dataBase/usersServices.js';
 import { sendRecoverPassword } from '../utils/mail.utils.js';
@@ -9,8 +11,6 @@ import {
 } from '../utils/validations.utils.js';
 import { userDTO } from '../DTO/currentUser.js';
 import { createCart } from '../services/dataBase/cartServicesDB.js';
-import config from '../config/config.js';
-import { devLog, prodLog } from '../config/customLogger.js';
 
 let log;
 config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
@@ -122,6 +122,32 @@ const getUsers = async (req, res) => {
   }
 };
 
+// Traer un usuario por Id
+const getUserById = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await usersServices.getUserById(userId);
+    if (!user) {
+      log.error('Usuario no encontrado');
+      return res.status(404).json({
+        status: 'error',
+        message: 'Usuario no encontrado',
+      });
+    }
+    res.status(200).json({
+      status: 'success',
+      message: 'Usuario encontrado',
+      data: user,
+    });
+  } catch (error) {
+    log.fatal('Error al obtener el usuario. ' + error.message);
+    return res.status(500).json({
+      status: 'error',
+      message: 'Error al obtener el usuario',
+    });
+  }
+};
+
 const passwordRecover = async (req, res) => {
   const { email } = req.body;
 
@@ -155,12 +181,10 @@ const recoverPassword = (req, res) => {
 
     const newToken = generateToken(email);
 
-    // enviarlo dentro de un json y tomarlo en la pagina donde se recupera la contraseña
-    res
-      .status(200)
-      .send(
-        `Enviar a la pagina para hacer reset la contraseña!, token: ${newToken}`
-      );
+    res.status(200).json({
+      message: 'Enviar a la pagina para hacer reset la contraseña!',
+      token: newToken,
+    });
   } catch (error) {
     console.error('Error', error);
     res.status(500).send('Error interno');
@@ -191,32 +215,6 @@ const resetPassword = async (req, res) => {
   }
 };
 
-// Traer un usuario por Id
-const getUserById = async (req, res) => {
-  try {
-    const userId = req.params.id;
-    const user = await usersServices.getUserById(userId);
-    if (!user) {
-      log.error('Usuario no encontrado');
-      return res.status(404).json({
-        status: 'error',
-        message: 'Usuario no encontrado',
-      });
-    }
-    res.status(200).json({
-      status: 'success',
-      message: 'Usuario encontrado',
-      data: user,
-    });
-  } catch (error) {
-    log.fatal('Error al obtener el usuario. ' + error.message);
-    return res.status(500).json({
-      status: 'error',
-      message: 'Error al obtener el usuario',
-    });
-  }
-};
-
 // Renderizar vista registro
 const register = (req, res) => {
   res.render('register', {
@@ -224,6 +222,7 @@ const register = (req, res) => {
     view: 'Crear usuario',
   });
 };
+
 // Renderizar vista fail registro
 const failregister = async (req, res) => {
   console.log('Failed Strategy');
@@ -233,6 +232,7 @@ const failregister = async (req, res) => {
     message: 'El email ya se encuentra en uso',
   });
 };
+
 // Renderizar vista login
 const login = (req, res) => {
   res.render('login', {
@@ -240,6 +240,7 @@ const login = (req, res) => {
     view: 'Login',
   });
 };
+
 // Renderizar vista faillogin
 const faillogin = async (req, res) => {
   console.log('Failed Login');
@@ -249,6 +250,7 @@ const faillogin = async (req, res) => {
     message: 'Inicio de sesión incorrecto',
   });
 };
+
 // Renderizar vista perfil de usuario
 const profile = (req, res) => {
   res.render('profile', {

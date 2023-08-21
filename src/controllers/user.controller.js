@@ -29,7 +29,6 @@ const userRegister = async (req, res) => {
 };
 
 // Login de usuario
-// * no me deja hacer login como admin porque req.user.save is not a function, admin no tiene persistencia en db.
 const userLogin = async (req, res) => {
   try {
     // Inicio de session por postman
@@ -43,16 +42,20 @@ const userLogin = async (req, res) => {
         email: req.user.email,
         role: req.user.role,
       };
-      // Verificar si el usuario ya tiene un carrito asignado
-      if (!req.user.cart) {
-        // Si no tiene un carrito asignado, crear uno nuevo y asociarlo al usuario
-        const newCart = await createCart(req.user._id, { products: [] });
 
-        // Asignar el ID del nuevo carrito al campo 'cart' del usuario
-        req.user.cart = newCart._id;
+      // Verificar si el usuario no es el administrador
+      if (req.user.role !== 'admin') {
+        if (!req.user.cart) {
+          // Verificar si el usuario ya tiene un carrito asignado
+          // Si no tiene un carrito asignado, crear uno nuevo y asociarlo al usuario
+          const newCart = await createCart(req.user._id, { products: [] });
 
-        // Guardar los cambios en el usuario en la base de datos
-        await req.user.save();
+          // Asignar el ID del nuevo carrito al campo 'cart' del usuario
+          req.user.cart = newCart._id;
+
+          // Guardar los cambios en el usuario en la base de datos
+          await req.user.save();
+        }
       }
       res.status(200).json({
         status: 'success',

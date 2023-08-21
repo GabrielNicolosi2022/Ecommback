@@ -20,7 +20,7 @@ const initializePassport = () => {
         const { first_name, last_name, age, role, permissions } = req.body;
 
         // Verificar si todos los campos requeridos están presentes
-        if (!first_name || !last_name || !username || !age || !password) { 
+        if (!first_name || !last_name || !username || !age || !password) {
           log.error('All fields are required');
           return done(null, false, {
             message: 'All fields are required',
@@ -42,7 +42,7 @@ const initializePassport = () => {
             age,
             password: createHash(password),
             role,
-            permissions
+            permissions,
           };
           const result = await UserModel.create(newUser);
 
@@ -83,6 +83,7 @@ const initializePassport = () => {
               if (err) {
                 return done(err);
               }
+              log.info(`user ${userSession.id} successfully logged in`);
               return done(null, userSession);
             });
           } else {

@@ -171,6 +171,7 @@ const passwordRecover = async (req, res) => {
 
 const recoverPassword = (req, res) => {
   const { token } = req.query;
+  // log.info('token: ' + token);
   const { email } = req.body;
   try {
     const checkToken = validateToken(token);

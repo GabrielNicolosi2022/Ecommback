@@ -16,6 +16,7 @@ productsRouter.get('/:pid', prodControllers.getProductById);
 productsRouter.post(
   '/',
   uploader.array('thumbnails', 5),
+  checkRole('premium' || 'admin'),
   prodControllers.createProducts
 );
 

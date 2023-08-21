@@ -121,7 +121,7 @@ const getProductById = async (req, res) => {
     res.status(500).json({ error: 'Error al obtener el producto' });
   }
 };
-
+// ! no genera owner
 const createProducts = async (req, res) => {
   const productsData = req.body;
   const createdProducts = [];
@@ -135,9 +135,7 @@ const createProducts = async (req, res) => {
       )
     ) {
       log.error('No se proporcionaron productos válidos');
-      return res
-        .status(400)
-        .json({ error: 'No se proporcionaron productos válidos' });
+      return res.status(400).send('No se proporcionaron productos válidos');
     }
 
     // Validar campos obligatorios para todos los productos antes de crearlos
@@ -150,7 +148,7 @@ const createProducts = async (req, res) => {
         status,
         stock,
         category,
-        thumbnails,
+        owner,
       } = productData;
 
       if (
@@ -178,8 +176,11 @@ const createProducts = async (req, res) => {
           code: EErrors.INVALID_TYPES_ERROR,
         });
       }
-    }
 
+      if (owner === 'premium' && req.user.role !== 'premium') {
+        return res.status(403).send('No tienes permisos!');
+      }
+    }
     const processProduct = async (productData) => {
       const {
         title,
@@ -190,8 +191,10 @@ const createProducts = async (req, res) => {
         stock,
         category,
         thumbnails,
+        
       } = productData;
 
+      console.log('owner: ' + req.user); // clg
       const newProduct = {
         title,
         description,
@@ -201,14 +204,17 @@ const createProducts = async (req, res) => {
         stock,
         category,
         thumbnails: thumbnails || [],
+        owner: req.user.role === 'premium' ? req.user._id : 'admin',
       };
 
       const createdProduct = await prodServices.createProduct(newProduct);
       createdProducts.push(createdProduct);
     };
 
+    console.log('User Role:', req.user.role); // clg
     if (Array.isArray(productsData)) {
       for (const productData of productsData) {
+        console.log('Product Owner:', productData.owner); // clg
         await processProduct(productData);
       }
       res.send({
@@ -217,6 +223,7 @@ const createProducts = async (req, res) => {
         data: createdProducts,
       });
     } else {
+      console.log('Product Owner:', productsData.owner); //clg
       await processProduct(productsData);
       res.send({
         status: 'success',

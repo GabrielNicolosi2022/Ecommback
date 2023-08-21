@@ -166,12 +166,12 @@ const initializePassport = () => {
   passport.deserializeUser(async (id, done) => {
     // Si el id es "admin", devolver el objeto de usuario para el administrador
     if (id === 'admin') {
-      const user = {
+      const adminUser = {
         id: 'admin',
         email: config.admin.username,
         role: 'admin',
       };
-      return done(null, user);
+      return done(null, adminUser);
     }
     // Para otros ids, buscar el usuario en la base de datos
     try {

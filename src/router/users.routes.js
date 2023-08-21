@@ -28,6 +28,6 @@ userRouter.get('/:id', getUserById)
 userRouter.get('/current',isPrivate, currentUser);
 
 // Enviar nueva contraseña
-userRouter.post('/resetpassword', isUserOrTokenValid, resetPassword); // donde voy a hacer reset de la contraseña
+userRouter.patch('/resetpassword', isUserOrTokenValid, resetPassword); // donde voy a hacer reset de la contraseña
 
 export default userRouter;

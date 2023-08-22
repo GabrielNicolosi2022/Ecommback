@@ -128,8 +128,8 @@ const getUsers = async (req, res) => {
 // Traer un usuario por Id
 const getUserById = async (req, res) => {
   try {
-    const userId = req.params.id;
-    const user = await usersServices.getUserById(userId);
+    const uid = req.params.id;
+    const user = await usersServices.getUserById(uid);
     if (!user) {
       log.error('Usuario no encontrado');
       return res.status(404).json({
@@ -191,7 +191,7 @@ const recoverPassword = (req, res) => {
       token: newToken,
     });
   } catch (error) {
-    log.error('Error'+ error.message);
+    log.error('Error' + error.message);
     res.status(500).send('Error interno');
   }
 };
@@ -220,6 +220,36 @@ const resetPassword = async (req, res) => {
   }
 };
 
+// Cambiar el rol de un usuario
+const changeRole = async (req, res) => {
+  try {
+    const uid = req.params.uid;
+
+    const user = await usersServices.getUserById(uid);
+    if (!user) {
+      log.error(`Usuario con id ${_id} no encontrado`);
+      return res.status(404).send('Usuario inexistente');
+    }
+    const newRole = req.body;
+    if (!newRole || (newRole.role !== 'user' && newRole.role !== 'premium')) {
+      log.error('El campo "role" se encuentra incompleto o es inválido');
+      return res.status(400).send('Mala Petición');
+    }
+
+    const updatedRoleUser = await usersServices.updateUserById(uid, newRole);
+    log.info(
+      `El usuario con id: ${user._id} ahora tiene rol '${newRole.role}'`
+    );
+    res.status(200).json({
+      status: 'success',
+      message: 'Rol de usuario actualizado',
+      data: updatedRoleUser,
+    });
+  } catch (error) {
+    log.fatal('Error al obtener el usuario. ' + error.message);
+    return res.status(500).send('Error interno');
+  }
+};
 
 // Renderizar vista registro
 const register = (req, res) => {
@@ -344,4 +374,5 @@ export {
   resetPassword,
   passwordRecoverView,
   recoverPasswordView,
+  changeRole,
 };

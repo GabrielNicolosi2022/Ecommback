@@ -6,6 +6,7 @@ import {
   passwordRecover,
   recoverPassword,
   resetPassword,
+  changeRole,
 } from '../controllers/user.controller.js';
 import { isAuthorized, isPrivate } from '../middlewares/auth.js';
 import { isUserOrTokenValid } from '../middlewares/user.middlewares.js';
@@ -24,10 +25,13 @@ userRouter.post('/recoverpassword', recoverPassword); // donde voy a enviar a es
 // buscar usuario por Id
 userRouter.get('/:id', getUserById)
 
+// Cambiar el rol de un usuario
+userRouter.patch('/premium/:uid',changeRole);
+
 // Perfil de usuario
 userRouter.get('/current',isPrivate, currentUser);
 
 // Enviar nueva contraseña
-userRouter.post('/resetpassword', isUserOrTokenValid, resetPassword); // donde voy a hacer reset de la contraseña
+userRouter.patch('/resetpassword', isUserOrTokenValid, resetPassword); // donde voy a hacer reset de la contraseña
 
 export default userRouter;

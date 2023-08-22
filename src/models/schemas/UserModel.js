@@ -30,6 +30,11 @@ const userSchema = new mongoose.Schema({
     enum: ['user', 'premium', 'admin'],
     default: 'user',
   },
+  permissions: {
+    type: Map,
+    of: Boolean,
+    default: { createProducts: false },
+  },
   cart: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'carts',

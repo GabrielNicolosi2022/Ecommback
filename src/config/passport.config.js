@@ -1,10 +1,11 @@
 import config from './config.js';
+import { devLog, prodLog } from '../config/customLogger.js';
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import gitHubStrategy from 'passport-github2';
 import { createHash, isValidPassword } from '../utils/validations.utils.js';
 import UserModel from '../models/schemas/UserModel.js';
-import { devLog, prodLog } from '../config/customLogger.js';
+import { updateUserPermissions } from '../utils/permissions.utils.js';
 
 let log;
 config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
@@ -16,7 +17,7 @@ const initializePassport = () => {
     new LocalStrategy(
       { passReqToCallback: true, usernameField: 'email' },
       async (req, username, password, done) => {
-        const { first_name, last_name, age } = req.body;
+        const { first_name, last_name, age, role, permissions } = req.body;
 
         // Verificar si todos los campos requeridos están presentes
         if (!first_name || !last_name || !username || !age || !password) {
@@ -40,8 +41,15 @@ const initializePassport = () => {
             email: username,
             age,
             password: createHash(password),
+            role,
+            permissions,
           };
           const result = await UserModel.create(newUser);
+
+          if (result.role === 'premium') {
+            await updateUserPermissions(result._id, { createProducts: true });
+          }
+
           log.info('New user created');
           return done(null, result, { message: 'User created' });
         } catch (error) {
@@ -75,6 +83,7 @@ const initializePassport = () => {
               if (err) {
                 return done(err);
               }
+              log.info(`user ${userSession.id} successfully logged in`);
               return done(null, userSession);
             });
           } else {
@@ -158,12 +167,12 @@ const initializePassport = () => {
   passport.deserializeUser(async (id, done) => {
     // Si el id es "admin", devolver el objeto de usuario para el administrador
     if (id === 'admin') {
-      const user = {
+      const adminUser = {
         id: 'admin',
         email: config.admin.username,
         role: 'admin',
       };
-      return done(null, user);
+      return done(null, adminUser);
     }
     // Para otros ids, buscar el usuario en la base de datos
     try {

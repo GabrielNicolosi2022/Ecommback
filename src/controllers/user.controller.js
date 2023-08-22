@@ -29,7 +29,6 @@ const userRegister = async (req, res) => {
 };
 
 // Login de usuario
-// * no me deja hacer login como admin porque req.user.save is not a function, admin no tiene persistencia en db.
 const userLogin = async (req, res) => {
   try {
     // Inicio de session por postman
@@ -43,16 +42,20 @@ const userLogin = async (req, res) => {
         email: req.user.email,
         role: req.user.role,
       };
-      // Verificar si el usuario ya tiene un carrito asignado
-      if (!req.user.cart) {
-        // Si no tiene un carrito asignado, crear uno nuevo y asociarlo al usuario
-        const newCart = await createCart(req.user._id, { products: [] });
 
-        // Asignar el ID del nuevo carrito al campo 'cart' del usuario
-        req.user.cart = newCart._id;
+      // Verificar si el usuario no es el administrador
+      if (req.user.role !== 'admin') {
+        if (!req.user.cart) {
+          // Verificar si el usuario ya tiene un carrito asignado
+          // Si no tiene un carrito asignado, crear uno nuevo y asociarlo al usuario
+          const newCart = await createCart(req.user._id, { products: [] });
 
-        // Guardar los cambios en el usuario en la base de datos
-        await req.user.save();
+          // Asignar el ID del nuevo carrito al campo 'cart' del usuario
+          req.user.cart = newCart._id;
+
+          // Guardar los cambios en el usuario en la base de datos
+          await req.user.save();
+        }
       }
       res.status(200).json({
         status: 'success',
@@ -125,8 +128,8 @@ const getUsers = async (req, res) => {
 // Traer un usuario por Id
 const getUserById = async (req, res) => {
   try {
-    const userId = req.params.id;
-    const user = await usersServices.getUserById(userId);
+    const uid = req.params.id;
+    const user = await usersServices.getUserById(uid);
     if (!user) {
       log.error('Usuario no encontrado');
       return res.status(404).json({
@@ -148,6 +151,7 @@ const getUserById = async (req, res) => {
   }
 };
 
+// Modificar contraseña actual
 const passwordRecover = async (req, res) => {
   const { email } = req.body;
 
@@ -171,11 +175,12 @@ const passwordRecover = async (req, res) => {
 
 const recoverPassword = (req, res) => {
   const { token } = req.query;
+  // log.info('token: ' + token);
   const { email } = req.body;
   try {
     const checkToken = validateToken(token);
     if (!checkToken) {
-      console.log('Invalid token');
+      log.error('Invalid token');
       return res.status(401).send('Acceso denegado!');
     }
 
@@ -186,7 +191,7 @@ const recoverPassword = (req, res) => {
       token: newToken,
     });
   } catch (error) {
-    console.error('Error', error);
+    log.error('Error' + error.message);
     res.status(500).send('Error interno');
   }
 };
@@ -215,6 +220,37 @@ const resetPassword = async (req, res) => {
   }
 };
 
+// Cambiar el rol de un usuario
+const changeRole = async (req, res) => {
+  try {
+    const uid = req.params.uid;
+
+    const user = await usersServices.getUserById(uid);
+    if (!user) {
+      log.error(`Usuario con id ${_id} no encontrado`);
+      return res.status(404).send('Usuario inexistente');
+    }
+    const newRole = req.body;
+    if (!newRole || (newRole.role !== 'user' && newRole.role !== 'premium')) {
+      log.error('El campo "role" se encuentra incompleto o es inválido');
+      return res.status(400).send('Mala Petición');
+    }
+
+    const updatedRoleUser = await usersServices.updateUserById(uid, newRole);
+    log.info(
+      `El usuario con id: ${user._id} ahora tiene rol '${newRole.role}'`
+    );
+    res.status(200).json({
+      status: 'success',
+      message: 'Rol de usuario actualizado',
+      data: updatedRoleUser,
+    });
+  } catch (error) {
+    log.fatal('Error al obtener el usuario. ' + error.message);
+    return res.status(500).send('Error interno');
+  }
+};
+
 // Renderizar vista registro
 const register = (req, res) => {
   res.render('register', {
@@ -225,7 +261,7 @@ const register = (req, res) => {
 
 // Renderizar vista fail registro
 const failregister = async (req, res) => {
-  console.log('Failed Strategy');
+  log.error('Failed Strategy');
   res.render('register', {
     title: 'Registro de usuario',
     view: 'Crear usuario',
@@ -338,4 +374,5 @@ export {
   resetPassword,
   passwordRecoverView,
   recoverPasswordView,
+  changeRole,
 };

@@ -21,7 +21,7 @@ const createCart = async (userId, cartData) => {
     ...cartData,
     user: userId,
   };
-  return await cartsModel.create(newCart).exec();
+  return await cartsModel.create(newCart);
 };
 
 // no se utiliza

@@ -1,3 +1,9 @@
+import config from '../config/config.js';
+import { devLog, prodLog } from '../config/customLogger.js';
+
+let log;
+config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
+
 // Middleware para verificar si la ruta es pública
 const isPublic = (req, res, next) => {
   if (req.session && req.session.user) {
@@ -34,16 +40,20 @@ const isAuthorized = (req, res, next) => {
 // Middleware para verificar el rol del usuario y autorizar el acceso a ciertas rutas
 const checkRole = (requiredRole) => (req, res, next) => {
   // Verificar si hay una sesión activa y si el usuario tiene un rol válido
-  if (req.session && req.session.user && req.session.user.role === requiredRole) {
+  if (
+    req.session &&
+    req.session.user &&
+    req.session.user.role === requiredRole
+  ) {
     // El usuario tiene el rol adecuado, permitir el acceso
     next();
   } else {
     // El usuario no tiene el rol adecuado, devolver un mensaje de error o redirigir a una página de acceso denegado
-    res.status(403).json({ error: 'Acceso denegado' });
+    log.error('Acceso denegado. El usuario no tiene el rol adecuado');
+    res.status(403).send('Acceso denegado' );
     // Opcionalmente, puedes redirigir a una página de acceso denegado
     // res.redirect('/access-denied');
   }
 };
-
 
 export { isPublic, isPrivate, isAuthorized, checkRole };

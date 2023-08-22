@@ -16,7 +16,7 @@ const updateUserPermissions = async (userId, permissions) => {
     );
     log.info('User permissions updated successfully');
   } catch (error) {
-    log.error('Error updating user permissions:' + error);
+    log.error('Error updating user permissions:' + error.message);
   }
 };
 

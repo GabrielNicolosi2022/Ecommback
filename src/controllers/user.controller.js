@@ -151,6 +151,7 @@ const getUserById = async (req, res) => {
   }
 };
 
+// Modificar contraseña actual
 const passwordRecover = async (req, res) => {
   const { email } = req.body;
 
@@ -218,6 +219,7 @@ const resetPassword = async (req, res) => {
     res.status(500).send('Error interno');
   }
 };
+
 
 // Renderizar vista registro
 const register = (req, res) => {

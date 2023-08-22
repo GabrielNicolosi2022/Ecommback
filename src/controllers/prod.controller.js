@@ -121,7 +121,6 @@ const getProductById = async (req, res) => {
     res.status(500).json({ error: 'Error al obtener el producto' });
   }
 };
-// ! no genera owner
 const createProducts = async (req, res) => {
   const productsData = req.body;
   const createdProducts = [];

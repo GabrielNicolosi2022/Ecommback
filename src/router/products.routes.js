@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import * as prodControllers from '../controllers/prod.controller.js';
 import { uploader } from '../middlewares/multer.js';
+import { checkProductOwner } from '../middlewares/products.middlewares.js';
 import { checkRole } from '../middlewares/auth.js';
 import { generateMockingProducts } from '../test/products.test.js';
 
@@ -21,9 +22,22 @@ productsRouter.post(
 );
 
 // Actualizar un producto por id
-productsRouter.put('/:pid', checkRole('admin'), prodControllers.updateProduct);
+productsRouter.patch(
+  '/:pid',
+  checkRole('premium'),
+  checkProductOwner,
+  prodControllers.updateProduct
+);
 
 // Eliminar un producto por id
+productsRouter.delete(
+  '/:pid',
+  checkRole('premium'),
+  checkProductOwner,
+  prodControllers.deleteProduct
+);
+
+// Opción adicional para que el admin pueda borrar cualquier producto
 productsRouter.delete(
   '/:pid',
   checkRole('admin'),

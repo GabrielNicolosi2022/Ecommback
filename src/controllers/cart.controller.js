@@ -119,22 +119,44 @@ const updateCart = async (req, res) => {
     const cid = req.params.cid;
     const { products } = req.body;
     const cartId = new mongoose.Types.ObjectId(cid);
+    const { user } = req.session;
 
     // Buscar el carrito por su ID
     const cart = await cartServices.getCartById(cartId);
 
     if (!cart) {
       log.error(`Carrito con id ${cartId} no encontrado`);
-      return res.status(404).json({ message: 'Carrito no encontrado' });
+      return res.status(404).send('Carrito inexistente');
     }
+
     // Iterar sobre los productos del body
     for (const product of products) {
+      const productId = product.product;
+      const prodFromDb = await prodServices.getProductsById(productId);
+
+      if (user.role === 'premium') {
+        if (prodFromDb.owner) {
+          //  Filtrar los productos que son propiedad del usuario
+          const ownedProducts = products.filter((productItem) => {
+            const productOwner = prodFromDb.owner.toString();
+            return productOwner === user.userId;
+          });
+          // si hay productos de su propiedad en el carrito, no permitir agregarlos
+          if (ownedProducts.length > 0) {
+            log.warn(
+              'El cliente está intentando agregar al carrito un producto de su propiedad'
+            );
+            return res.status(403).send('Acción inválida');
+          }
+        }
+      }
+
       const productInCart = cart.products.find((p) =>
         p.product.equals(new mongoose.Types.ObjectId(product.product))
       );
 
-      // Si el producto ya existe en el carrito, actualizar la cantidad
       if (productInCart) {
+        // Si el producto ya existe en el carrito, actualizar la cantidad
         productInCart.quantity = product.quantity;
       } else {
         // Si el producto no existe en el carrito, agregarlo
@@ -289,8 +311,8 @@ const purchase = async (req, res) => {
     }, 0);
 
     const code = await generateUniqueCode();
-    const {email} = await getUserById(cart.user);
-    
+    const { email } = await getUserById(cart.user);
+
     // crear ticket con los datos de la compra
     const orderInfo = {
       code: code,

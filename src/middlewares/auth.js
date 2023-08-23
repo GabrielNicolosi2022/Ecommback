@@ -38,22 +38,23 @@ const isAuthorized = (req, res, next) => {
 };
 
 // Middleware para verificar el rol del usuario y autorizar el acceso a ciertas rutas
-const checkRole = (requiredRole) => (req, res, next) => {
-  // Verificar si hay una sesión activa y si el usuario tiene un rol válido
-  if (
-    req.session &&
-    req.session.user &&
-    req.session.user.role === requiredRole
-  ) {
-    // El usuario tiene el rol adecuado, permitir el acceso
-    next();
-  } else {
-    // El usuario no tiene el rol adecuado, devolver un mensaje de error o redirigir a una página de acceso denegado
-    log.error('Acceso denegado. El usuario no tiene el rol adecuado');
-    res.status(403).send('Acceso denegado' );
-    // Opcionalmente, puedes redirigir a una página de acceso denegado
-    // res.redirect('/access-denied');
-  }
-};
+const checkRole =
+  (...requiredRole) =>
+  (req, res, next) => {
+    // Verificar si hay una sesión activa y si el usuario tiene un rol válido
+    if (
+      req.session &&
+      req.session.user &&
+      // req.session.user.role === requiredRole
+      requiredRole.includes(req.session.user.role)
+    ) {
+      // El usuario tiene el rol adecuado, permitir el acceso
+      next();
+    } else {
+      // El usuario no tiene el rol adecuado, devolver un mensaje de error o redirigir a una página de acceso denegado
+      log.error('Acceso denegado. El usuario no tiene el rol adecuado');
+      res.status(403).send('Acceso denegado');
+    }
+  };
 
 export { isPublic, isPrivate, isAuthorized, checkRole };

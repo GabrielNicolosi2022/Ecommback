@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import cartsModel from '../../models/schemas/CartModel.js';
 
 // Trae todos todos los carritos
@@ -24,19 +23,11 @@ const createCart = async (userId, cartData) => {
   return await cartsModel.create(newCart);
 };
 
-// no se utiliza
-/* const addProductToCart = async (cartId, products) =>
-  await cartsModel.findByIdAndUpdate(
-    cartId,
-    { $push: { products: products } },
-    { new: true }
-  );
- */
 // Se utiliza para agregar productos o modificar las cantidades de los mismos
 const updateCart = async (cartId, products) =>
   await cartsModel
     .findByIdAndUpdate(cartId, { $set: { products } }, { new: true })
-    .lean();
+    .exec();
 
 const deleteCart = async (cartId) => await cartsModel.findByIdAndRemove(cartId);
 
@@ -48,6 +39,5 @@ export {
   getCartByUserId,
   createCart,
   updateCart,
-  // addProductToCart,
   deleteCart,
 };

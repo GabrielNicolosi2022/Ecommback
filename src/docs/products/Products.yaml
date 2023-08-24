@@ -1,0 +1,230 @@
+paths:
+  /api/products/:
+    get:
+      summary: Obtiene todos los productos
+      tags:
+        - Products
+      responses:
+        '200':
+          description: Los productos fueron obtenidos satisfactoriamente de la base de datos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#components/schemas/Products'
+        '500':
+          description: Error interno del servidor
+    post:
+      summary: Crea un nuevo producto (es necesario iniciar sesión con usuario 'premium' o 'admin'), es posible crear mas de un producto a la vez.
+      tags:
+        - Products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#components/requestBodies/createProduct'
+      responses:
+        '200':
+          description: Nuevo producto guardado correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#components/schemas/Products'
+        '400':
+          description: No se proporcionaron productos válidos, probablemente array vacío o datos inválidos en el cuerpo de la petición.
+        '403':
+          description: No tienes permisos!, probablemente el nuevo producto esté queriendo ser creado por un usuario con rol 'user'.
+        '500':
+          description: Error interno del servidor
+  /api/products/{pid}:
+    get:
+      summary: Obtiene un producto a partir de su id
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: Id del producto que desea solicitar
+      responses:
+        '200':
+          description: Producto encontrado
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#components/schemas/Products'
+        '404':
+          description: Producto no encontrado - probablemente error en el id
+        '500':
+          description: Error interno del servidor
+    patch:
+      summary: Modifica un producto a partir de su id ('admin' modifica cualquier producto, 'premium' modifica sólo los sus productos)
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: Id del producto que desea actualizar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#components/requestBodies/updateProduct'
+      responses:
+        '200':
+          description: Producto actualizado correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#components/schemas/Products'
+        '404':
+          description: Producto no encontrado, probablemente error en el id
+        '500':
+          description: Error interno del servidor
+    delete:
+      summary: Elimina un producto a partir de su id
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: Id del producto que desea eliminar
+      responses:
+        '200':
+          description: El producto ha sido eliminado correctamente
+        '404':
+          description: Producto no encontrado, probablemente error en el id
+        '500':
+          description: Error interno del servidor
+
+components:
+  schemas:
+    Products:
+      type: object
+      properties:
+        _id:
+          type: ObjectId
+          description: Id autogenerado por mongo
+        title:
+          type: String
+          description: Nombre del producto
+          required: true
+        description:
+          type: String
+          description: Descripción del producto
+          required: true
+        code:
+          type: String
+          description: Código interno del producto
+          required: true
+          unique: true
+        price:
+          type: Number
+          description: Precio del producto
+          required: true
+        status:
+          type: Boolean
+          description: Estado de disponibilidad del producto
+          required: true
+        stock:
+          type: Number
+          description: Cantidad de stock del producto
+          required: true
+        category:
+          type: String
+          description: Categoría del producto
+          required: true
+        thumbnails:
+          type: Array
+          description: Array de Strings correspondientes a los nombres de archivos de imágenes del producto
+          required: false
+        owner:
+          type: ObjectId
+          reference: User
+          required: false
+      example:
+        _id: ObjectId("64e3e242f5ea3a37f8190375")
+        title: Ventilador
+        description: Symco turbo
+        code: VST15
+        price: 15000
+        status: true
+        stock: 25
+        category: electrodomesticos
+        thumbnails:
+          ['ventilador_img.png', 'ventilador_dim.png', 'ventilador_char.png']
+        owner: ObjectId("64df91cecaf5d075245d1d68")
+  requestBodies:
+    createProduct:
+      type: Object
+      properties:
+        title:
+          type: String
+          description: Nombre del producto
+        description:
+          type: String
+          description: Descripción del producto
+        price:
+          type: Number
+          description: Precio del producto
+        status:
+          type: Boolean
+          description: Estado de disponibilidad del producto
+        stock:
+          type: Number
+          description: Cantidad de stock del producto
+        category:
+          type: String
+          description: Categoría del producto
+        thumbnails:
+          type: Array
+          description: Array de Strings correspondientes a los nombres de archivos de imágenes del producto
+      example:
+        title: Calculadora científica
+        description: Ecal auto power off
+        price: 20000
+        status: true
+        stock: 32
+        category: libreria
+        thumbnails: ['calculadora.png']
+    updateProduct:
+      type: Object
+      properties:
+        title:
+          type: String
+          description: Nombre del producto
+        description:
+          type: String
+          description: Descripción del producto
+        price:
+          type: Number
+          description: Precio del producto
+        status:
+          type: Boolean
+          description: Estado de disponibilidad del producto
+        stock:
+          type: Number
+          description: Cantidad de stock del producto
+        category:
+          type: String
+          description: Categoría del producto
+        thumbnails:
+          type: Array
+          description: Array de Strings correspondientes a los nombres de archivos de imágenes del producto
+      example:
+        title: Ventilador 3 velocidades
+        price: 20000
+        stock: 32

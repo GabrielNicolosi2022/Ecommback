@@ -10,9 +10,6 @@ const productsRouter = Router();
 // Obtener todos los productos paginados, filtrados y ordenados
 productsRouter.get('/', prodControllers.getProducts);
 
-// Obtener un producto por id
-productsRouter.get('/:pid', prodControllers.getProductById);
-
 // Crear un nuevo producto
 productsRouter.post(
   '/',
@@ -20,6 +17,9 @@ productsRouter.post(
   checkRole('premium' || 'admin'),
   prodControllers.createProducts
 );
+
+// Obtener un producto por id
+productsRouter.get('/:pid', prodControllers.getProductById);
 
 // Actualizar un producto por id
 productsRouter.patch(

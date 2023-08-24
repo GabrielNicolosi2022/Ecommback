@@ -10,7 +10,9 @@ import productsRouter from './products.routes.js';
 import cartsRouter from './carts.routes.js';
 import loggerRouter from './logger.routes.js';
 
+
 const indexRouter = Router();
+
 
 indexRouter.use('/', viewsRouter);
 indexRouter.use('/api/sessions', sessionsRouter);

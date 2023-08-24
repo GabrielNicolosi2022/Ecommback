@@ -86,7 +86,7 @@ const getProducts = async (req, res) => {
       nextLink: nextLink,
     };
 
-    res.json({
+    res.status(200).json({
       status: 'success',
       message: 'Productos encontrados',
       data: response,
@@ -107,11 +107,9 @@ const getProductById = async (req, res) => {
 
     if (!product) {
       log.error(`Producto con id ${_id} no encontrado`);
-      return res
-        .status(404)
-        .json({ error: `Producto con id ${_id} no encontrado` });
+      return res.status(404).json({ error: 'Producto no encontrado' });
     }
-    return res.json({
+    return res.status(200).json({
       status: 'success',
       message: 'Producto encontrado',
       data: product,
@@ -190,10 +188,9 @@ const createProducts = async (req, res) => {
         stock,
         category,
         thumbnails,
-        
       } = productData;
 
-      console.log('owner: ' + req.user); // clg
+      // log.info('owner: ' + req.user); // clg
       const newProduct = {
         title,
         description,
@@ -210,29 +207,26 @@ const createProducts = async (req, res) => {
       createdProducts.push(createdProduct);
     };
 
-    console.log('User Role:', req.user.role); // clg
     if (Array.isArray(productsData)) {
       for (const productData of productsData) {
-        console.log('Product Owner:', productData.owner); // clg
         await processProduct(productData);
       }
-      res.send({
+      res.status(200).send({
         status: 'success',
         message: 'Nuevos productos guardados correctamente',
         data: createdProducts,
       });
     } else {
-      console.log('Product Owner:', productsData.owner); //clg
       await processProduct(productsData);
-      res.send({
+      res.status(200).send({
         status: 'success',
         message: 'Nuevo producto guardado correctamente',
         data: createdProducts,
       });
     }
   } catch (error) {
-    log.fatal(error.message); //! si quito el log no de muestra el custom en la consola
-    return res.status(500).json({ message: 'Error al guardar los productos' });
+    log.fatal('Error al guardar los productos ' + error.message); //! si quito el log no se muestra el custom en la consola
+    return res.status(500).send('Error interno');
   }
 };
 
@@ -246,12 +240,12 @@ const updateProduct = async (req, res) => {
 
     if (!product) {
       log.error(`Producto con id ${_id} no encontrado`);
-      return res.status(404).json({ error: 'Producto no encontrado' });
+      return res.status(404).send('Producto no encontrado');
     }
 
     const updatedProduct = await prodServices.updateProduct(_id, updatedData);
 
-    return res.json({
+    return res.status(200).json({
       status: 'success',
       message: 'Producto actualizado correctamente',
       data: updatedProduct,
@@ -271,18 +265,18 @@ const deleteProduct = async (req, res) => {
 
     if (!product) {
       log.error(`Producto con id ${_id} no encontrado`);
-      return res.status(404).json({ message: 'Producto no encontrado' });
+      return res.status(404).send('Producto no encontrado');
     }
 
     await prodServices.deleteProduct(_id);
 
-    return res.json({
+    return res.status(200).json({
       status: 'success',
       message: 'El producto ha sido eliminado correctamente',
     });
   } catch (error) {
     log.fatal('Error al eliminar el producto. ' + error.message);
-    res.status(500).json({ message: 'Error al eliminar el producto' });
+    res.status(500).send('Error interno del servidor');
   }
 };
 

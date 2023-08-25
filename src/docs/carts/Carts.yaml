@@ -183,10 +183,10 @@ components:
           type: ObjectId
           description: Id autogenerado por mongo
         products:
-          type: Array
+          type: array
           description: Arreglo que contiene todos los productos del carrito
           items:
-            type: Object
+            type: object
             description: Cada objeto es un producto distinto
             properties:
               product:
@@ -219,8 +219,8 @@ components:
             quantity: 3
         user: '64e7948ebfea3f72d7f12838'
     Orders:
-      type: Object
-      description: Datos de la orden generada
+      type: object
+      # description: Datos de la orden generada
       properties:
         _id:
           type: ObjectId
@@ -250,13 +250,13 @@ components:
         purchaser: 'josebronco@mail.com'
   requestBodies:
     createCart:
-      type: Object
+      type: object
       properties:
         products:
-          type: Array
+          type: array
           description: Arreglo que contiene todos los productos del carrito
           items:
-            type: Object
+            type: object
             description: Cada objeto es un producto distinto
             properties:
               product:
@@ -272,13 +272,13 @@ components:
           product: 64e00c00cedc37f05b4f25c9
           quantity: 3
     updateCart:
-      type: Object
+      type: object
       properties:
         products:
-          type: Array
+          type: array
           description: Arreglo que contiene todos los productos del carrito
           items:
-            type: Object
+            type: object
             description: Cada objeto es un producto distinto
             properties:
               product:

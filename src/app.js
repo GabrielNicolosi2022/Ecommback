@@ -52,7 +52,6 @@ const swaggerOptions = {
 
 const specs = swaggerJSDoc(swaggerOptions);
 
-
 // Session whit MongoStore
 app.use(
   session({

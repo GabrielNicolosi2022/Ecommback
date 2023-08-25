@@ -1,0 +1,295 @@
+paths:
+  /api/carts/:
+    get:
+      summary: Obtiene todos los carritos (solo accesible por un 'admin' logueado)
+      tags:
+        - Carts
+      responses:
+        '200':
+          description: Los carritos fueron obtenidos satisfactoriamente de la base de datos
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/Carts'
+        '500':
+          description: Error interno del servidor
+    post:
+      summary: Crea un nuevo carrito
+      tags:
+        - Carts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#components/requestBodies/createCart'
+      responses:
+        '200':
+          description: Nuevo carrito creado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/Carts'
+        '400':
+          description: No se han enviado productos para cargar en el carrito, probablemente el array esta vacío
+        '500':
+          description: Error interno del servidor
+  /api/carts/{cid}:
+    get:
+      summary: Obtiene un carrito a partir de su id (solo accesible por un 'admin' logueado)
+      tags:
+        - Carts 
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Id del carrito que desea solicitar
+      responses:
+        '200':
+          description: Carrito encontrado satisfactoriamente
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/Carts'
+        '404':
+          description: Carrito no encontrado - probablemente error en el id
+        '500':
+          description: Error interno del servidor
+    put:
+      summary: Actualiza un carrito a partir de su id con nuevos productos y/o cantidad de ejemplares de un producto (es necesario iniciar sesión con usuario 'premium' o 'admin')
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Id del carrito que desea actualizar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#components/requestBodies/updateCart'
+      responses:
+        '200':
+          description: Carrito actualizado satisfactoriamente
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/Carts'
+        '403':
+          description: Acción inválida - probablemente el cliente está intentando agregar al carrito un producto de su propiedad
+        '404':
+          description: Carrito no encontrado - probablemente error en el id
+        '500':
+          description: Error interno del servidor
+    delete:
+      summary: Elimina un carrito a partir de su id (solo accesible por un 'admin' logueado)
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Id del carrito que desea eliminar
+      responses:
+        '200':
+          description: Carrito eliminado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/Carts'
+        '404':
+          description: Carrito no encontrado - probablemente error en el id
+        '500':
+          description: Error interno del servidor
+  /api/carts/user/{uid}:
+    get:
+      summary: Obtiene el carrito del usuario actual partir de su id (solo accesible por un 'user' o 'premium' logueado)
+      tags:
+        - Carts
+      parameters:
+        - name: uid
+          in: path
+          required: true
+          description: Id del usuario propietario del carrito
+      responses:
+        '200':
+          description: Carrito del usuario encontrado satisfactoriamente
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/Carts'
+        '404':
+          description: Carrito no encontrado
+        '500':
+          description: Error interno del servidor
+  /api/carts/{cid}/products/{pid}:
+    delete:
+      summary: Elimina un producto de un carrito en particular a partir de su id (solo accesible por un 'user' o 'premium' logueado)
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Id del carrito a intervenir
+        - name: pid
+          in: path
+          required: true
+          description: Id del producto a eliminar
+      responses:
+        '200':
+          description: Producto removido correctamente del carrito
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/Carts'
+        '404':
+          description: |
+            - Carrito no encontrado - probablemente error en el id.
+            - Producto no encontrado en el carrito - probablemente error en el id. 
+        '500':
+          description: Error interno del servidor
+  /api/carts/{cid}/purchase:
+    post:
+      summary: Finalizar la compra de un carrito a partir de su id (solo accesible por un 'user' o 'premium' logueado)
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Id del carrito a finalizar
+      responses:
+        '200':
+          description: Compra realizada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/Orders'
+        '404':
+          description: Carrito no encontrado - probablemente error de id
+        '500':
+          description: Error interno de servidor
+components:
+  schemas:
+    Carts:
+      type: object
+      properties:
+        _id:
+          type: ObjectId
+          description: Id autogenerado por mongo
+        products:
+          type: Array
+          description: Arreglo que contiene todos los productos del carrito
+          items:
+            type: Object
+            description: Cada objeto es un producto distinto
+            properties:
+              product:
+                type: ObjectId
+                reference: products
+                description: Referencia al ID de un producto
+                required: true
+              quantity:
+                type: Number
+                description: Cantidad de unidades de un producto
+                required: true
+        user:
+          type: ObjectId
+          reference: User
+          description: Referencia al ID del usuario
+      example:
+        _id: 64e794adbfea3f72d7f1283c
+        products:
+          - product: 
+              _id: "64e00c00cedc37f05b4f25c9"
+              title: "Auriculares"
+              description: "Noga vincha"
+              code: "NV515EE"
+              price: 25000
+              status: true
+              stock: 20
+              category: "informatica"
+              thumbnails: []
+              owner: "64df91e9caf5d075245d1d6c"
+            quantity: 3
+        user: '64e7948ebfea3f72d7f12838'
+    Orders:
+      type: Object
+      description: Datos de la orden generada
+      properties:
+        _id:
+          type: ObjectId
+          description: Id autogenerado por mongo
+        code:
+          type: Number
+          description: Numero de orden correlativo autogenerado por el sistema
+          unique: true
+          required: true
+        purchase_datetime:
+          type: DateTime 
+          description: Contiene la fecha y hora exacta en la cual se formalizó la compra
+          required: true
+        amount:
+          type: Number
+          description: Monto total de la compra
+          required: true
+        purchaser:
+          type: String
+          description: Correo del usuario asociado al carrito
+          required: true
+      example:
+        _id: ObjectId('64db8fbed53a3a801d5cd8f4')
+        code: 5
+        purchase_datetime: 2023-08-15T14:46:21.999+00:00
+        amount: 10539.84
+        purchaser: 'josebronco@mail.com'
+  requestBodies:
+    createCart:
+      type: Object
+      properties:
+        products:
+          type: Array
+          description: Arreglo que contiene todos los productos del carrito
+          items:
+            type: Object
+            description: Cada objeto es un producto distinto
+            properties:
+              product:
+                type: String
+                description: Id del producto en formato string
+                required: true
+              quantity:
+                type: Number
+                description: Cantidad de unidades de un producto
+                required: true
+      example:
+        products:
+          product: 64e00c00cedc37f05b4f25c9
+          quantity: 3
+    updateCart:
+      type: Object
+      properties:
+        products:
+          type: Array
+          description: Arreglo que contiene todos los productos del carrito
+          items:
+            type: Object
+            description: Cada objeto es un producto distinto
+            properties:
+              product:
+                type: String
+                description: Id del producto en formato string
+                required: true
+              quantity:
+                type: Number
+                description: Cantidad de unidades de un producto
+                required: true
+      example:
+        products:
+          product: 64e00c00cedc37f05b4f25c9
+          quantity: 3

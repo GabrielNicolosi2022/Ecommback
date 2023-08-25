@@ -19,16 +19,14 @@ const getCarts = async (req, res) => {
     if (limit && !isNaN(limit) && limit > 0) {
       return carts.slice(0, limit);
     }
-    return res.json({
+    return res.status(200).json({
       status: 'success',
       message: 'Carritos encontrados',
       data: carts,
     });
   } catch (error) {
     log.fatal('Error al obtener los carritos. ' + error.message);
-    res
-      .status(500)
-      .json({ status: 'error', error: 'Error al obtener los carritos' });
+    res.status(500).send('Error interno');
   }
 };
 // Obtener un carrito por Id
@@ -39,22 +37,16 @@ const getCartById = async (req, res) => {
 
     if (!cart) {
       log.error(`Carrito con id ${cartId} no encontrado`);
-      return res.status(404).json({
-        status: 'error',
-        message: 'Carrito no encontrado',
-      });
+      return res.status(404).send('Carrito no encontrado');
     }
     res.status(200).json({
       status: 'success',
-      message: 'Carrito encontrado',
+      message: 'Carrito encontrado satisfactoriamente',
       data: cart,
     });
   } catch (error) {
     log.fatal('Error al obtener el carrito. ' + error.message);
-    return res.status(500).json({
-      status: 'error',
-      message: 'Error al obtener el carrito',
-    });
+    return res.status(500).send('Error interno');
   }
 };
 // Obtener el carrito del usuario
@@ -68,21 +60,17 @@ const getMyCart = async (req, res) => {
 
     if (!cart) {
       log.error(`Carrito del usuario ${userId} no encontrado`);
-      return res
-        .status(404)
-        .json({ message: 'Carrito no encontrado para este usuario' });
+      return res.status(404).send('Carrito no encontrado');
     }
 
     res.status(200).json({
       status: 'success',
-      message: 'Carrito del usuario encontrado',
+      message: 'Carrito del usuario encontrado satisfactoriamente',
       data: cart,
     });
   } catch (error) {
     log.fatal('Error al obtener el carrito del usuario. ', error.message);
-    res
-      .status(500)
-      .json({ message: 'Error al obtener el carrito del usuario. ', error });
+    res.status(500).send('Error interno');
   }
 };
 // Crear un nuevo carrito
@@ -109,7 +97,7 @@ const createCart = async (req, res) => {
     });
   } catch (error) {
     log.fatal('Error al crear el carrito. ' + error.message);
-    res.status(500).json({ error: 'Error al crear el carrito' });
+    res.status(500).send('Error interno');
   }
 };
 
@@ -126,7 +114,7 @@ const updateCart = async (req, res) => {
 
     if (!cart) {
       log.error(`Carrito con id ${cartId} no encontrado`);
-      return res.status(404).send('Carrito inexistente');
+      return res.status(404).send('Carrito no encontrado');
     }
 
     // Iterar sobre los productos del body
@@ -177,7 +165,7 @@ const updateCart = async (req, res) => {
     });
   } catch (error) {
     log.fatal('Error al actualizar el carrito. ', error);
-    res.status(500).json({ message: 'Error al actualizar el carrito', error });
+    res.status(500).json('Error interno');
   }
 };
 
@@ -190,15 +178,13 @@ const deleteProdOfCart = async (req, res) => {
     const cart = await cartServices.getCartById(cartId);
     if (!cart) {
       log.error(`Carrito con id ${cartId} no encontrado`);
-      return res.status(404).json({ message: 'Carrito no encontrado' });
+      return res.status(404).send('Carrito no encontrado');
     }
     const productInCart = cart.products.find((p) => p.product.equals(pid));
 
     if (!productInCart) {
       log.error(`Producto con id ${pid} no encontrado en el carrito`);
-      return res
-        .status(404)
-        .json({ message: 'Producto no encontrado en el carrito' });
+      return res.status(404).send('Producto no encontrado en el carrito');
     }
 
     cart.products.splice(productInCart, 1);
@@ -224,17 +210,17 @@ const deleteCart = async (req, res) => {
     const cart = await cartServices.getCartById(_id);
     if (!cart) {
       log.error(`Carrito con id ${_id} no encontrado`);
-      return res.status(404).json({ message: 'Carrito no encontrado' });
+      return res.status(404).send('Carrito no encontrado');
     }
     await cartServices.deleteCart(cart);
-    return res.json({
+    return res.status(200).json({
       status: 'success',
       message: 'Carrito eliminado correctamente',
       data: cart,
     });
   } catch (error) {
     log.fatal('Error al eliminar el carrito. ' + error.message);
-    res.status(500).json({ message: 'Error al eliminar el carrito' });
+    res.status(500).send('Error interno');
   }
 };
 // Finalizar la compra
@@ -243,10 +229,10 @@ const purchase = async (req, res) => {
     const cartId = req.params.cid;
     // Obtener el carrito por ID
     const cart = await cartServices.getCartById(cartId);
-    log.info('cart: ' + cart);
+    // log.info('cart: ' + cart);
     if (!cart) {
       log.error(`Carrito con id ${cartId} no encontrado`);
-      throw new Error('Carrito no encontrado');
+      return res.status(404).send('Carrito no encontrado');
     }
 
     const productsToProcess = [];

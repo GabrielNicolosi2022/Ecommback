@@ -1,7 +1,8 @@
 import cartsModel from '../../models/schemas/CartModel.js';
 
 // Trae todos todos los carritos
-const getAllCarts = async () => await cartsModel.find().lean();
+const getAllCarts = async () =>
+  await cartsModel.find().populate('products.product').lean();
 
 // Trae un carrito por id, se utiliza para traer el carrito a modificar en el controller y/o solo para buscar un carrito por id
 const getCartById = async (cartId) =>
@@ -30,8 +31,6 @@ const updateCart = async (cartId, products) =>
     .exec();
 
 const deleteCart = async (cartId) => await cartsModel.findByIdAndRemove(cartId);
-
-
 
 export {
   getAllCarts,

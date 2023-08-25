@@ -16,7 +16,7 @@ const getProducts = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const sort = req.query.sort;
     const query = req.query;
-
+    
     // ordenar los productos si se proporciona sort
     const sortOptions = {};
     if (sort) {
@@ -26,10 +26,10 @@ const getProducts = async (req, res) => {
         sortOptions.price = -1;
       }
     }
-
+    
     // filtrar los productos si se proporciona query
     const filter = {};
-
+    
     if (query) {
       if (query.category) {
         filter.$or = [{ category: query.category }];
@@ -42,13 +42,13 @@ const getProducts = async (req, res) => {
         filter.$or.push({ status: query.status });
       }
     }
-
+    
     // opciones de paginación
     const options = {
       limit: limit,
       page: page,
     };
-
+    
     // Cargo los productos utilizando mongoose-paginate-v2
     const {
       docs,
@@ -62,34 +62,34 @@ const getProducts = async (req, res) => {
       options,
       filter,
       sortOptions
-    );
-
-    // enlaces a página previa y siguiente
-    const prevLink = hasPrevPage
+      );
+      
+      // enlaces a página previa y siguiente
+      const prevLink = hasPrevPage
       ? `/products?page=${prevPage}&limit=${limit}`
       : null;
     const nextLink = hasNextPage
       ? `/products?page=${nextPage}&limit=${limit}`
       : null;
+      
+      // objeto para respuesta
+      const response = {
+        status: 'success',
+        payload: docs,
+        totalPages: totalPages,
+        prevPage: prevPage,
+        nextPage: nextPage,
+        page: page,
+        hasPrevPage: hasPrevPage,
+        hasNextPage: hasNextPage,
+        prevLink: prevLink,
+        nextLink: nextLink,
+      };
 
-    // objeto para respuesta
-    const response = {
-      status: 'success',
-      payload: docs,
-      totalPages: totalPages,
-      prevPage: prevPage,
-      nextPage: nextPage,
-      page: page,
-      hasPrevPage: hasPrevPage,
-      hasNextPage: hasNextPage,
-      prevLink: prevLink,
-      nextLink: nextLink,
-    };
-
-    res.status(200).json({
-      status: 'success',
-      message: 'Productos encontrados',
-      data: response,
+      res.status(200).json({
+        status: 'success',
+        message: 'Productos encontrados',
+        data: response,
     });
   } catch (error) {
     log.fatal('Error al obtener los productos.' + error.message);
@@ -97,6 +97,12 @@ const getProducts = async (req, res) => {
   }
 };
 
+/**
+ * getProductById - Obtiene un producto a partir un pid
+ * @param {pid} req 
+ * @param {product} res 
+ * @returns 
+ */
 const getProductById = async (req, res) => {
   try {
     // Obtengo el valor del parámetro de ruta 'pid'
@@ -104,7 +110,7 @@ const getProductById = async (req, res) => {
 
     // Obtener el producto por su ID utilizando la función getProductsById()
     const product = await prodServices.getProductsById(_id);
-
+    
     if (!product) {
       log.error(`Producto con id ${_id} no encontrado`);
       return res.status(404).json({ error: 'Producto no encontrado' });
@@ -119,6 +125,7 @@ const getProductById = async (req, res) => {
     res.status(500).json({ error: 'Error al obtener el producto' });
   }
 };
+
 const createProducts = async (req, res) => {
   const productsData = req.body;
   const createdProducts = [];

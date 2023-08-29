@@ -8,7 +8,8 @@
     "start": "src/app.js",
     "dev": "nodemon src/app.js",
     "open": "open http://localhost:8080",
-    "test": "node src/test/TDD/package.test.js"
+    "tdd": "node src/test/TDD/package.test.js",
+    "test": "mocha test/**/*.test.js"
   },
   "author": "Gabriel Nicolosi",
   "license": "ISC",
@@ -35,11 +36,14 @@
     "passport-github2": "^0.1.12",
     "passport-local": "^1.0.0",
     "socket.io": "^4.7.1",
+    "supertest": "^6.3.3",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
     "winston": "^3.10.0"
   },
   "devDependencies": {
+    "chai": "^4.3.8",
+    "mocha": "^10.2.0",
     "nodemon": "^3.0.1",
     "uuid": "^9.0.0"
   },

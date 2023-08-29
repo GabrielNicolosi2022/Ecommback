@@ -3,9 +3,10 @@ import { devLog, prodLog } from '../config/customLogger.js';
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import gitHubStrategy from 'passport-github2';
-import { createHash, isValidPassword } from '../utils/validations.utils.js';
+import { isValidPassword } from '../utils/validations.utils.js';
 import UserModel from '../models/schemas/UserModel.js';
-import { updateUserPermissions } from '../utils/permissions.utils.js';
+import {createUser} from '../utils/users.utils.js'
+
 
 let log;
 config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
@@ -17,44 +18,31 @@ const initializePassport = () => {
     new LocalStrategy(
       { passReqToCallback: true, usernameField: 'email' },
       async (req, username, password, done) => {
-        const { first_name, last_name, age, role, permissions } = req.body;
-
-        // Verificar si todos los campos requeridos están presentes
-        if (!first_name || !last_name || !username || !age || !password) {
-          log.error('All fields are required');
-          return done(null, false, {
-            message: 'All fields are required',
-          });
-        }
+        const { first_name, last_name, age } = req.body;
 
         try {
           const user = await UserModel.findOne({ email: username });
-          // Si el user existe
+          // Si el usuario ya existe
           if (user) {
             log.error('User already exists');
             return done(null, false, { message: 'User already exists' });
           }
-          // Si el user no existe
-          const newUser = {
+
+          const result = await createUser({
             first_name,
             last_name,
             email: username,
             age,
-            password: createHash(password),
-            role,
-            permissions,
-          };
-          const result = await UserModel.create(newUser);
-
-          if (result.role === 'premium') {
-            await updateUserPermissions(result._id, { createProducts: true });
-          }
+            password,
+            role: 'user',
+          });
+          console.log('result passport: ', result);
 
           log.info('New user created');
           return done(null, result, { message: 'User created' });
         } catch (error) {
           log.fatal('Error al obtener el usuario: ' + error.message);
-          return done('Error al obtener el usuario: ' + error);
+          return done('error: ' + error);
         }
       }
     )
@@ -83,6 +71,7 @@ const initializePassport = () => {
               if (err) {
                 return done(err);
               }
+              console.log('userSession:', userSession);
               log.info(`user ${userSession.id} successfully logged in`);
               return done(null, userSession);
             });

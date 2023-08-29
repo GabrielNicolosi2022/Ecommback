@@ -17,6 +17,7 @@ config.server = {
 
 config.db = {
   cs: process.env.MONGO_URI,
+  testing: process.env.MONGO_URI_TESTING
 };
 
 config.session = {

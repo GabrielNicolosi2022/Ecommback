@@ -20,11 +20,27 @@ const root = (req, res) => {
 };
 // Registro de usuario
 const userRegister = async (req, res) => {
-  if (req.get('User-Agent').includes('Postman')) {
-    res.json({ message: 'Registro exitoso. Inicia sesión para continuar.' });
+/*   if (req.get('User-Agent').includes('Postman')) {
+    res.status(201).json({
+      status: 'success',
+      message: 'Registro exitoso. Inicia sesión para continuar.',
+    });
   } else {
     req.flash('success', 'Registro exitoso. Inicia sesión para continuar.');
     res.redirect('/login');
+  }
+ */
+  try {
+    const userCreated = req.user;
+
+    res.status(201).json({
+      status: 'success',
+      message: 'Registro exitoso. Inicia sesión para continuar.',
+      user: userCreated,
+    });
+  } catch (error) {
+    log.error('Error creating user: ' + error);
+    res.status(500).send({ error: 'Error interno' });
   }
 };
 
@@ -32,7 +48,7 @@ const userRegister = async (req, res) => {
 const userLogin = async (req, res) => {
   try {
     // Inicio de session por postman
-    if (req.get('User-Agent').includes('Postman')) {
+    if (req.get('User-Agent') && req.get('User-Agent').includes('Postman')) {
       // Generar el objeto 'user' en req.session
       req.session.user = {
         userId: req.user._id,

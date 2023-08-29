@@ -31,3 +31,4 @@ export const checkProductOwner = async (req, res, next) => {
     res.status(500).send('Error interno');
   }
 };
+

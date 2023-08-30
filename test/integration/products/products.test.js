@@ -2,17 +2,42 @@ import config from '../../../src/config/config.js';
 import { expect } from 'chai';
 import mongoose from 'mongoose';
 import supertest from 'supertest';
-// import { products1, products2 } from '../../mocks/products.mocks.js';
+import productsModel from '../../../src/models/schemas/ProdModel.js';
+import { products1, products2 } from '../../mocks/products.mocks.js';
 
-// console.log(config)
-// mongoose.connect(config.db.testing);
-await mongoose.connect(
-  'mongodb+srv://gabianp:PrIntMdb23@ecommerce.hwzuuds.mongodb.net/testing'
-);
+/* 
+* Bloque comentado porque no me estan llegando los values del config.js
+console.log(config)
+mongoose.connect(config.db.testing,{
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }); */
 
 const requester = supertest('http://localhost:8080');
 
-describe('Product router testing', () => {
+describe('Product router testing', function () {
+  this.timeout(6000);
+
+  before(async () => {
+    // Conectar a la base de datos
+    const dbURI =
+      'mongodb+srv://gabianp:PrIntMdb23@ecommerce.hwzuuds.mongodb.net/testing?retryWrites=true&w=majority';
+    await mongoose.connect(dbURI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+  });
+
+  after(async () => {
+    await mongoose.connection.close(); // Después de todos los tests, cerrar la conexión
+  });
+
+  beforeEach(async () => {
+    // Antes de cada prueba, eliminar documentos de la colección de prueba
+    await productsModel.deleteMany({});
+    // await db.connection.collections.testing.deleteMany({});
+  });
+
   describe('getProducts', () => {
     it('It should return an object with all the products of the DB', async () => {
       const response = await requester.get('/api/products').send();
@@ -67,7 +92,7 @@ describe('Product router testing', () => {
     });
   });
 
-  // describe.skip('createProducts', () => {
+  // describe.only('createProducts', () => {
   //   it('It should create a new product', async () => {
   //     const response = await requester.post('/api/products').send(products1);
 

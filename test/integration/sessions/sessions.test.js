@@ -1,15 +1,33 @@
 import { expect } from 'chai';
 import mongoose from 'mongoose';
-
 import supertest from 'supertest';
+import users from '../../../src/models/schemas/UserModel.js';
 import { user1, userFail } from '../../mocks/users.mocks.js';
+
 
 const requester = supertest('http://localhost:8080');
 
-describe('Sessions router testing', () => {
-  // beforeEach(() => {
-  //   mongoose.connection.collections.test.drop(); // antes de cada test hacer reset de la collection
-  // });
+describe.only('Sessions router testing', function () {
+  this.timeout(6000);
+
+  before(async () => {
+    // Conectar a la base de datos
+    const dbURI =
+      'mongodb+srv://gabianp:PrIntMdb23@ecommerce.hwzuuds.mongodb.net/testing?retryWrites=true&w=majority';
+    await mongoose.connect(dbURI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+  });
+
+  after(async () => {
+    await mongoose.connection.close(); // Después de todos los tests, cerrar la conexión
+  });
+
+  beforeEach(async () => {
+    // Antes de cada prueba, eliminar documentos de la colección de prueba
+    await users.deleteMany({});
+  });
 
   describe('register', () => {
     it('It should fail if any required field is not provided.', async () => {
@@ -89,16 +107,16 @@ describe('Sessions router testing', () => {
   describe('logout', () => {
     it('It should log out and redirect to "/login"', async () => {
       const response = await requester.get('/api/sessions/logout').send();
-            expect(response.statusCode).to.equal(302);
-            expect(response.redirect).to.equal(true);
-            expect(response.text).to.equal('Found. Redirecting to /login');
-            expect(response.headers.location).to.equal('/login');
+      expect(response.statusCode).to.equal(302);
+      expect(response.redirect).to.equal(true);
+      expect(response.text).to.equal('Found. Redirecting to /login');
+      expect(response.headers.location).to.equal('/login');
 
-            const redirectUrl = response.headers.location;
-            const redirectedResponse = await requester.get(redirectUrl);
+      const redirectUrl = response.headers.location;
+      const redirectedResponse = await requester.get(redirectUrl);
 
-            expect(redirectedResponse.statusCode).to.equal(200);
-            expect(redirectedResponse.ok).to.be.true;
+      expect(redirectedResponse.statusCode).to.equal(200);
+      expect(redirectedResponse.ok).to.be.true;
     });
   });
 });

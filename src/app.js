@@ -20,7 +20,7 @@ import morgan from 'morgan';
 import { devLog, prodLog } from './config/customLogger.js';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUiExpress from 'swagger-ui-express';
-
+import db from './config/dbConnection.js';
 // Logger
 let log;
 config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
@@ -82,6 +82,7 @@ app.use(morgan('dev'));
 
 // Server HTTP
 const server = app.listen(PORT, (err) => {
+  db;
   if (err) {
     log.fatal('Connection Error: ', err.message);
     return;

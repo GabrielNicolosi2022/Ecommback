@@ -4,6 +4,7 @@ import { devLog, prodLog } from '../config/customLogger.js';
 
 let log;
 config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
+console.log(config);
 
 const connection = mongoose
   .connect(config.db.cs, {

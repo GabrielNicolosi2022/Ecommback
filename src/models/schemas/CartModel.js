@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
-import db from '../../config/dbConnection.js';
 
 const cartCollection = 'carts';
 
@@ -25,6 +24,6 @@ const cartSchema = new mongoose.Schema({
 
 cartSchema.plugin(mongoosePaginate);
 
-const cartsModel = db.model(cartCollection, cartSchema);
+const cartsModel = mongoose.model(cartCollection, cartSchema);
 
 export default cartsModel;

@@ -1,9 +1,5 @@
-// import 'dotenv/config';
-// import config from '../../../src/config/config.js';
 
 import * as prodServices from '../../../src/services/dataBase/prodServicesDB.js';
-import productsModel from '../../../src/models/schemas/ProdModel.js';
-import mongoose from 'mongoose';
 import supertest from 'supertest';
 import { expect } from 'chai';
 import { products1, products2 } from '../../mocks/products.mocks.js';
@@ -18,23 +14,9 @@ mongoose.connect(config.db.testing,{
 
 const requester = supertest('http://localhost:8080');
 
-const dbURI =
-  'mongodb+srv://gabianp:PrIntMdb23@ecommerce.hwzuuds.mongodb.net/testing?retryWrites=true&w=majority';
 
 describe('Product router testing', function () {
   this.timeout(6000);
-  let connection;
-
-  before(async () => {
-    connection = await mongoose.connect(dbURI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-  });
-
-  // beforeEach(async () => {
-  //   await mongoose.connection.collections.products.deleteMany({});
-  // });
 
   describe('getProducts', () => {
     it('It should return an object with all the products of the DB', async () => {

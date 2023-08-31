@@ -1,29 +1,12 @@
-import mongoose from 'mongoose';
 import { expect } from 'chai';
 import supertest from 'supertest';
-import users from '../../../src/models/schemas/UserModel.js';
 import { user1, userFail } from '../../mocks/users.mocks.js';
 
 const requester = supertest('http://localhost:8080');
 
-// Conectar a la base de datos
-const dbURI =
-  'mongodb+srv://gabianp:PrIntMdb23@ecommerce.hwzuuds.mongodb.net/testing?retryWrites=true&w=majority';
 
 describe('Sessions router testing', function () {
   this.timeout(6000);
-  let connection;
-
-  before(async () => {
-    connection = await mongoose.connect(dbURI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-  });
-
-  // beforeEach(async () => {
-  //   await mongoose.connection.collections.sessions.deleteMany({});
-  // });
 
   describe('register', () => {
     it('It should fail if any required field is not provided.', async () => {

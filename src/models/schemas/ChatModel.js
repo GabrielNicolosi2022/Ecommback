@@ -1,7 +1,5 @@
 import mongoose from 'mongoose';
 
-import db from '../../config/dbConnection.js';
-
 const chatCollection = 'chats';
 
 const chatSchema = new mongoose.Schema({
@@ -19,5 +17,5 @@ const chatSchema = new mongoose.Schema({
   },
 });
 
-const chatModel = db.model(chatCollection, chatSchema);
+const chatModel = mongoose.model(chatCollection, chatSchema);
 export default chatModel;

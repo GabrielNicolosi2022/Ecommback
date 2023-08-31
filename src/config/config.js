@@ -1,10 +1,15 @@
 import dotenv from 'dotenv';
 let config = {};
 
-const environment = 'development'; // cambiar environment: 'production' / 'development'
+const environment = 'testing'; // cambiar environment: 'production' / 'development' / 'testing'
 
 dotenv.config({
-  path: environment === 'development' ? '.env.development' : '.env.production',
+  path:
+    environment === 'development'
+      ? '.env.development'
+      : environment === 'testing'
+      ? '.env.testing'
+      : '.env.production',
 });
 
 config.environment = {
@@ -17,7 +22,7 @@ config.server = {
 
 config.db = {
   cs: process.env.MONGO_URI,
-  testing: process.env.MONGO_URI_TESTING
+  dbName: process.env.DB_NAME,
 };
 
 config.session = {

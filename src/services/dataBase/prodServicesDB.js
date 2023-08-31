@@ -1,5 +1,7 @@
 import productsModel from '../../models/schemas/ProdModel.js';
 
+const createProduct = async (productsData) => await productsModel.create(productsData);
+
 // Recibe 3 parámetros desde prod.controller.js
 const getAllProductsPaginated = async (options, filter, sortOptions) => {
   const {
@@ -13,7 +15,7 @@ const getAllProductsPaginated = async (options, filter, sortOptions) => {
   } = await productsModel.paginate(filter, {
     ...options,
     sort: sortOptions,
-  });
+  });  
 
   return {
     docs,
@@ -23,14 +25,12 @@ const getAllProductsPaginated = async (options, filter, sortOptions) => {
     page,
     hasNextPage,
     hasPrevPage,
-  };
-};
+  };  
+};  
 
 const getAllProducts = async () => await productsModel.find().lean();
 
 const getProductsById = async (_id) => await productsModel.findById(_id).exec();
-
-const createProduct = async (productsData) => await productsModel.create(productsData);
 
 const updateProduct = async (_id, updatedData) => await productsModel.findByIdAndUpdate(_id, updatedData, { new: true });
 

@@ -295,7 +295,7 @@ const login = (req, res) => {
 
 // Renderizar vista faillogin
 const faillogin = async (req, res) => {
-  console.log('Failed Login');
+  log.info('Failed Login');
   res.render('login', {
     title: 'Login de usuario',
     view: 'Login',

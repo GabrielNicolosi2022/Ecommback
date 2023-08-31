@@ -5,9 +5,9 @@ import { devLog, prodLog } from '../config/customLogger.js';
 let log;
 config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
 
- const connection = mongoose
+const connection = mongoose
   .connect(config.db.cs, {
-    dbName: 'ecommerce',
+    dbName: config.db.dbName,
   })
   .catch((err) => log.fatal(err));
 

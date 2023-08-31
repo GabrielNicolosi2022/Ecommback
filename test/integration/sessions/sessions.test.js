@@ -1,33 +1,29 @@
-import { expect } from 'chai';
 import mongoose from 'mongoose';
+import { expect } from 'chai';
 import supertest from 'supertest';
 import users from '../../../src/models/schemas/UserModel.js';
 import { user1, userFail } from '../../mocks/users.mocks.js';
 
-
 const requester = supertest('http://localhost:8080');
 
-describe.only('Sessions router testing', function () {
+// Conectar a la base de datos
+const dbURI =
+  'mongodb+srv://gabianp:PrIntMdb23@ecommerce.hwzuuds.mongodb.net/testing?retryWrites=true&w=majority';
+
+describe('Sessions router testing', function () {
   this.timeout(6000);
+  let connection;
 
   before(async () => {
-    // Conectar a la base de datos
-    const dbURI =
-      'mongodb+srv://gabianp:PrIntMdb23@ecommerce.hwzuuds.mongodb.net/testing?retryWrites=true&w=majority';
-    await mongoose.connect(dbURI, {
+    connection = await mongoose.connect(dbURI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
   });
 
-  after(async () => {
-    await mongoose.connection.close(); // Después de todos los tests, cerrar la conexión
-  });
-
-  beforeEach(async () => {
-    // Antes de cada prueba, eliminar documentos de la colección de prueba
-    await users.deleteMany({});
-  });
+  // beforeEach(async () => {
+  //   await mongoose.connection.collections.sessions.deleteMany({});
+  // });
 
   describe('register', () => {
     it('It should fail if any required field is not provided.', async () => {

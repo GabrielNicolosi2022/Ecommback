@@ -4,8 +4,7 @@ import { user1, userFail } from '../../mocks/users.mocks.js';
 
 const requester = supertest('http://localhost:8080');
 
-
-describe.skip('Sessions router testing', function () {
+describe('Sessions router testing', function () {
   this.timeout(6000);
 
   describe('register', () => {

@@ -2,4 +2,6 @@ node_modules
 .vscode
 .env.development
 .env.production
+.env.testing
 .dependencygraph
+estructuraDeProyecto.yaml

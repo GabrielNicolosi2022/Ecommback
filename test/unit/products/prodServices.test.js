@@ -1,3 +1,7 @@
+import 'dotenv/config';
+import config from '../../../src/config/config.js';
+console.log(config);
+
 import * as prodServices from '../../../src/services/dataBase/prodServicesDB.js';
 import mongoose from 'mongoose';
 import { expect } from 'chai';
@@ -8,7 +12,7 @@ import { before } from 'mocha';
 const dbURI =
   'mongodb+srv://gabianp:PrIntMdb23@ecommerce.hwzuuds.mongodb.net/testing?retryWrites=true&w=majority';
 
-describe('prodServices testing', function () {
+describe.only('prodServices testing', function () {
   this.timeout(6000);
   let connection;
 

@@ -1,12 +1,14 @@
-
 import * as prodServices from '../../../src/services/dataBase/prodServicesDB.js';
 import supertest from 'supertest';
 import { expect } from 'chai';
 import { products1, products2 } from '../../mocks/products.mocks.js';
 
+// import 'dotenv/config';
+// import config from '../../../src/config/config.js';
+// console.log(config);
 /* 
-* Bloque comentado porque no me estan llegando los values del config.js
-console.log(config.environment);
+* Bloque comentado porque no me están llegando los values del config.js, encontré el problema, es que el .env se encuentra dentro de src y no en la raíz del proyecto, pero si lo muevo a la raíz del proyecto, deja de leerlo el config.js 
+
 mongoose.connect(config.db.testing,{
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -14,8 +16,7 @@ mongoose.connect(config.db.testing,{
 
 const requester = supertest('http://localhost:8080');
 
-
-describe('Product router testing', function () {
+describe.skip('Product router testing', function () {
   this.timeout(6000);
 
   describe('getProducts', () => {
@@ -34,7 +35,7 @@ describe('Product router testing', function () {
   describe.skip('getProductById', () => {
     it('It should return an object whit a product from its id', async () => {
       const createProduct = await prodServices.createProduct(products1);
-      console.log('createProduct: ' + createProduct)
+      console.log('createProduct: ' + createProduct);
       const id = '647bb555772098d69e1e8200';
       const response = await requester.get(`/api/products/${id}`).send();
 

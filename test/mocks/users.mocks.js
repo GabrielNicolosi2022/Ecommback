@@ -1,15 +1,15 @@
 const user1 = {
-  first_name: 'mario',
+  first_name: 'carlos',
   last_name: 'lopez',
-  email: 'marlopez@mail.com',
+  email: 'carlopez@mail.com',
   age: 18,
-  password: 'mariopass',
-  role: 'user',
+  password: '1234',
+  role: 'premium',
 };
 
 const user1b = {
-  email: 'marlo@mail.com',
-  password: 'mariopass',
+  email: 'carlo@mail.com',
+  password: '1234',
   role: 'premium',
 };
 

@@ -51,8 +51,10 @@ describe('Product router testing', function () {
   describe('getProductById', () => {
     it('It should return an object whit a product from its id', async () => {
       const createProduct = await prodServices.createProduct(products1);
-      const id = '647bb555772098d69e1e8200';
-      const response = await requester.get(`/api/products/${id}`).send();
+      const result = await prodServices.getAllProducts();
+      const _id = result[0]._id.toString();
+
+      const response = await requester.get(`/api/products/${_id}`).send();
 
       expect(response.ok).to.be.true;
       expect(response.statusCode).to.be.equal(200);

@@ -7,6 +7,7 @@ const products1 = [
     status: true,
     stock: 200,
     category: 'libreria',
+    owner: '64f27efabb24deb713035c47',
   },
 ];
 
@@ -19,6 +20,7 @@ const products2 = [
     status: true,
     stock: 250,
     category: 'libreria',
+    owner: '64f27efabb24deb713035c47',
   },
 ];
 
@@ -31,7 +33,7 @@ const productsData = [
     status: true,
     stock: 25,
     category: 'informatica',
-    owner: '56cb91bdc3464f14678934ca',
+    owner: '64f27efabb24deb713035c47',
   },
   {
     title: 'Monitor Philips',
@@ -41,7 +43,7 @@ const productsData = [
     status: true,
     stock: 25,
     category: 'informatica',
-    owner: '56cb91bdc3464f14678934ca',
+    owner: '64f27efabb24deb713035c47',
   },
   {
     title: 'Mouse Genius',
@@ -51,7 +53,7 @@ const productsData = [
     status: true,
     stock: 25,
     category: 'informatica',
-    owner: '56cb91bdc3464f14678934ca',
+    owner: '64f27efabb24deb713035c47',
   },
 ];
 

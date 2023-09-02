@@ -48,6 +48,7 @@ const checkRole =
       // req.session.user.role === requiredRole
       requiredRole.includes(req.session.user.role)
     ) {
+      // log.info('req.session: ', req.session)
       // El usuario tiene el rol adecuado, permitir el acceso
       next();
     } else {

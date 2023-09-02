@@ -18,7 +18,7 @@ const initializePassport = () => {
     new LocalStrategy(
       { passReqToCallback: true, usernameField: 'email' },
       async (req, username, password, done) => {
-        const { first_name, last_name, age } = req.body;
+        const { first_name, last_name, age, role } = req.body;
 
         try {
           const user = await UserModel.findOne({ email: username });
@@ -34,7 +34,7 @@ const initializePassport = () => {
             email: username,
             age,
             password,
-            role: 'user',
+            role,
           });
           console.log('result passport: ', result);
 
@@ -71,8 +71,8 @@ const initializePassport = () => {
               if (err) {
                 return done(err);
               }
-              console.log('userSession:', userSession);
               log.info(`user ${userSession.id} successfully logged in`);
+              // log.info('userSession:', userSession);
               return done(null, userSession);
             });
           } else {
@@ -91,6 +91,7 @@ const initializePassport = () => {
               return done(null, false, { message: 'Incorrect password' });
             }
             log.info(`user ${user._id} successfully logged in`);
+            // log.info('userSession:', user);
             return done(null, user);
           }
         } catch (error) {

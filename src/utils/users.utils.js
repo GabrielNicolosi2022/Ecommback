@@ -1,6 +1,5 @@
 import UserModel from '../models/schemas/UserModel.js';
 import { createHash } from '../utils/validations.utils.js';
-import { updateUserPermissions } from '../utils/permissions.utils.js';
 
 export const createUser = async ({
   first_name,
@@ -21,8 +20,9 @@ export const createUser = async ({
     };
 
     const result = await UserModel.create(newUser);
-    if (role === 'premium') {
-      await updateUserPermissions(result._id, { createProducts: true });
+
+    if (newUser.role === 'premium') {
+      result.permissions.set('createProducts', true);
     }
 
     return result;

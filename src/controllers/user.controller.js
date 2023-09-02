@@ -73,6 +73,7 @@ const userLogin = async (req, res) => {
           await req.user.save();
         }
       }
+      // console.log('res: ', res);
       res.status(200).json({
         status: 'success',
         message: 'Inicio de sesión exitoso.',

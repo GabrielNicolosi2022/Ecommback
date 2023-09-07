@@ -2,7 +2,7 @@ import users from '../../models/schemas/UserModel.js';
 
 const getAll = async () => await users.find().lean();
 
-const getUserById = async (id) => await users.findOne({ _id: id }).lean();
+const getUserById = async (id) => await users.findOne({ _id: id }).exec();
 
 const getUserByEmail = async (email) => await users.findOne({ email: email });
 

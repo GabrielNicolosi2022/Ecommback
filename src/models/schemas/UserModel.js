@@ -2,6 +2,15 @@ import mongoose from 'mongoose';
 
 const userCollection = 'User';
 
+const documentsSchema = new mongoose.Schema({
+  name: {
+    type: String,
+  },
+  reference: {
+    type: String
+  },
+});
+
 const userSchema = new mongoose.Schema({
   first_name: {
     type: String,
@@ -42,6 +51,12 @@ const userSchema = new mongoose.Schema({
   orders: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Order',
+  },
+  documents: [documentsSchema],
+  last_connection: {
+    type: Date,
+    required: true,
+    default: new Date(),
   },
 });
 

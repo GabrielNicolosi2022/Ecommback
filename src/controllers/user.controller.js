@@ -20,7 +20,7 @@ const root = (req, res) => {
 };
 // Registro de usuario
 const userRegister = async (req, res) => {
-/*   if (req.get('User-Agent').includes('Postman')) {
+  /*   if (req.get('User-Agent').includes('Postman')) {
     res.status(201).json({
       status: 'success',
       message: 'Registro exitoso. Inicia sesión para continuar.',
@@ -57,6 +57,8 @@ const userLogin = async (req, res) => {
         age: req.user.age,
         email: req.user.email,
         role: req.user.role,
+        documents: req.user.documents,
+        last_connection: new Date(),
       };
 
       // Verificar si el usuario no es el administrador
@@ -145,7 +147,7 @@ const getUsers = async (req, res) => {
 // Traer un usuario por Id
 const getUserById = async (req, res) => {
   try {
-    const uid = req.params.id;
+    const uid = req.params.uid;
     const user = await usersServices.getUserById(uid);
     if (!user) {
       log.error('Usuario no encontrado');
@@ -267,6 +269,61 @@ const changeRole = async (req, res) => {
     return res.status(500).send('Error interno');
   }
 };
+
+// Subir documentación ( premium users )
+const uploadDocs = async (req, res) => {
+  try {
+    const uid = req.params.uid;
+
+    const user = await usersServices.getUserById(uid);
+    if (!user) {
+      log.error(`Usuario con id ${_id} no encontrado`);
+      return res.status(404).send('Usuario inexistente');
+    }
+
+    // Verificar si se han cargado documentos
+    if (!req.files || req.files.length === 0) {
+      log.error('No se han cargado archivos');
+      return res.status(400).send('Mala Petición');
+    }
+
+    // Procesar los archivos cargados
+    const uploadedFiles = req.files;
+
+    const newDocuments = [];
+    // Iterar sobre los archivos cargados y agregar la información necesaria
+    uploadedFiles.forEach((file) => {
+      newDocuments.push({
+        name: file.originalname,
+        reference: `/public/images/documents/${file.filename}`,
+      });
+    });
+
+    // Actualizar el estado del usuario con la información de los archivos cargados
+    user.documents.push(...newDocuments);
+
+    // Guardar los cambios en el usuario en la base de datos
+    await user.save();
+
+    const uploadedDocsInfo = newDocuments.map((doc) => {
+      return doc.name;
+    });
+    log.info(
+      `El usuario con id: ${user._id} ha subido documentación: ${uploadedDocsInfo.join(', ')}`
+    );
+
+    res.status(200).json({
+      status: 'success',
+      message: 'documentación de usuario actualizada',
+      documents: user.documents,
+    });
+  } catch (error) {
+    log.fatal('Error uploading documents: ' + error.message);
+    return res.status(500).send('Error interno del servidor');
+  }
+};
+
+// ------------------------ VIEWS ------------------------------
 
 // Renderizar vista registro
 const register = (req, res) => {
@@ -392,4 +449,5 @@ export {
   passwordRecoverView,
   recoverPasswordView,
   changeRole,
+  uploadDocs,
 };

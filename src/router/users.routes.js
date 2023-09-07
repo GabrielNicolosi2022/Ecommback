@@ -7,14 +7,15 @@ import {
   recoverPassword,
   resetPassword,
   changeRole,
+  uploadDocs,
 } from '../controllers/user.controller.js';
 import { isAuthorized, isPrivate } from '../middlewares/auth.js';
 import { isUserOrTokenValid } from '../middlewares/user.middlewares.js';
-
+import { uploader } from '../middlewares/multer.js';
 
 const userRouter = Router();
 // Listar todos los usuarios
-userRouter.get('/', getUsers)
+userRouter.get('/', getUsers);
 
 // Enviar mail de reset de contraseña
 userRouter.post('/passwordrecover', passwordRecover); // donde me lleve el botón de reset contraseña
@@ -23,13 +24,15 @@ userRouter.post('/passwordrecover', passwordRecover); // donde me lleve el botó
 userRouter.post('/recoverpassword', recoverPassword); // donde voy a enviar a escribir la contraseña nueva
 
 // buscar usuario por Id
-userRouter.get('/:id', getUserById)
+userRouter.get('/:uid', getUserById);
 
+// Enviar documentación de usuario premium
+userRouter.post('/:uid/documents', uploader.array('documents', 5), uploadDocs);
 // Cambiar el rol de un usuario
-userRouter.patch('/premium/:uid',changeRole);
+userRouter.patch('/premium/:uid', changeRole);
 
 // Perfil de usuario
-userRouter.get('/current',isPrivate, currentUser);
+userRouter.get('/current', isPrivate, currentUser);
 
 // Enviar nueva contraseña
 userRouter.patch('/resetpassword', isUserOrTokenValid, resetPassword); // donde voy a hacer reset de la contraseña

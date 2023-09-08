@@ -270,7 +270,7 @@ const changeRole = async (req, res) => {
   }
 };
 
-// Subir documentación ( premium users )
+// Subir documentación
 const uploadDocs = async (req, res) => {
   try {
     const uid = req.params.uid;
@@ -284,6 +284,33 @@ const uploadDocs = async (req, res) => {
     // Verificar si se han cargado documentos
     if (!req.files || req.files.length === 0) {
       log.error('No se han cargado archivos');
+      return res.status(400).send('Mala Petición');
+    }
+
+    // Verificar si el usuario ya tiene 3 documentos cargados
+    if (user.documents.length === 3) {
+      log.error(
+        'El usuario ya tiene 3 documentos cargados, no se pueden agregar más.'
+      );
+      return res.status(400).send('Límite de documentos alcanzado');
+    }
+
+    // Obtener los nombres de los archivos subidos
+    const uploadedFileNames = req.files.map((file) =>
+      file.originalname.replace(/\.[^/.]+$/, '')
+    );
+
+    // verificar si el nombre del archivo se encuentra en la lista permitida
+    const allowedFileNames = [
+      'identificacion',
+      'comprobanteDomicilio',
+      'comprobanteEstadoCuenta',
+    ];
+    const isValidFiles = uploadedFileNames.every((filename) =>
+      allowedFileNames.includes(filename)
+    );
+    if (!isValidFiles) {
+      log.error('Los archivos cargados son incorrectos');
       return res.status(400).send('Mala Petición');
     }
 

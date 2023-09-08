@@ -27,7 +27,7 @@ userRouter.post('/recoverpassword', recoverPassword); // donde voy a enviar a es
 userRouter.get('/:uid', getUserById);
 
 // Enviar documentación de usuario premium
-userRouter.post('/:uid/documents', uploader.array('documents', 5), uploadDocs);
+userRouter.post('/:uid/documents', uploader.array('documents', 3), uploadDocs);
 // Cambiar el rol de un usuario
 userRouter.patch('/premium/:uid', changeRole);
 

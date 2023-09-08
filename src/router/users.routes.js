@@ -10,7 +10,10 @@ import {
   uploadDocs,
 } from '../controllers/user.controller.js';
 import { isAuthorized, isPrivate } from '../middlewares/auth.js';
-import { isUserOrTokenValid } from '../middlewares/user.middlewares.js';
+import {
+  isUserOrTokenValid,
+  verifyDocuments,
+} from '../middlewares/user.middlewares.js';
 import { uploader } from '../middlewares/multer.js';
 
 const userRouter = Router();
@@ -28,8 +31,9 @@ userRouter.get('/:uid', getUserById);
 
 // Enviar documentación de usuario premium
 userRouter.post('/:uid/documents', uploader.array('documents', 3), uploadDocs);
+
 // Cambiar el rol de un usuario
-userRouter.patch('/premium/:uid', changeRole);
+userRouter.patch('/premium/:uid', verifyDocuments, changeRole);
 
 // Perfil de usuario
 userRouter.get('/current', isPrivate, currentUser);

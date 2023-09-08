@@ -6,12 +6,12 @@ import {
   userRegister,
 } from '../controllers/user.controller.js';
 import { verifyRequiredFields } from '../middlewares/sessions.middlewares.js';
-
 const sessionsRouter = Router();
 
 // Registrar un usuario
 sessionsRouter.post(
-  '/register', verifyRequiredFields, 
+  '/register',
+  verifyRequiredFields,
   passport.authenticate('local-register', {
     failureRedirect: '/failregister',
     failureFlash: true,

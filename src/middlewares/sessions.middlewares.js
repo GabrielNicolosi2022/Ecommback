@@ -17,7 +17,39 @@ export const verifyRequiredFields = (req, res, next) => {
     }
     next();
   } catch (error) {
-    log.error('Error de middleware: ' + error.message);
+    log.error('verifyRequiredFields: ' + error.message);
+    res.status(500).send('Error interno del servidor');
+  }
+};
+
+export const requireDocumentation = (req, res, next) => {
+  const { role } = req.body;
+  try {
+    if (role === 'user') {
+      return next();
+    } else if (role === 'premium') {
+      const uploadedDocs = req.files; 
+      console.log('uploadedDocs:', uploadedDocs)
+      const requiredDocs = [
+        'identificacion',
+        'comprobanteDomicilio',
+        'comprobanteEstadoCuenta',
+      ];
+
+      const uploadedFileNames = Object.keys(uploadedDocs);
+
+      const missingDocs = requiredDocs.filter(
+        (fileName) => !uploadedFileNames.includes(fileName)
+      );
+
+      if (missingDocs.length !== 0) {
+        // Si faltan documentos requeridos, responde con un error.
+        return res.status(403).send('Incomplete documentation');
+      }
+    }
+    next();
+  } catch (error) {
+    log.error('requireDocumentation: ' + error.message);
     res.status(500).send('Error interno del servidor');
   }
 };

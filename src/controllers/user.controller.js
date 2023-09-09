@@ -426,8 +426,7 @@ const currentUser = async (req, res) => {
       const userSession = req.session.user;
 
       // Buscar el usuario en la base de datos utilizando el ID
-      const user = await users.findOne(userSession);
-
+      const user = await usersServices.getUserById(userSession.userId);
       if (!user) {
         return res.status(404).json({ error: 'Usuario no encontrado' });
       }
@@ -436,7 +435,7 @@ const currentUser = async (req, res) => {
       const userDTOData = userDTO(user);
 
       // Devolver el usuario en la respuesta
-      res.json(userDTOData);
+      res.json({data: userDTOData});
     } else {
       // No hay un usuario en la sesión actual
       res.json(null);

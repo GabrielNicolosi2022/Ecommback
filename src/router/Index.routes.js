@@ -15,10 +15,10 @@ const indexRouter = Router();
 
 
 indexRouter.use('/', viewsRouter);
-indexRouter.use('/api/sessions', sessionsRouter);
-indexRouter.use('/api/users', userRouter);
-indexRouter.use('/api/products', productsRouter);
-indexRouter.use('/api/carts', cartsRouter);
-indexRouter.use('/api/logger', loggerRouter);
+indexRouter.use('/v1/api/sessions', sessionsRouter);
+indexRouter.use('/v1/api/users', userRouter);
+indexRouter.use('/v1/api/products', productsRouter);
+indexRouter.use('/v1/api/carts', cartsRouter);
+indexRouter.use('/v1/api/logger', loggerRouter);
 
 export default indexRouter;

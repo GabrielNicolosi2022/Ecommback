@@ -44,6 +44,10 @@ productsRouter.delete(
   prodControllers.deleteProduct
 );
 
-productsRouter.post('/mockingproducts', generateMockingProducts);
+productsRouter.post(
+  '/mockingproducts',
+  checkRole('admin'),
+  generateMockingProducts
+);
 
 export default productsRouter;

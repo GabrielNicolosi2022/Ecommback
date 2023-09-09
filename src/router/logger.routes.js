@@ -2,6 +2,7 @@ import { Router } from 'express';
 import fs from 'fs';
 import { join } from 'path';
 import __dirname from '../utils.js';
+import { checkRole } from '../middlewares/auth.js';
 
 const loggerRouter = new Router();
 
@@ -14,7 +15,7 @@ function readFileContent(filePath) {
   }
 }
 
-loggerRouter.get('/', (req, res) => {
+loggerRouter.get('/',checkRole('admin'), (req, res) => {
   const filePath = join(__dirname, '/logs/errors.log'); // Ruta al archivo de errores
   console.log(filePath);
   const fileContent = readFileContent(filePath);

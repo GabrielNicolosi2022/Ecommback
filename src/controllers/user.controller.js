@@ -1,6 +1,5 @@
 import config from '../config/config.js';
 import { devLog, prodLog } from '../config/customLogger.js';
-import users from '../models/schemas/UserModel.js';
 import * as usersServices from '../services/dataBase/usersServices.js';
 import { sendRecoverPassword } from '../utils/mail.utils.js';
 import {
@@ -128,13 +127,17 @@ const getUsers = async (req, res) => {
     const limit = parseInt(req.query.limit);
     const users = await usersServices.getAll();
 
+    // Crear un DTO del usuario con la información necesaria
+    const usersDTOList = users.map(userDTO);
+
     if (limit && !isNaN(limit) && limit > 0) {
-      return users.slice(0, limit);
+      return usersDTOList.slice(0, limit);
     }
+
     return res.json({
       status: 'success',
       message: 'Usuarios encontrados',
-      data: users,
+      data: usersDTOList,
     });
   } catch (error) {
     log.fatal('Error al obtener los usuarios. ' + error.message);
@@ -336,7 +339,9 @@ const uploadDocs = async (req, res) => {
       return doc.name;
     });
     log.info(
-      `El usuario con id: ${user._id} ha subido documentación: ${uploadedDocsInfo.join(', ')}`
+      `El usuario con id: ${
+        user._id
+      } ha subido documentación: ${uploadedDocsInfo.join(', ')}`
     );
 
     res.status(200).json({
@@ -426,8 +431,7 @@ const currentUser = async (req, res) => {
       const userSession = req.session.user;
 
       // Buscar el usuario en la base de datos utilizando el ID
-      const user = await users.findOne(userSession);
-
+      const user = await usersServices.getUserById(userSession.userId);
       if (!user) {
         return res.status(404).json({ error: 'Usuario no encontrado' });
       }
@@ -436,7 +440,7 @@ const currentUser = async (req, res) => {
       const userDTOData = userDTO(user);
 
       // Devolver el usuario en la respuesta
-      res.json(userDTOData);
+      res.json({ data: userDTOData });
     } else {
       // No hay un usuario en la sesión actual
       res.json(null);

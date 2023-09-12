@@ -36,4 +36,36 @@ const sendRecoverPassword = (email, token) => {
   });
 };
 
-export { sendRecoverPassword };
+const deleteAccountMail = (email, name) => {
+  const mailBody = `
+  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td align="center">
+        <h1>Cuenta Eliminada</h1>
+        <hr />
+      </td>
+    </tr>
+  </table>
+  <p>Hemos detectado que su cuenta ha permanecido inactiva por mas de 2 días, motivo por el cual ha sido eliminada.</p>
+`;
+
+  const mailOptions = {
+    from: 'noreply@miempresa.com',
+    to: email,
+    subject: 'Cuenta eliminada',
+    html: mailBody,
+  };
+  transporter.sendMail(mailOptions, (err, info) => {
+    if (err) {
+      console.error('Error: ', err.message);
+      return;
+    }
+
+    console.log('Mail enviado: ', info);
+  });
+};
+
+export {
+  sendRecoverPassword,
+  deleteAccountMail
+};

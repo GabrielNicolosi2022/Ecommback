@@ -7,7 +7,7 @@ const documentsSchema = new mongoose.Schema({
     type: String,
   },
   reference: {
-    type: String
+    type: String,
   },
 });
 
@@ -57,6 +57,10 @@ const userSchema = new mongoose.Schema({
     type: Date,
     required: true,
     default: new Date(),
+  },
+  enabled: {
+    type: Boolean,
+    default: true,
   },
 });
 

@@ -8,8 +8,9 @@ import {
   resetPassword,
   changeRole,
   uploadDocs,
+  deleteUsers,
 } from '../controllers/user.controller.js';
-import { isAuthorized, isPrivate } from '../middlewares/auth.js';
+import { checkRole, isAuthorized, isPrivate } from '../middlewares/auth.js';
 import {
   isUserOrTokenValid,
   verifyDocuments,
@@ -40,5 +41,7 @@ userRouter.get('/current', isPrivate, currentUser);
 
 // Enviar nueva contraseña
 userRouter.patch('/resetpassword', isUserOrTokenValid, resetPassword); // donde voy a hacer reset de la contraseña
+
+userRouter.delete('/',checkRole('admin'), deleteUsers); //
 
 export default userRouter;

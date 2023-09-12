@@ -20,6 +20,8 @@ const updatePasswordByEmail = async (email, hashedPassword) =>
 const updateTicketByUserId = async (id, ticketId) =>
   await users.updateOne({ _id: id }, { $push: { tickets: ticketId } }).lean();
 
+const deleteUsersById = async (id) => users.deleteMany({ _id: id }).lean();
+
 export {
   getAll,
   getUserById,
@@ -28,4 +30,5 @@ export {
   updateUserById,
   updatePasswordByEmail,
   updateTicketByUserId,
+  deleteUsersById,
 };

@@ -1,7 +1,7 @@
 import config from '../config/config.js';
 import { devLog, prodLog } from '../config/customLogger.js';
 import * as usersServices from '../services/dataBase/usersServices.js';
-import { sendRecoverPassword } from '../utils/mail.utils.js';
+import { sendRecoverPassword, deleteAccountMail } from '../utils/mail.utils.js';
 import {
   isSamePassword,
   createHash,
@@ -191,7 +191,7 @@ const passwordRecover = async (req, res) => {
     res.status(200).send('Reset de contraseña enviada');
   } catch (error) {
     log.error('Error: ' + error.message);
-    return res.status(500).send('Error interno');
+    return res.status(500).send('Internal Server Error');
   }
 };
 
@@ -355,6 +355,39 @@ const uploadDocs = async (req, res) => {
   }
 };
 
+const deleteUsers = async (req, res) => {
+  try {
+    const currentDate = new Date();
+    const twoDaysAgo = new Date(currentDate);
+    twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+
+    const usersList = await usersServices.getAll();
+    const usersToClean = usersList.filter((user) => {
+      return user.last_connection <= twoDaysAgo;
+    });
+    const usersIdsToDelete = usersToClean.map((user) => user._id);
+    const emailsToDelete = usersToClean.map((user) => user.email);
+
+    if (usersIdsToDelete.length === 0) {
+      return res.status(404).send('No users to delete')
+    }
+
+    if (usersIdsToDelete.length > 0) {
+      const deleteResult = await usersServices.deleteUsersById(usersIdsToDelete);
+      //  Enviar correos a usuarios eliminados
+      deleteAccountMail(emailsToDelete);
+    }
+
+    res.status(200).json({
+      status: 'success',
+      message: `${usersToClean.length} Users successfully removed due to inactivity`,
+      data: usersToClean,
+    });
+  } catch (error) {
+    log.fatal('cleanUsers: ' + error.message);
+    res.status(500).send('Internal Server Error');
+  }
+};
 // ------------------------ VIEWS ------------------------------
 
 // Renderizar vista registro
@@ -481,4 +514,5 @@ export {
   recoverPasswordView,
   changeRole,
   uploadDocs,
+  deleteUsers,
 };

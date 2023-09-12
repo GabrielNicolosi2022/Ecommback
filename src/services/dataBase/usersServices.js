@@ -6,7 +6,7 @@ const getUserById = async (id) => await users.findOne({ _id: id }).exec();
 
 const getUserByEmail = async (email) => await users.findOne({ email: email });
 
-const create = async (info) => await users.create(info).lean();
+const create = async (info) => await users.create(info).exec();
 
 const updateUserById = async (id, info) =>
   await users.findByIdAndUpdate({ _id: id }, { $set: info }, { new: true });

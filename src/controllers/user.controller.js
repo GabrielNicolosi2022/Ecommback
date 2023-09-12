@@ -15,7 +15,7 @@ let log;
 config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
 
 const root = (req, res) => {
-  res.redirect('/login');
+  res.redirect('/product');
 };
 // Registro de usuario
 const userRegister = async (req, res) => {
@@ -98,17 +98,20 @@ const userLogin = async (req, res) => {
         role: req.user.role,
       };
 
-      // Verificar si el usuario ya tiene un carrito asignado
-      if (!req.user.cart) {
-        // Si no tiene un carrito asignado, crear uno nuevo y asociarlo al usuario
-        const newCart = await createCart(req.user._id, { products: [] });
+      if (req.user.role !== 'admin') {
+        // Verificar si el usuario ya tiene un carrito asignado
+        if (!req.user.cart) {
+          // Si no tiene un carrito asignado, crear uno nuevo y asociarlo al usuario
+          const newCart = await createCart(req.user._id, { products: [] });
 
-        // Asignar el ID del nuevo carrito al campo 'cart' del usuario
-        req.user.cart = newCart._id;
+          // Asignar el ID del nuevo carrito al campo 'cart' del usuario
+          req.user.cart = newCart._id;
 
-        // Guardar los cambios en el usuario en la base de datos
-        await req.user.save();
+          // Guardar los cambios en el usuario en la base de datos
+          await req.user.save();
+        }
       }
+
       req.flash('success', 'Inicio de sesión exitoso.');
       res.redirect('/product');
     }
@@ -369,11 +372,13 @@ const deleteUsers = async (req, res) => {
     const emailsToDelete = usersToClean.map((user) => user.email);
 
     if (usersIdsToDelete.length === 0) {
-      return res.status(404).send('No users to delete')
+      return res.status(404).send('No users to delete');
     }
 
     if (usersIdsToDelete.length > 0) {
-      const deleteResult = await usersServices.deleteUsersById(usersIdsToDelete);
+      const deleteResult = await usersServices.deleteUsersById(
+        usersIdsToDelete
+      );
       //  Enviar correos a usuarios eliminados
       deleteAccountMail(emailsToDelete);
     }
@@ -388,7 +393,14 @@ const deleteUsers = async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 };
+
 // ------------------------ VIEWS ------------------------------
+const adminControlPanel = (req, res) => {
+  res.render('adminControlPanel', {
+    title: 'EcommBack - ACP',
+    view: 'Panel de control de admin',
+  });
+};
 
 // Renderizar vista registro
 const register = (req, res) => {
@@ -515,4 +527,5 @@ export {
   changeRole,
   uploadDocs,
   deleteUsers,
+  adminControlPanel,
 };

@@ -34,4 +34,10 @@ viewsRouter.get('/cart', isPrivate, cartControllers.viewCart);
 
 viewsRouter.get('/cart/:cid', isPrivate, cartControllers.viewCartById);
 
+viewsRouter.get(
+  '/admin/users',
+  checkRole('admin'),
+  userControllers.adminControlPanel
+);
+
 export default viewsRouter;

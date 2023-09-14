@@ -6,8 +6,8 @@
       {{! Mostrar contenido solo para usuarios con rol de administrador }}
       <div>
         {{#if isAdmin}}
-          <h3>Panel de administración</h3>
           <!-- ... contenido específico para administradores -->
+        <a href="/admin"><button class='btn btn-outline-primary' type="submit">Panel de administración</button></a>
           <hr />
         {{/if}}
       </div>

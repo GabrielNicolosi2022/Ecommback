@@ -110,10 +110,11 @@ const userLogin = async (req, res) => {
           // Guardar los cambios en el usuario en la base de datos
           await req.user.save();
         }
+        req.flash('success', 'Inicio de sesión exitoso.');
+        return res.redirect('/product');
       }
-
       req.flash('success', 'Inicio de sesión exitoso.');
-      res.redirect('/product');
+      res.redirect('/admin');
     }
   } catch (err) {
     log.fatal(err.message);
@@ -249,27 +250,55 @@ const resetPassword = async (req, res) => {
 const changeRole = async (req, res) => {
   try {
     const uid = req.params.uid;
+    // Si es una solicitud HTTP
+    if (req.get('User-Agent') && req.get('User-Agent').includes('Postman')) {
+      const user = await usersServices.getUserById(uid);
+      if (!user) {
+        log.error(`Usuario con id ${_id} no encontrado`);
+        return res.status(404).send('Usuario inexistente');
+      }
+      const newRole = req.body;
+      if (!newRole || (newRole.role !== 'user' && newRole.role !== 'premium')) {
+        log.error('El campo "role" se encuentra incompleto o es inválido');
+        return res.status(400).send('Mala Petición');
+      }
 
-    const user = await usersServices.getUserById(uid);
-    if (!user) {
-      log.error(`Usuario con id ${_id} no encontrado`);
-      return res.status(404).send('Usuario inexistente');
-    }
-    const newRole = req.body;
-    if (!newRole || (newRole.role !== 'user' && newRole.role !== 'premium')) {
-      log.error('El campo "role" se encuentra incompleto o es inválido');
-      return res.status(400).send('Mala Petición');
-    }
+      const updatedRoleUser = await usersServices.updateUserById(uid, newRole);
+      log.info(
+        `El usuario con id: ${user._id} ahora tiene rol '${newRole.role}'`
+      );
+      res.status(200).json({
+        status: 'success',
+        message: 'Rol de usuario actualizado',
+        data: updatedRoleUser,
+      });
+    } else {
+      // Si es una solicitud desde la interfaz de usuario (vista)
+      const user = await usersServices.getUserById(uid);
+      if (!user) {
+        log.error(`Usuario con id ${_id} no encontrado`);
+        req.flash('error', 'Usuario inexistente');
+        return res.redirect('/admin');
+      }
+      const newRole = req.body;
+      if (!newRole || (newRole.role !== 'user' && newRole.role !== 'premium')) {
+        log.error('El campo "role" se encuentra incompleto o es inválido');
+        req.flash(
+          'error',
+          'Mala petición. El campo "Nuevo Rol" se encuentra incompleto o es inválido'
+        );
 
-    const updatedRoleUser = await usersServices.updateUserById(uid, newRole);
-    log.info(
-      `El usuario con id: ${user._id} ahora tiene rol '${newRole.role}'`
-    );
-    res.status(200).json({
-      status: 'success',
-      message: 'Rol de usuario actualizado',
-      data: updatedRoleUser,
-    });
+        return res.redirect('/admin');
+      }
+
+      const updatedRoleUser = await usersServices.updateUserById(uid, newRole);
+      log.info(
+        `El usuario con id: ${user._id} ahora tiene rol '${newRole.role}'`
+      );
+      // Si es una petición de la interfaz de usuario (vista), redirigir a la página deseada
+      req.flash('success', 'Rol de usuario actualizado con éxito');
+      res.redirect('/admin');
+    }
   } catch (error) {
     log.fatal('Error al obtener el usuario. ' + error.message);
     return res.status(500).send('Error interno');
@@ -365,7 +394,12 @@ const deleteUsers = async (req, res) => {
     twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
 
     const usersList = await usersServices.getAll();
-    const usersToClean = usersList.filter((user) => {
+    // verificar que solo sean con rol 'user'
+    const onlyUserRole = usersList.filter((user) =>  user.role === 'user');
+      log.info('onlyUserRole: ' + onlyUserRole);
+     
+    
+    const usersToClean = onlyUserRole.filter((user) => {
       return user.last_connection <= twoDaysAgo;
     });
     const usersIdsToDelete = usersToClean.map((user) => user._id);
@@ -375,7 +409,7 @@ const deleteUsers = async (req, res) => {
       return res.status(404).send('No users to delete');
     }
 
-    if (usersIdsToDelete.length > 0) {
+        if (usersIdsToDelete.length > 0) {
       const deleteResult = await usersServices.deleteUsersById(
         usersIdsToDelete
       );
@@ -383,11 +417,21 @@ const deleteUsers = async (req, res) => {
       deleteAccountMail(emailsToDelete);
     }
 
-    res.status(200).json({
-      status: 'success',
-      message: `${usersToClean.length} Users successfully removed due to inactivity`,
-      data: usersToClean,
-    });
+    if (req.get('User-Agent') && req.get('User-Agent').includes('Postman')) {
+      
+      res.status(200).json({
+        status: 'success',
+        message: `${usersToClean.length} Users successfully removed due to inactivity`,
+        data: usersToClean,
+      });
+    } else {
+      // Si es una petición de la interfaz de usuario (vista), redirigir a la página deseada
+      req.flash(
+        'success',
+        `${usersToClean.length} Usuarios eliminados exitosamente debido a inactividad`
+      );
+      res.redirect('/admin');
+    }
   } catch (error) {
     log.fatal('cleanUsers: ' + error.message);
     res.status(500).send('Internal Server Error');
@@ -395,11 +439,21 @@ const deleteUsers = async (req, res) => {
 };
 
 // ------------------------ VIEWS ------------------------------
-const adminControlPanel = (req, res) => {
-  res.render('adminControlPanel', {
-    title: 'EcommBack - ACP',
-    view: 'Panel de control de admin',
-  });
+const adminControlPanel = async (req, res) => {
+  try {
+    const users = await usersServices.getAll();
+
+    res.render('adminControlPanel', {
+      title: 'EcommBack - ACP',
+      view: 'Panel de control de admin',
+      users,
+    });
+  } catch (error) {
+    log.fatal('adminControlPanel: ' + error.message);
+    res
+      .status(500)
+      .json({ status: 'error', error: 'Error interno de servidor' });
+  }
 };
 
 // Renderizar vista registro

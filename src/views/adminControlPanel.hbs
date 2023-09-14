@@ -1,0 +1,68 @@
+<h1 class='mb-3'>{{view}}</h1>
+{{#if messages.success}}
+  <div class='alert alert-success'>
+    {{messages.success}}
+  </div>
+{{/if}}
+{{#if messages.error}}
+  <div class='alert alert-danger'>
+    {{messages.error}}
+  </div>
+{{/if}}
+<hr />
+
+<div class='row'>
+  <div class='container'>
+    <div class='mb-3'>
+      <button class='btn btn-outline-primary' type='submit'>Listar Usuarios</button>
+      <button class='btn btn-outline-primary' type='submit'>Listar Productos</button>
+    </div>
+      <form action='/v1/api/users' method='POST'>
+        <button class='btn btn-outline-danger' type='submit'>
+          Eliminar usuarios sin conexión
+        </button>
+      </form>
+    <div class='col-12'>
+      <h3>Todos los usuarios </h3>
+      <div>
+        <table class='table table-bordered'>
+          <tr class='text-center'>
+            <th>Nombre y Apellido</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Documentación</th>
+            <th>Última conexión</th>
+            <th></th>
+          </tr>
+          {{#each users}}
+            <tr>
+              <td>{{this.first_name}} {{this.last_name}}</td>
+              <td>{{this.email}}</td>
+              <td>{{this.role}}</td>
+              <td><ul>
+                  {{#each this.documents}}
+                    <li>{{this.name}}</li>
+                  {{/each}}
+                </ul></td>
+              <td>{{this.last_connection}}</td>
+              <td>
+                <form action='/v1/api/users/premium/{{_id}}' method='post'>
+                  <input
+                    type='text'
+                    name='role'
+                    id='role'
+                    placeholder='Nuevo Rol'
+                  />
+                  <button
+                    class='btn btn-outline-primary me-2'
+                    type='submit'
+                  >Modificar Rol</button>
+                </form>
+              </td>
+            </tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

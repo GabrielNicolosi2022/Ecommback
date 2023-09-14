@@ -30,7 +30,7 @@ const getAllProductsPaginated = async (options, filter, sortOptions) => {
 
 const getAllProducts = async () => await productsModel.find().lean();
 
-const getProductsById = async (_id) => await productsModel.findById(_id).exec();
+const getProductsById = async (_id) => await productsModel.findById(_id).lean().exec();
 
 const updateProduct = async (_id, updatedData) => await productsModel.findByIdAndUpdate(_id, updatedData, { new: true });
 

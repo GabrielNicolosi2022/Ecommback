@@ -132,9 +132,9 @@ const getProductById = async (req, res) => {
 
 /**
  * createProducts - Crea un producto
- * @param {body} req 
- * @param {createdProducts} res 
- * @returns 
+ * @param {body} req
+ * @param {createdProducts} res
+ * @returns
  */
 const createProducts = async (req, res) => {
   const productsData = req.body;
@@ -284,8 +284,13 @@ const deleteProduct = async (req, res) => {
       log.error(`Producto con id ${_id} no encontrado`);
       return res.status(404).send('Producto no encontrado');
     }
+    // console.log('product: ', product)
 
     await prodServices.deleteProduct(_id);
+    /*
+    si (product.owner === 'premium'){
+    enviar un email indicando que el producto fue eliminado de la base de datos
+    } */
 
     return res.status(200).json({
       status: 'success',
@@ -363,10 +368,10 @@ const products = async (req, res) => {
     const prevPage = page > 1 ? page - 1 : null;
     const nextPage = page < totalPages ? page + 1 : null;
     const prevLink = prevPage
-      ? `/products?page=${prevPage}&limit=${limit}`
+      ? `/product?page=${prevPage}&limit=${limit}`
       : null;
     const nextLink = nextPage
-      ? `/products?page=${nextPage}&limit=${limit}`
+      ? `/product?page=${nextPage}&limit=${limit}`
       : null;
 
     res.render('products', {
@@ -385,11 +390,11 @@ const products = async (req, res) => {
     res.status(500).json({ message: 'Error al obtener los productos', error });
   }
 };
+
 const productsById = async (req, res) => {
   try {
     const productId = req.params.pid;
     const product = await prodServices.getProductsById(productId);
-    console.log(product);
     res.render('productDetail', {
       pageTitle: 'Detalle del Producto',
       title: 'EcommBack',

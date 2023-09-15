@@ -21,6 +21,7 @@ import { devLog, prodLog } from './config/customLogger.js';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUiExpress from 'swagger-ui-express';
 import db from './config/dbConnection.js';
+import { passSessionToViews } from './middlewares/sessions.middlewares.js';
 // Logger
 let log;
 config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
@@ -65,7 +66,7 @@ app.use(
     }),
     secret: config.session.secret,
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
   })
 );
 
@@ -73,6 +74,9 @@ app.use(
 initializePassport();
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Middleware para pasar la sesión a las vistas
+app.use(passSessionToViews);
 
 // Flash
 app.use(flash());

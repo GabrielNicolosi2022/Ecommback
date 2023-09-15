@@ -20,7 +20,11 @@ viewsRouter.get('/login', isPublic, userControllers.login);
 
 viewsRouter.get('/faillogin', isPublic, userControllers.faillogin);
 
-viewsRouter.get('/profile', isPrivate, userControllers.profile);
+viewsRouter.get(
+  '/profile/:uid',
+  isPrivate,
+  userControllers.profile
+);
 
 viewsRouter.get('/passwordrecover', userControllers.passwordRecoverView);
 

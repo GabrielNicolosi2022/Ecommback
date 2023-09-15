@@ -91,6 +91,7 @@ const userLogin = async (req, res) => {
       }
       // Generar el objeto 'user' en req.session
       req.session.user = {
+        userId: req.user._id,
         first_name: req.user.first_name,
         last_name: req.user.last_name,
         age: req.user.age,
@@ -395,10 +396,9 @@ const deleteUsers = async (req, res) => {
 
     const usersList = await usersServices.getAll();
     // verificar que solo sean con rol 'user'
-    const onlyUserRole = usersList.filter((user) =>  user.role === 'user');
-      log.info('onlyUserRole: ' + onlyUserRole);
-     
-    
+    const onlyUserRole = usersList.filter((user) => user.role === 'user');
+    log.info('onlyUserRole: ' + onlyUserRole);
+
     const usersToClean = onlyUserRole.filter((user) => {
       return user.last_connection <= twoDaysAgo;
     });
@@ -409,7 +409,7 @@ const deleteUsers = async (req, res) => {
       return res.status(404).send('No users to delete');
     }
 
-        if (usersIdsToDelete.length > 0) {
+    if (usersIdsToDelete.length > 0) {
       const deleteResult = await usersServices.deleteUsersById(
         usersIdsToDelete
       );
@@ -418,7 +418,6 @@ const deleteUsers = async (req, res) => {
     }
 
     if (req.get('User-Agent') && req.get('User-Agent').includes('Postman')) {
-      
       res.status(200).json({
         status: 'success',
         message: `${usersToClean.length} Users successfully removed due to inactivity`,

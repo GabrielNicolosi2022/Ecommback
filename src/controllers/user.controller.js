@@ -74,7 +74,6 @@ const userLogin = async (req, res) => {
           await req.user.save();
         }
       }
-      // console.log('res: ', res);
       res.status(200).json({
         status: 'success',
         message: 'Inicio de sesión exitoso.',
@@ -377,11 +376,17 @@ const uploadDocs = async (req, res) => {
       } ha subido documentación: ${uploadedDocsInfo.join(', ')}`
     );
 
-    res.status(200).json({
-      status: 'success',
-      message: 'documentación de usuario actualizada',
-      documents: user.documents,
-    });
+    if (req.get('User-Agent') && req.get('User-Agent').includes('Postman')) {
+      res.status(200).json({
+        status: 'success',
+        message: 'documentación de usuario actualizada',
+        documents: user.documents,
+      });
+    } else {
+      // Si es una petición de la interfaz de usuario (vista), redirigir a la página deseada
+      req.flash('success', 'Documentación de usuario actualizada con éxito');
+      res.render('profile');
+    }
   } catch (error) {
     log.fatal('Error uploading documents: ' + error.message);
     return res.status(500).send('Error interno del servidor');

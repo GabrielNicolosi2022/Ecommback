@@ -1,15 +1,11 @@
 <h1 class='mb-3'>{{view}}</h1>
-{{#if messages.success}}
-  <div class='alert alert-success'>
-    {{messages.success}}
-  </div>
-{{/if}}
-{{#if messages.error}}
-  <div class='alert alert-danger'>
-    {{messages.error}}
-  </div>
-{{/if}}
-<hr />
+<div>
+  <a href='http://localhost:8080/v1/api/sessions/logout'>
+    <button class='btn btn-outline-danger mb-4'>Cerrar sesión</button>
+  </a>
+</div>
+
+{{>messages}}
 
 <div class='row'>
   <div class='container'>
@@ -17,11 +13,11 @@
       <button class='btn btn-outline-primary' type='submit'>Listar Usuarios</button>
       <button class='btn btn-outline-primary' type='submit'>Listar Productos</button>
     </div>
-      <form action='/v1/api/users' method='POST'>
-        <button class='btn btn-outline-danger' type='submit'>
-          Eliminar usuarios sin conexión
-        </button>
-      </form>
+    <form action='/v1/api/users' method='POST'>
+      <button class='btn btn-outline-danger' type='submit'>
+        Eliminar usuarios sin conexión
+      </button>
+    </form>
     <div class='col-12'>
       <h3>Todos los usuarios </h3>
       <div>

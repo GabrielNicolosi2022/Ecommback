@@ -1,5 +1,7 @@
 <h1 class='mb-3'>{{view}}</h1>
 
+{{>messages}}
+
 <div class='row'>
   <div class='container'>
     <div class='col'>
@@ -15,7 +17,7 @@
         {{/if}}
         <!-- ... contenido específico para user -->
         <form
-          action='/v1/api/users/:uid/documents'
+          action='/v1/api/users/{{userSession.userId}}/documents'
           method='POST'
           enctype='multipart/form-data'
         >
@@ -36,12 +38,13 @@
         <hr />
       </div>
       <div>
-        <table class='text-center'>
-          <tr>
+        <table class='table table-bordered'>
+          <tr class='text-center'>
             <th>User Id</th>
             <th>Nombre y Apellido</th>
             <th>Email</th>
             <th>Edad</th>
+            <th>Documentación</th>
             <th>Rol</th>
           </tr>
           <tr>
@@ -49,6 +52,13 @@
             <td>{{userSession.first_name}} {{userSession.last_name}}</td>
             <td>{{userSession.email}}</td>
             <td>{{userSession.age}}</td>
+            <td>
+              <ul>
+                {{#each user.documents}}
+                  <li>{{documents.name}}</li>
+                {{/each}}
+              </ul>
+            </td>
             <td>{{userSession.role}}</td>
           </tr>
         </table>

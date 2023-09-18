@@ -20,18 +20,28 @@ viewsRouter.get('/login', isPublic, userControllers.login);
 
 viewsRouter.get('/faillogin', isPublic, userControllers.faillogin);
 
-viewsRouter.get('/profile', isPrivate, userControllers.profile);
+viewsRouter.get(
+  '/profile/:uid',
+  isPrivate,
+  userControllers.profile
+);
 
 viewsRouter.get('/passwordrecover', userControllers.passwordRecoverView);
 
 viewsRouter.get('/recoverpassword', userControllers.recoverPassword);
 
-viewsRouter.get('/product', isPublic, prodControllers.products);
+viewsRouter.get('/product', prodControllers.products);
 
-viewsRouter.get('/product/:pid', isPublic, prodControllers.productsById);
+viewsRouter.get('/product/:pid', prodControllers.productsById);
 
 viewsRouter.get('/cart', isPrivate, cartControllers.viewCart);
 
 viewsRouter.get('/cart/:cid', isPrivate, cartControllers.viewCartById);
+
+viewsRouter.get(
+  '/admin',
+  checkRole('admin'),
+  userControllers.adminControlPanel
+);
 
 export default viewsRouter;

@@ -8,18 +8,22 @@
         <div>
           <h2>{{product.title}}</h2>
           <p>{{product.description}}</p>
+          <p>Código: {{product.code}}</p>
           <p>Precio: $ {{product.price}}</p>
           <p>Stock: {{product.stock}} u.</p>
           <p>Categoría: {{product.category}}</p>
+          {{!-- {{#each product.thumbnails}} --}}
           <img
             src='{{product.thumbnails}}'
             alt='Image Product'
             width='200'
             height='200'
           />
+          {{!-- {{/each}} --}}
+          <p>Vendedor: {{product.owner}}</p>
         </div>
         <div>
-          <a href='/products'>Volver a la lista de productos</a>
+          <a href='/product'>Volver a la lista de productos</a>
           <form action='/cart/add' method='POST'>
             <input type='hidden' name='productId' value='{{_id}}' />
             <input

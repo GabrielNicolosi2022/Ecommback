@@ -53,3 +53,8 @@ export const requireDocumentation = (req, res, next) => {
     res.status(500).send('Error interno del servidor');
   }
 };
+
+export const passSessionToViews = (req, res, next) => {
+  res.locals.userSession = req.session.user;
+  next();
+};

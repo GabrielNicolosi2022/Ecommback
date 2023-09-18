@@ -1,37 +1,71 @@
 <h1 class='mb-3'>{{view}}</h1>
 
+{{>messages}}
+
 <div class='row'>
   <div class='container'>
     <div class='col'>
-      {{! Mostrar contenido solo para usuarios con rol de administrador }}
+      {{! Mostrar contenido según el rol del usuario }}
       <div>
         {{#if isAdmin}}
-          <h3>Panel de administración</h3>
           <!-- ... contenido específico para administradores -->
+          <a href='/admin'><button
+              class='btn btn-outline-primary'
+              type='submit'
+            >Panel de administración</button></a>
           <hr />
         {{/if}}
+        <!-- ... contenido específico para user -->
+        <form
+          action='/v1/api/users/{{userSession.userId}}/documents'
+          method='POST'
+          enctype='multipart/form-data'
+        >
+          <div class='mb-3'>
+            <label for='documents' class='form-label'>Documentos:</label>
+            <input
+              class='form-control'
+              type='file'
+              name='documents'
+              multiple
+              required
+            />
+            <button class='btn btn-outline-primary mt-2' type='submit'>Enviar
+              Documentación</button>
+          </div>
+        </form>
+
+        <hr />
       </div>
       <div>
-        <table class='text-center'>
-          <tr>
-            <th>Nombre</th>
-            <th>Apellido</th>
+        <table class='table table-bordered'>
+          <tr class='text-center'>
+            <th>User Id</th>
+            <th>Nombre y Apellido</th>
             <th>Email</th>
             <th>Edad</th>
+            <th>Documentación</th>
             <th>Rol</th>
           </tr>
           <tr>
-            <td>{{userSession.first_name}}</td>
-            <td>{{userSession.last_name}}</td>
+            <td>{{userSession.userId}}</td>
+            <td>{{userSession.first_name}} {{userSession.last_name}}</td>
             <td>{{userSession.email}}</td>
             <td>{{userSession.age}}</td>
+            <td>
+              <ul>
+                {{#each user.documents}}
+                  <li>{{documents.name}}</li>
+                {{/each}}
+              </ul>
+            </td>
             <td>{{userSession.role}}</td>
           </tr>
         </table>
       </div>
       <div>
-        <a href='http://localhost:8080/api/sessions/logout'>
-          <button>Cerrar sesion</button>
+        <a href='http://localhost:8080/v1/api/sessions/logout'>
+          <button class='btn btn-outline-primary mt-4 float-end'>Cerrar sesión</button>
         </a>
       </div>
     </div>

@@ -1,8 +1,7 @@
 import config from '../config/config.js';
 import { devLog, prodLog } from '../config/customLogger.js';
-import users from '../models/schemas/UserModel.js';
 import * as usersServices from '../services/dataBase/usersServices.js';
-import { sendRecoverPassword } from '../utils/mail.utils.js';
+import { sendRecoverPassword, deleteAccountMail } from '../utils/mail.utils.js';
 import {
   isSamePassword,
   createHash,
@@ -16,7 +15,7 @@ let log;
 config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
 
 const root = (req, res) => {
-  res.redirect('/login');
+  res.redirect('/product');
 };
 // Registro de usuario
 const userRegister = async (req, res) => {
@@ -75,7 +74,6 @@ const userLogin = async (req, res) => {
           await req.user.save();
         }
       }
-      // console.log('res: ', res);
       res.status(200).json({
         status: 'success',
         message: 'Inicio de sesión exitoso.',
@@ -92,6 +90,7 @@ const userLogin = async (req, res) => {
       }
       // Generar el objeto 'user' en req.session
       req.session.user = {
+        userId: req.user._id,
         first_name: req.user.first_name,
         last_name: req.user.last_name,
         age: req.user.age,
@@ -99,19 +98,23 @@ const userLogin = async (req, res) => {
         role: req.user.role,
       };
 
-      // Verificar si el usuario ya tiene un carrito asignado
-      if (!req.user.cart) {
-        // Si no tiene un carrito asignado, crear uno nuevo y asociarlo al usuario
-        const newCart = await createCart(req.user._id, { products: [] });
+      if (req.user.role !== 'admin') {
+        // Verificar si el usuario ya tiene un carrito asignado
+        if (!req.user.cart) {
+          // Si no tiene un carrito asignado, crear uno nuevo y asociarlo al usuario
+          const newCart = await createCart(req.user._id, { products: [] });
 
-        // Asignar el ID del nuevo carrito al campo 'cart' del usuario
-        req.user.cart = newCart._id;
+          // Asignar el ID del nuevo carrito al campo 'cart' del usuario
+          req.user.cart = newCart._id;
 
-        // Guardar los cambios en el usuario en la base de datos
-        await req.user.save();
+          // Guardar los cambios en el usuario en la base de datos
+          await req.user.save();
+        }
+        req.flash('success', 'Inicio de sesión exitoso.');
+        return res.redirect('/product');
       }
       req.flash('success', 'Inicio de sesión exitoso.');
-      res.redirect('/product');
+      res.redirect('/admin');
     }
   } catch (err) {
     log.fatal(err.message);
@@ -128,13 +131,17 @@ const getUsers = async (req, res) => {
     const limit = parseInt(req.query.limit);
     const users = await usersServices.getAll();
 
+    // Crear un DTO del usuario con la información necesaria
+    const usersDTOList = users.map(userDTO);
+
     if (limit && !isNaN(limit) && limit > 0) {
-      return users.slice(0, limit);
+      return usersDTOList.slice(0, limit);
     }
+
     return res.json({
       status: 'success',
       message: 'Usuarios encontrados',
-      data: users,
+      data: usersDTOList,
     });
   } catch (error) {
     log.fatal('Error al obtener los usuarios. ' + error.message);
@@ -188,7 +195,7 @@ const passwordRecover = async (req, res) => {
     res.status(200).send('Reset de contraseña enviada');
   } catch (error) {
     log.error('Error: ' + error.message);
-    return res.status(500).send('Error interno');
+    return res.status(500).send('Internal Server Error');
   }
 };
 
@@ -243,27 +250,55 @@ const resetPassword = async (req, res) => {
 const changeRole = async (req, res) => {
   try {
     const uid = req.params.uid;
+    // Si es una solicitud HTTP
+    if (req.get('User-Agent') && req.get('User-Agent').includes('Postman')) {
+      const user = await usersServices.getUserById(uid);
+      if (!user) {
+        log.error(`Usuario con id ${_id} no encontrado`);
+        return res.status(404).send('Usuario inexistente');
+      }
+      const newRole = req.body;
+      if (!newRole || (newRole.role !== 'user' && newRole.role !== 'premium')) {
+        log.error('El campo "role" se encuentra incompleto o es inválido');
+        return res.status(400).send('Mala Petición');
+      }
 
-    const user = await usersServices.getUserById(uid);
-    if (!user) {
-      log.error(`Usuario con id ${_id} no encontrado`);
-      return res.status(404).send('Usuario inexistente');
-    }
-    const newRole = req.body;
-    if (!newRole || (newRole.role !== 'user' && newRole.role !== 'premium')) {
-      log.error('El campo "role" se encuentra incompleto o es inválido');
-      return res.status(400).send('Mala Petición');
-    }
+      const updatedRoleUser = await usersServices.updateUserById(uid, newRole);
+      log.info(
+        `El usuario con id: ${user._id} ahora tiene rol '${newRole.role}'`
+      );
+      res.status(200).json({
+        status: 'success',
+        message: 'Rol de usuario actualizado',
+        data: updatedRoleUser,
+      });
+    } else {
+      // Si es una solicitud desde la interfaz de usuario (vista)
+      const user = await usersServices.getUserById(uid);
+      if (!user) {
+        log.error(`Usuario con id ${_id} no encontrado`);
+        req.flash('error', 'Usuario inexistente');
+        return res.redirect('/admin');
+      }
+      const newRole = req.body;
+      if (!newRole || (newRole.role !== 'user' && newRole.role !== 'premium')) {
+        log.error('El campo "role" se encuentra incompleto o es inválido');
+        req.flash(
+          'error',
+          'Mala petición. El campo "Nuevo Rol" se encuentra incompleto o es inválido'
+        );
 
-    const updatedRoleUser = await usersServices.updateUserById(uid, newRole);
-    log.info(
-      `El usuario con id: ${user._id} ahora tiene rol '${newRole.role}'`
-    );
-    res.status(200).json({
-      status: 'success',
-      message: 'Rol de usuario actualizado',
-      data: updatedRoleUser,
-    });
+        return res.redirect('/admin');
+      }
+
+      const updatedRoleUser = await usersServices.updateUserById(uid, newRole);
+      log.info(
+        `El usuario con id: ${user._id} ahora tiene rol '${newRole.role}'`
+      );
+      // Si es una petición de la interfaz de usuario (vista), redirigir a la página deseada
+      req.flash('success', 'Rol de usuario actualizado con éxito');
+      res.redirect('/admin');
+    }
   } catch (error) {
     log.fatal('Error al obtener el usuario. ' + error.message);
     return res.status(500).send('Error interno');
@@ -336,21 +371,94 @@ const uploadDocs = async (req, res) => {
       return doc.name;
     });
     log.info(
-      `El usuario con id: ${user._id} ha subido documentación: ${uploadedDocsInfo.join(', ')}`
+      `El usuario con id: ${
+        user._id
+      } ha subido documentación: ${uploadedDocsInfo.join(', ')}`
     );
 
-    res.status(200).json({
-      status: 'success',
-      message: 'documentación de usuario actualizada',
-      documents: user.documents,
-    });
+    if (req.get('User-Agent') && req.get('User-Agent').includes('Postman')) {
+      res.status(200).json({
+        status: 'success',
+        message: 'documentación de usuario actualizada',
+        documents: user.documents,
+      });
+    } else {
+      // Si es una petición de la interfaz de usuario (vista), redirigir a la página deseada
+      req.flash('success', 'Documentación de usuario actualizada con éxito');
+      res.render('profile');
+    }
   } catch (error) {
     log.fatal('Error uploading documents: ' + error.message);
     return res.status(500).send('Error interno del servidor');
   }
 };
 
+const deleteUsers = async (req, res) => {
+  try {
+    const currentDate = new Date();
+    const twoDaysAgo = new Date(currentDate);
+    twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+
+    const usersList = await usersServices.getAll();
+    // verificar que solo sean con rol 'user'
+    const onlyUserRole = usersList.filter((user) => user.role === 'user');
+    log.info('onlyUserRole: ' + onlyUserRole);
+
+    const usersToClean = onlyUserRole.filter((user) => {
+      return user.last_connection <= twoDaysAgo;
+    });
+    const usersIdsToDelete = usersToClean.map((user) => user._id);
+    const emailsToDelete = usersToClean.map((user) => user.email);
+
+    if (usersIdsToDelete.length === 0) {
+      return res.status(404).send('No users to delete');
+    }
+
+    if (usersIdsToDelete.length > 0) {
+      const deleteResult = await usersServices.deleteUsersById(
+        usersIdsToDelete
+      );
+      //  Enviar correos a usuarios eliminados
+      deleteAccountMail(emailsToDelete);
+    }
+
+    if (req.get('User-Agent') && req.get('User-Agent').includes('Postman')) {
+      res.status(200).json({
+        status: 'success',
+        message: `${usersToClean.length} Users successfully removed due to inactivity`,
+        data: usersToClean,
+      });
+    } else {
+      // Si es una petición de la interfaz de usuario (vista), redirigir a la página deseada
+      req.flash(
+        'success',
+        `${usersToClean.length} Usuarios eliminados exitosamente debido a inactividad`
+      );
+      res.redirect('/admin');
+    }
+  } catch (error) {
+    log.fatal('cleanUsers: ' + error.message);
+    res.status(500).send('Internal Server Error');
+  }
+};
+
 // ------------------------ VIEWS ------------------------------
+const adminControlPanel = async (req, res) => {
+  try {
+    const users = await usersServices.getAll();
+
+    res.render('adminControlPanel', {
+      title: 'EcommBack - ACP',
+      view: 'Panel de control de admin',
+      users,
+    });
+  } catch (error) {
+    log.fatal('adminControlPanel: ' + error.message);
+    res
+      .status(500)
+      .json({ status: 'error', error: 'Error interno de servidor' });
+  }
+};
 
 // Renderizar vista registro
 const register = (req, res) => {
@@ -476,4 +584,6 @@ export {
   recoverPasswordView,
   changeRole,
   uploadDocs,
+  deleteUsers,
+  adminControlPanel,
 };

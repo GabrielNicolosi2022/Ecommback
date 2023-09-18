@@ -32,16 +32,15 @@ productsRouter.patch(
 // Eliminar un producto por id
 productsRouter.delete(
   '/:pid',
-  checkRole('premium'),
+  checkRole('premium', 'admin'),  
   checkProductOwner,
   prodControllers.deleteProduct
 );
 
-// Opción adicional para que el admin pueda borrar cualquier producto
-productsRouter.delete(
-  '/:pid',
+productsRouter.post(
+  '/mockingproducts',
   checkRole('admin'),
-  prodControllers.deleteProduct
+  generateMockingProducts
 );
 
 productsRouter.post(

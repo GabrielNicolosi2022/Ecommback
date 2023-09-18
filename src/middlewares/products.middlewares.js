@@ -16,9 +16,11 @@ export const checkProductOwner = async (req, res, next) => {
       log.info('Producto inexistente');
       return res.status(404).send('Producto inexistente');
     }
-
-    // Si el usuario es dueño del producto, permitir continuar
-    if (product.owner.toString() === req.user._id.toString()) {
+    // Si el usuario es 'admin', permitir continuar
+    if (req.session.user.role === 'admin') {
+      next();
+      // Si el usuario es dueño del producto, permitir continuar
+    } else if (product.owner.toString() === req.user._id.toString()) {
       next();
     } else {
       log.error(
@@ -31,4 +33,3 @@ export const checkProductOwner = async (req, res, next) => {
     res.status(500).send('Error interno');
   }
 };
-

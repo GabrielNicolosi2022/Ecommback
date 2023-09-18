@@ -1,9 +1,9 @@
-<h1 class='mb-3'>{{view}}</h1>
 <div>
   <a href='http://localhost:8080/v1/api/sessions/logout'>
-    <button class='btn btn-outline-danger mb-4'>Cerrar sesión</button>
+    <button class='btn btn-outline-danger float-end'>Cerrar sesión</button>
   </a>
 </div>
+<h1 class='mb-3'>{{view}}</h1>
 
 {{>messages}}
 
@@ -14,7 +14,7 @@
       <button class='btn btn-outline-primary' type='submit'>Listar Productos</button>
     </div>
     <form action='/v1/api/users' method='POST'>
-      <button class='btn btn-outline-danger' type='submit'>
+      <button class='btn btn-outline-danger mb-3 float-end' type='submit'>
         Eliminar usuarios sin conexión
       </button>
     </form>

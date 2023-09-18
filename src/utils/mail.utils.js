@@ -36,7 +36,7 @@ const sendRecoverPassword = (email, token) => {
   });
 };
 
-const deleteAccountMail = (email, name) => {
+const deleteAccountMail = (email) => {
   const mailBody = `
   <table width="100%" border="0" cellspacing="0" cellpadding="0">
     <tr>
@@ -65,7 +65,37 @@ const deleteAccountMail = (email, name) => {
   });
 };
 
+const deleteProductMail = (email) => {
+  const mailBody = `
+  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td align="center">
+        <h1>Producto Eliminado</h1>
+        <hr />
+      </td>
+    </tr>
+  </table>
+  <p>Nos ponemos en contacto con usted para indicarle que un producto de su propiedad ha sido eliminado.</p>
+`;
+
+  const mailOptions = {
+    from: 'noreply@miempresa.com',
+    to: email,
+    subject: 'Producto eliminado',
+    html: mailBody,
+  };
+  transporter.sendMail(mailOptions, (err, info) => {
+    if (err) {
+      console.error('Error: ', err.message);
+      return;
+    }
+
+    console.log('Mail enviado: ', info);
+  });
+};
+
 export {
   sendRecoverPassword,
-  deleteAccountMail
+  deleteAccountMail,
+  deleteProductMail
 };

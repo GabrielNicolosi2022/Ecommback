@@ -1,4 +1,6 @@
 import * as prodServices from '../services/dataBase/prodServicesDB.js';
+import * as usersServices from '../services/dataBase/usersServices.js';
+import { deleteProductMail } from '../utils/mail.utils.js';
 import customError from '../services/errors/customError.js';
 import { EErrors, PErrors } from '../services/errors/enums.js';
 import { createProductPropsErrorInfo } from '../services/errors/info.js';
@@ -279,18 +281,21 @@ const deleteProduct = async (req, res) => {
   try {
     // Guardo el producto por si se eliminó por error
     const product = await prodServices.getProductsById(_id);
+    const ownerId = product.owner;
+    const { role, email } = await usersServices.getUserById(ownerId);
 
     if (!product) {
       log.error(`Producto con id ${_id} no encontrado`);
       return res.status(404).send('Producto no encontrado');
     }
-    // console.log('product: ', product)
 
     await prodServices.deleteProduct(_id);
-    /*
-    si (product.owner === 'premium'){
-    enviar un email indicando que el producto fue eliminado de la base de datos
-    } */
+
+    // enviar un email al propietario indicando que el producto fue eliminado de la base de datos
+    if (role === 'premium') {
+      deleteProductMail(email);
+      log.info(`Producto eliminado exitosamente, mail enviado a ${email}.`);
+    }
 
     return res.status(200).json({
       status: 'success',

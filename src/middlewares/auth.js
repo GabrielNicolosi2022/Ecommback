@@ -16,6 +16,12 @@ const isPublic = (req, res, next) => {
 };
 
 // Middleware para verificar si la ruta es privada
+/**
+ * Debe estar logueado para tener acceso
+ * @param {req.session.user} req 
+ * @param {redirect} res 
+ * @param {*} next 
+ */
 const isPrivate = (req, res, next) => {
   if (req.session && req.session.user) {
     // Hay una sesión activa, permitir el acceso

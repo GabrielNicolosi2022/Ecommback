@@ -19,24 +19,19 @@ const root = (req, res) => {
 };
 // Registro de usuario
 const userRegister = async (req, res) => {
-  /*   if (req.get('User-Agent').includes('Postman')) {
-    res.status(201).json({
-      status: 'success',
-      message: 'Registro exitoso. Inicia sesión para continuar.',
-    });
-  } else {
-    req.flash('success', 'Registro exitoso. Inicia sesión para continuar.');
-    res.redirect('/login');
-  }
- */
   try {
     const userCreated = req.user;
 
-    res.status(201).json({
-      status: 'success',
-      message: 'Registro exitoso. Inicia sesión para continuar.',
-      user: userCreated,
-    });
+    if (req.get('User-Agent').includes('Postman')) {
+      res.status(201).json({
+        status: 'success',
+        message: 'Registro exitoso. Inicia sesión para continuar.',
+        user: userCreated,
+      });
+    } else {
+      req.flash('success', 'Registro exitoso. Inicia sesión para continuar.');
+      res.redirect('/login');
+    }
   } catch (error) {
     log.error('Error creating user: ' + error);
     res.status(500).send({ error: 'Error interno' });
@@ -96,8 +91,13 @@ const userLogin = async (req, res) => {
         age: req.user.age,
         email: req.user.email,
         role: req.user.role,
+        cart: req.user.cart,
+        documents: req.user.documents,
+        last_connection: new Date(),
       };
-
+      
+      console.log('req.session.user', req.session.user);
+      
       if (req.user.role !== 'admin') {
         // Verificar si el usuario ya tiene un carrito asignado
         if (!req.user.cart) {

@@ -31,7 +31,7 @@
           <a href='/product/{{_id}}'>Ver detalles</a>
 
           {{! Opción 2: Botón para agregar al carrito directamente }}
-          <form action='/cart' method='POST'>
+          <form action='/v1/api/carts/{{_id}}' method='post'>
             <input type='hidden' name='productId' value='{{_id}}' />
             <input
               class='btn btn-primary mt-3'

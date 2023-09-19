@@ -15,7 +15,8 @@ cartsRouter.get('/:cid', checkRole('admin'), controllers.getCartById);
 
 // Actualizar el carrito con nuevos productos y/o cantidad de ejemplares de un producto en un carrito
 cartsRouter.put('/:cid', checkRole('premium', 'user'), controllers.updateCart);
-// cartsRouter.put('/:cid', checkRole('user'), controllers.updateCart);
+// Actualizar el carrito con nuevos productos y/o cantidad de ejemplares de un producto en un carrito (Opción para Vistas)
+cartsRouter.post('/:cid', checkRole('premium', 'user'), controllers.updateCart);
 
 // Eliminar un carrito
 cartsRouter.delete('/:cid', checkRole('admin'), controllers.deleteCart);

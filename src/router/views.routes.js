@@ -8,7 +8,7 @@ import { chat } from '../controllers/chat.controller.js';
 const viewsRouter = Router();
 
 // Rutas
-viewsRouter.get('/', isPublic, userControllers.root);
+viewsRouter.get('/', userControllers.root);
 
 viewsRouter.get('/chat', isPrivate, checkRole('user'), chat);
 

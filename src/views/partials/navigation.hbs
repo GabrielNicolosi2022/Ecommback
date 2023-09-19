@@ -24,7 +24,7 @@
                 <a class='nav-link fw-bold' href='/product'>Products</a>
               </li>
               <li class='nav-item'>
-                <a class='nav-link fw-bold' href='/cart'>Carts</a>
+                <a class='nav-link fw-bold' href='/cart'>Cart</a>
               </li>
               <li class='nav-item'>
                 <a class='nav-link fw-bold' href='/chat'>Chat</a>
@@ -38,12 +38,23 @@
             <li class='nav-item'>
               <a href='/register' class='nav-link'>Register</a>
             </li>
-            <li class='nav-item'>
-                <a
-                  href='/profile/{{userSession.userId}}'
-                  class='nav-link'
-                >Profile</a>
-            </li>
+            {{#if userSession}}
+              {{#if userSession.userId}}
+                <li class='nav-item'>
+                  <a
+                    href='/profile/{{userSession.userId}}'
+                    class='nav-link'
+                  >Profile</a>
+                </li>
+              {{else}}
+                <li class='nav-item'>
+                  <a
+                    href='/admin'
+                    class='nav-link'
+                  >Panel</a>
+                </li>
+              {{/if}}
+            {{/if}}
           </ul>
         </div>
       </div>

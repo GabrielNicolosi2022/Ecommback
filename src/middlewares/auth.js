@@ -7,8 +7,8 @@ config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
 // Middleware para verificar si la ruta es pública
 const isPublic = (req, res, next) => {
   if (req.session && req.session.user) {
-    // Hay una sesión activa, redirigir al perfil
-    res.redirect('/profile');
+    // Hay una sesión activa, redirigir al listado de productos
+    res.redirect('/product');
   } else {
     // No hay sesión activa, permitir el acceso
     next();

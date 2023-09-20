@@ -378,7 +378,6 @@ const products = async (req, res) => {
     const nextLink = nextPage
       ? `/product?page=${nextPage}&limit=${limit}`
       : null;
-
     res.render('products', {
       title: 'EcommBack',
       pageTitle: 'Lista de Productos',
@@ -389,6 +388,7 @@ const products = async (req, res) => {
       prevLink,
       nextLink,
       user: req.session.user,
+      userCart: req.session.user.cart
     });
   } catch (error) {
     console.error('Error al obtener los productos', error);
@@ -404,6 +404,7 @@ const productsById = async (req, res) => {
       pageTitle: 'Detalle del Producto',
       title: 'EcommBack',
       product,
+      userCart: req.session.user.cart,
     });
   } catch (error) {
     res

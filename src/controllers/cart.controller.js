@@ -105,64 +105,118 @@ const createCart = async (req, res) => {
 const updateCart = async (req, res) => {
   try {
     const cid = req.params.cid;
-    const { products } = req.body;
     const cartId = new mongoose.Types.ObjectId(cid);
     const { user } = req.session;
 
-    // Buscar el carrito por su ID
-    const cart = await cartServices.getCartById(cartId);
+    if (req.get('User-Agent') && req.get('User-Agent').includes('Postman')) {
+      const { products } = req.body;
 
-    if (!cart) {
-      log.error(`Carrito con id ${cartId} no encontrado`);
-      return res.status(404).send('Carrito no encontrado');
-    }
+      // Buscar el carrito por su ID
+      const cart = await cartServices.getCartById(cartId);
 
-    // Iterar sobre los productos del body
-    for (const product of products) {
-      const productId = product.product;
+      if (!cart) {
+        log.error(`Carrito con id ${cartId} no encontrado`);
+        return res.status(404).send('Carrito no encontrado');
+      }
+
+      // Iterar sobre los productos del body
+      for (const product of products) {
+        const productId = product.product;
+        const prodFromDb = await prodServices.getProductsById(productId);
+
+        if (user.role === 'premium') {
+          if (prodFromDb.owner) {
+            //  Filtrar los productos que son propiedad del usuario
+            const ownedProducts = products.filter((productItem) => {
+              const productOwner = prodFromDb.owner.toString();
+              return productOwner === user.userId;
+            });
+            // si hay productos de su propiedad en el carrito, no permitir agregarlos
+            if (ownedProducts.length > 0) {
+              log.warn(
+                'El cliente está intentando agregar al carrito un producto de su propiedad'
+              );
+              return res.status(403).send('Acción inválida');
+            }
+          }
+        }
+
+        const productInCart = cart.products.find((p) =>
+          p.product.equals(new mongoose.Types.ObjectId(product.product))
+        );
+
+        if (productInCart) {
+          // Si el producto ya existe en el carrito, actualizar la cantidad
+          productInCart.quantity = product.quantity;
+        } else {
+          // Si el producto no existe en el carrito, agregarlo
+          cart.products.push({
+            product: new mongoose.Types.ObjectId(product.product),
+            quantity: product.quantity,
+          });
+        }
+      }
+      // Guardar el nuevo carrito en la base de datos
+      await cartServices.updateCart(cartId, cart.products);
+
+      log.info('Carrito actualizado correctamente');
+      res.status(200).json({
+        status: 'success',
+        message: 'Carrito actualizado correctamente',
+        data: cart,
+      });
+    } else {
+      const { productId, quantity } = req.body;
+      // Buscar el carrito por su ID
+      const cart = await cartServices.getCartById(cartId);
+
+      if (!cart) {
+        req.flash(`Carrito no encontrado`);
+        return res.status(404).send('Carrito no encontrado');
+      }
+
+      if (!productId) {
+        req.flash('No se ha proporcionado el ID del producto');
+        return res.status(400).json({
+          status: 'error',
+          message: 'No se ha proporcionado el ID del producto',
+        });
+      }
+
       const prodFromDb = await prodServices.getProductsById(productId);
 
       if (user.role === 'premium') {
         if (prodFromDb.owner) {
-          //  Filtrar los productos que son propiedad del usuario
-          const ownedProducts = products.filter((productItem) => {
-            const productOwner = prodFromDb.owner.toString();
-            return productOwner === user.userId;
-          });
-          // si hay productos de su propiedad en el carrito, no permitir agregarlos
-          if (ownedProducts.length > 0) {
-            log.warn(
-              'El cliente está intentando agregar al carrito un producto de su propiedad'
-            );
+          const productOwner = prodFromDb.owner.toString();
+          if (productOwner === user.userId) {
+            req.flash('Acción inválida');
             return res.status(403).send('Acción inválida');
           }
         }
       }
-
       const productInCart = cart.products.find((p) =>
-        p.product.equals(new mongoose.Types.ObjectId(product.product))
+        p.product.equals(new mongoose.Types.ObjectId(productId))
       );
 
       if (productInCart) {
         // Si el producto ya existe en el carrito, actualizar la cantidad
-        productInCart.quantity = product.quantity;
+        productInCart.quantity = quantity;
       } else {
         // Si el producto no existe en el carrito, agregarlo
         cart.products.push({
-          product: new mongoose.Types.ObjectId(product.product),
-          quantity: product.quantity,
+          product: new mongoose.Types.ObjectId(productId),
+          quantity: quantity,
         });
       }
-    }
-    // Guardar el nuevo carrito en la base de datos
-    await cartServices.updateCart(cartId, cart.products);
+      // Guardar el nuevo carrito en la base de datos
+      await cartServices.updateCart(cartId, cart.products);
 
-    log.info('Carrito actualizado correctamente');
-    res.status(200).json({
-      status: 'success',
-      message: 'Carrito actualizado correctamente',
-      data: cart,
-    });
+      req.flash(
+        'success',
+        `Se han cargado al carrito ${quantity} un. del producto ${prodFromDb.title} correctamente`
+      );
+      res.redirect('/product');
+    }
   } catch (error) {
     log.fatal('Error al actualizar el carrito. ', error);
     res.status(500).json('Error interno');

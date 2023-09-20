@@ -1,5 +1,4 @@
 <h1 class='text-center pb-3'>{{pageTitle}}</h1>
-
 <div class='row'>
   <div class='container'>
     <div class='col'>
@@ -23,15 +22,23 @@
           <p>Vendedor: {{product.owner}}</p>
         </div>
         <div>
-          <a href='/product'>Volver a la lista de productos</a>
-          <form action='/cart/add' method='POST'>
-            <input type='hidden' name='productId' value='{{_id}}' />
+          {{! Agregar al carrito }}
+          <form action='/v1/api/carts/{{userCart}}' method='post'>
+            <input type='hidden' name='productId' value='{{product._id}}' />
+
+             {{!-- Selector de cantidad --}}
+            <div class='counter'>
+              <label for='quantity'>Cantidad:</label>
+              <input type='number' name='quantity' id='quantity' value='1' min='1' />
+            </div>
+            {{!-- Botón --}}
             <input
               class='btn btn-primary mt-3'
               type='submit'
               value='Agregar al carrito'
             />
           </form>
+          <a href='/product'>Volver a la lista de productos</a>
         </div>
       {{else}}
         <p>Upss!... Producto no encontrado</p>

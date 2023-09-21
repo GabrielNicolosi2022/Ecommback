@@ -82,7 +82,7 @@ const getMyCart = async (req, res) => {
         title: cartItem.product.title,
         description: cartItem.product.description,
         code: cartItem.product.code,
-        price: toLocaleFloat(cartItem.product.price),
+        price:  toLocalNumber(cartItem.product.price),
         status: cartItem.product.status,
         stock: cartItem.product.stock,
         quantity: cartItem.quantity,
@@ -95,7 +95,7 @@ const getMyCart = async (req, res) => {
 
         return total + productPrice * quantity;
       }, 0); 
-      const totalAmount = toLocaleFloat(totalPrice);
+      const totalAmount = toLocalNumber(totalPrice);
 
       res.render('cart', {
         pageTitle: 'Mi Carrito',
@@ -104,7 +104,7 @@ const getMyCart = async (req, res) => {
       });
     }
   } catch (error) {
-    log.fatal('Error al obtener el carrito del usuario. ', error);
+    log.fatal('Error al obtener el carrito del usuario. ', error.message);
     res.status(500).send('Error interno');
   }
 };

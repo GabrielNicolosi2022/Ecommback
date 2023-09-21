@@ -4,6 +4,7 @@ import * as prodServices from '../services/dataBase/prodServicesDB.js';
 import { getUserById } from '../services/dataBase/usersServices.js';
 import { generateUniqueCode } from '../utils/generateCode.utils.js';
 import { create as createOrder } from '../services/dataBase/orderServices.js';
+import { toLocaleFloat } from '../utils/numbers.utils.js';
 import config from '../config/config.js';
 import { devLog, prodLog } from '../config/customLogger.js';
 
@@ -39,6 +40,7 @@ const getCartById = async (req, res) => {
       log.error(`Carrito con id ${cartId} no encontrado`);
       return res.status(404).send('Carrito no encontrado');
     }
+
     res.status(200).json({
       status: 'success',
       message: 'Carrito encontrado satisfactoriamente',
@@ -52,22 +54,55 @@ const getCartById = async (req, res) => {
 // Obtener el carrito del usuario
 const getMyCart = async (req, res) => {
   try {
-    const userId = req.params.uid;
-    // log.info('userId: ', userId);
+    if (req.get('User-Agent').includes('Postman')) {
+      const userId = req.params.uid;
+      // Obtener el carrito del usuario desde la base de datos
+      const cart = await cartServices.getCartByUserId(userId);
 
-    // Obtener el carrito del usuario desde la base de datos
-    const cart = await cartServices.getCartByUserId(userId);
+      if (!cart) {
+        log.error(`Carrito del usuario ${userId} no encontrado`);
+        return res.status(404).send('Carrito no encontrado');
+      }
 
-    if (!cart) {
-      log.error(`Carrito del usuario ${userId} no encontrado`);
-      return res.status(404).send('Carrito no encontrado');
+      res.status(200).json({
+        status: 'success',
+        message: 'Carrito del usuario encontrado satisfactoriamente',
+        data: cart,
+      });
+    } else {
+      const cartId = req.session.user.cart;
+      const cart = await cartServices.getCartById(cartId);
+
+      if (!cart) {
+        req.flash('error', 'Carrito no encontrado');
+        return res.redirect('/product');
+      }
+
+      const cartDTO = cart.products.map((cartItem) => ({
+        title: cartItem.product.title,
+        description: cartItem.product.description,
+        code: cartItem.product.code,
+        price:  toLocalNumber(cartItem.product.price),
+        status: cartItem.product.status,
+        stock: cartItem.product.stock,
+        quantity: cartItem.quantity,
+      }));
+
+      // Calcular el monto total de todos los productos en el carrito
+      const totalPrice = cart.products.reduce((total, product) => {
+        const productPrice = product.product.price;
+        const quantity = product.quantity;
+
+        return total + productPrice * quantity;
+      }, 0); 
+      const totalAmount = toLocalNumber(totalPrice);
+
+      res.render('cart', {
+        pageTitle: 'Mi Carrito',
+        products: cartDTO,
+        totalAmount: totalAmount,
+      });
     }
-
-    res.status(200).json({
-      status: 'success',
-      message: 'Carrito del usuario encontrado satisfactoriamente',
-      data: cart,
-    });
   } catch (error) {
     log.fatal('Error al obtener el carrito del usuario. ', error.message);
     res.status(500).send('Error interno');
@@ -376,37 +411,18 @@ const viewCart = (req, res) => {
   res.render('cart', {
     title: 'EcommBack',
     pageTitle: 'Carrito',
-    products: cart.products,
+    products: req.session.user.cart,
   });
 };
 
-const viewCartById = async (req, res) => {
-  try {
-    const cartId = req.params.cid;
-    const cart = await cartServices.getCartById(cartId);
-
-    if (!cart) {
-      return res.status(404).json({ message: 'Carrito no encontrado' });
-    }
-
-    res.render('cart', {
-      pageTitle: 'Carrito',
-      products: cart.products,
-    });
-  } catch (error) {
-    res.status(500).json({ message: 'Error al obtener el carrito', error });
-  }
-};
-
 export {
+  createCart,
   getCarts,
   getCartById,
   getMyCart,
-  createCart,
   updateCart,
   deleteProdOfCart,
   deleteCart,
   viewCart,
-  viewCartById,
   purchase,
 };

@@ -32,7 +32,7 @@
           <a href='/product/{{_id}}'>Ver detalles</a>
           
           {{! Opción 2: Agregar al carrito }}
-          <form action='/v1/api/carts/{{../userCart}}' method='post'>
+          <form action='/v1/api/carts/{{../user.cart}}' method='post'>
             <input type='hidden' name='productId' value='{{_id}}' />
 
              {{!-- Selector de cantidad --}}

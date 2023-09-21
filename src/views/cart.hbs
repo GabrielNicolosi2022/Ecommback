@@ -1,22 +1,27 @@
 <h1>{{pageTitle}}</h1>
-
 {{>messages}}
 {{! Verificar si hay productos en el carrito }}
 {{#if products.length}}
   <div class='row'>
-    <div class='container'>
-      <div class='col'>
-        <h2>Productos en el carrito:</h2>
+    <div class='container cart-purchase'>
+      {{!-- Cart --}}
+      <div class='col-8 cart float-start'>
+        <h2>Productos en el carrito</h2>
         <hr />
         {{#each products}}
-          <div class='product'>
-            <h3>{{this.product.title}}</h3>
-            <p>{{this.product.description}}</p>
-            <p>Precio: $ {{this.product.price}}</p>
-            <p>Cantidad: {{this.quantity}} u.</p>
+          <div>
+            <h3>{{title}}</h3>
+            <p>{{description}}</p>
+            <p>Precio: $ {{price}}</p>
+            <p>Cantidad: {{quantity}} u.</p>
           </div>
           <hr />
         {{/each}}
+      </div>
+      {{!-- Purchase --}}
+      <div class='col-4 purchase float-end'>
+        <h3>Compra: $ {{totalAmount}} </h3>
+
       </div>
     </div>
   </div>
@@ -27,3 +32,4 @@
   <a class='btn btn-outline-primary' href='/products'>Volver a la lista de
     productos</a>
 </div>
+

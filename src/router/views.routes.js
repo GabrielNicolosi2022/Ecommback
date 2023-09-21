@@ -34,9 +34,9 @@ viewsRouter.get('/product', prodControllers.products);
 
 viewsRouter.get('/product/:pid', prodControllers.productsById);
 
-viewsRouter.get('/cart', isPrivate, cartControllers.viewCart);
+viewsRouter.get('/cart', isPrivate, cartControllers.getMyCart);
 
-viewsRouter.get('/cart/:cid', isPrivate, cartControllers.viewCartById);
+viewsRouter.get('/cart/:cid', isPrivate, cartControllers.getCartById);
 
 viewsRouter.get(
   '/admin',

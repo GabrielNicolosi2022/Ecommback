@@ -101,6 +101,7 @@ const getMyCart = async (req, res) => {
         pageTitle: 'Mi Carrito',
         products: cartDTO,
         totalAmount: totalAmount,
+        cartId,
       });
     }
   } catch (error) {

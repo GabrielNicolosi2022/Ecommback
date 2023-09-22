@@ -1,4 +1,5 @@
 <h1>{{pageTitle}}</h1>
+
 {{>messages}}
 {{! Verificar si hay productos en el carrito }}
 {{#if products.length}}
@@ -20,16 +21,19 @@
       </div>
       {{!-- Purchase --}}
       <div class='col-4 purchase float-end'>
-        <h3>Compra: $ {{totalAmount}} </h3>
-
+        <div>
+          <form action="/v1/api/carts/{{cartId}}/purchase" method="post">
+            <h3>Compra: <span class="fw-bold text-primary"> $ {{totalAmount}} </span></h3>
+            <div class="float-end mt-3">
+              <button class='btn btn-outline-success me-2' type="submit">Continuar compra</button>
+              <button class='btn btn-outline-primary' href='/product'>Volver</button>     
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>
 {{else}}
   <p>No hay productos en el carrito</p>
 {{/if}}
-<div>
-  <a class='btn btn-outline-primary' href='/products'>Volver a la lista de
-    productos</a>
-</div>
 

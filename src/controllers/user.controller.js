@@ -95,9 +95,7 @@ const userLogin = async (req, res) => {
         documents: req.user.documents,
         last_connection: new Date(),
       };
-      
-      console.log('req.session.user', req.session.user);
-      
+            
       if (req.user.role !== 'admin') {
         // Verificar si el usuario ya tiene un carrito asignado
         if (!req.user.cart) {

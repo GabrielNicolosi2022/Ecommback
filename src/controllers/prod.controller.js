@@ -378,7 +378,6 @@ const products = async (req, res) => {
     const nextLink = nextPage
       ? `/product?page=${nextPage}&limit=${limit}`
       : null;
-    console.log('user: ', req.session.user)
     res.render('products', {
       title: 'EcommBack',
       pageTitle: 'Lista de Productos',

@@ -36,7 +36,6 @@ const initializePassport = () => {
             password,
             role,
           });
-          console.log('result passport: ', result);
 
           log.info('New user created');
           return done(null, result, { message: 'User created' });

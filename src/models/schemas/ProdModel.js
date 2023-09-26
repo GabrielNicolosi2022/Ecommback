@@ -44,7 +44,7 @@ const productSchema = new mongoose.Schema({
     ref: 'User',
     required: false,
     enum: ['premium', 'admin'],
-    default: 'admin',
+    default: 'premium',
   },
 });
 productSchema.plugin(mongoosePaginate);

@@ -113,17 +113,38 @@ const getProductById = async (req, res) => {
     // Obtener el producto por su ID utilizando la función getProductsById()
     const product = await prodServices.getProductsById(_id);
 
-    if (!product) {
-      log.error(`Producto con id ${_id} no encontrado`);
-      return res
-        .status(404)
-        .json({ status: 'error', message: 'Producto no encontrado' });
+    if (req.get('User-Agent') && req.get('User-Agent').includes('Postman')) {
+      if (!product) {
+        log.error(`Producto con id ${_id} no encontrado`);
+        return res
+          .status(404)
+          .json({ status: 'error', message: 'Producto no encontrado' });
+      }
+
+      res.status(200).json({
+        status: 'success',
+        message: 'Producto encontrado',
+        data: product,
+      });
+    } else {
+      if (!product) {
+        return req.flash('Producto no encontrado');
+      }
+      if (!req.session.user) {
+        res.render('productDetail', {
+          pageTitle: 'Detalle del Producto',
+          title: 'EcommBack',
+          product: product,
+        });
+      } else {
+        res.render('productDetail', {
+          pageTitle: 'Detalle del Producto',
+          title: 'EcommBack',
+          product: product,
+          userCart: req.session.user.cart,
+        });
+      }
     }
-    return res.status(200).json({
-      status: 'success',
-      message: 'Producto encontrado',
-      data: product,
-    });
   } catch (error) {
     log.fatal('Error al obtener el producto. ' + error.message);
     res
@@ -396,22 +417,6 @@ const products = async (req, res) => {
   }
 };
 
-const productsById = async (req, res) => {
-  try {
-    const productId = req.params.pid;
-    const product = await prodServices.getProductsById(productId);
-    res.render('productDetail', {
-      pageTitle: 'Detalle del Producto',
-      title: 'EcommBack',
-      product,
-      userCart: req.session.user.cart,
-    });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: 'Error al obtener los detalles del producto', error });
-  }
-};
 
 export {
   getProducts,
@@ -420,5 +425,4 @@ export {
   updateProduct,
   deleteProduct,
   products,
-  productsById,
 };

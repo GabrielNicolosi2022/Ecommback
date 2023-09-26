@@ -29,7 +29,7 @@
           
 
           {{! Opción 1: Botón para ver detalles del producto en una nueva página }}
-          <a href='/product/{{_id}}'>Ver detalles</a>
+          <a href='/v1/api/products/{{_id}}'>Ver detalles</a>
           
           {{! Opción 2: Agregar al carrito }}
           <form action='/v1/api/carts/{{../user.cart}}' method='post'>

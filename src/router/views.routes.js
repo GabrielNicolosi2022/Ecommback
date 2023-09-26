@@ -32,7 +32,7 @@ viewsRouter.get('/recoverpassword', userControllers.recoverPassword);
 
 viewsRouter.get('/product', prodControllers.products);
 
-viewsRouter.get('/product/:pid', prodControllers.productsById);
+viewsRouter.get('/product/:pid', prodControllers.getProductById);
 
 viewsRouter.get('/cart', isPrivate, cartControllers.getMyCart);
 

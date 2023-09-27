@@ -7,6 +7,8 @@ import { create as createOrder } from '../services/dataBase/orderServices.js';
 import { toLocaleFloat } from '../utils/numbers.utils.js';
 import config from '../config/config.js';
 import { devLog, prodLog } from '../config/customLogger.js';
+import { calculateTotal, decimalToInteger } from '../utils/cart.utils.js';
+import { createPaymentIntent } from '../services/dataBase/paymentServices.js';
 
 let log;
 config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
@@ -94,10 +96,11 @@ const getMyCart = async (req, res) => {
         const quantity = product.quantity;
 
         return total + productPrice * quantity;
-      }, 0); 
+      }, 0);
       const totalAmount = toLocaleFloat(totalPrice);
 
       res.render('cart', {
+        title: 'EcommBack',
         pageTitle: 'Mi Carrito',
         products: cartDTO,
         totalAmount: totalAmount,
@@ -313,13 +316,14 @@ const deleteCart = async (req, res) => {
     res.status(500).send('Error interno');
   }
 };
+
 // Finalizar la compra
 const purchase = async (req, res) => {
+  const cartId = req.params.cid;
+
   try {
-    const cartId = req.params.cid;
     // Obtener el carrito por ID
     const cart = await cartServices.getCartById(cartId);
-    // log.info('cart: ' + cart);
     if (!cart) {
       log.error(`Carrito con id ${cartId} no encontrado`);
       return res.status(404).send('Carrito no encontrado');
@@ -327,6 +331,7 @@ const purchase = async (req, res) => {
 
     const productsToProcess = [];
     const productsNotProcessed = [];
+
     // Validar el stock de los productos en el carrito y separar los productos sin stock
     for (const product of cart.products) {
       const productId = product.product;
@@ -340,7 +345,9 @@ const purchase = async (req, res) => {
         );
       } else if (productFromDB.stock >= quantityInCart) {
         productsToProcess.push({ productFromDB, quantityInCart });
-        log.info(`Producto con id ${productId._id} será procesado`);
+        log.info(
+          `${quantityInCart} ud. del producto con id ${productId._id} serán procesadas.`
+        );
       } else {
         productsNotProcessed.push(productId);
         log.warn(`Producto con id ${productId._id} no tiene suficiente stock`);
@@ -349,20 +356,26 @@ const purchase = async (req, res) => {
 
     const processedProducts = [];
     for (const { productFromDB, quantityInCart } of productsToProcess) {
-      // Restar la cantidad comprada del stock del producto
-      productFromDB.stock -= quantityInCart;
-      // Guardar los cambios en la cantidad del producto en la base de datos
-      await productFromDB.save();
-
       processedProducts.push({
         product: productFromDB,
         quantity: quantityInCart,
       });
     }
 
+    // calcular total de la compra
+    const totalAmount = calculateTotal(processedProducts);
+    // generar código único para la orden
+    const code = await generateUniqueCode();
+
+    /*     // Si el pago es exitoso, Restar la cantidad comprada del stock del producto y actualizar la base de datos
+    for (const { productFromDB, quantityInCart } of productsToProcess) {
+      productFromDB.stock -= quantityInCart;
+      await prodServices.updateProduct(productFromDB._id, productFromDB.stock);
+    }
+
     // Actualizar el carrito en base a los productos procesados
-    const remainingProducts = cart.products.filter(
-      (prod) => productsNotProcessed.includes(prod.product) //?sino probar con processProducts
+    const remainingProducts = cart.products.filter((prod) =>
+      productsNotProcessed.includes(prod.product)
     );
     cart.products = remainingProducts;
     await cart.save();
@@ -381,15 +394,9 @@ const purchase = async (req, res) => {
       response.message = 'Algunos productos no pudieron ser procesados';
     }
 
-    // calcular total de la compra
-    const totalAmount = processedProducts.reduce((total, product) => {
-      return total + product.product.price * product.quantity;
-    }, 0);
-
-    const code = await generateUniqueCode();
+    // crear ticket con los datos de la compra
     const { email } = await getUserById(cart.user);
 
-    // crear ticket con los datos de la compra
     const orderInfo = {
       code: code,
       purchase_datetime: new Date(),
@@ -398,11 +405,12 @@ const purchase = async (req, res) => {
     };
 
     const newOrder = await createOrder(orderInfo);
-
+ 
     log.info('Compra realizada exitosamente.' + newOrder);
     res.status(200).json({ response: response, order: newOrder });
+ */
   } catch (error) {
-    log.fatal('Error al realizar la compra. ' + error.message);
+    log.fatal('Error al realizar la compra. ' + error);
     res.status(500).send('Error al realizar la compra');
   }
 };
@@ -413,6 +421,36 @@ const viewCart = (req, res) => {
     title: 'EcommBack',
     pageTitle: 'Carrito',
     products: req.session.user.cart,
+  });
+};
+// Intento de pago con Stripe
+const paymentIntents = async (req, res) => {
+  const {totalAmount} = req.query;
+
+  const paymentInfo = {
+    amount: decimalToInteger(totalAmount),
+    currency: 'ars',
+  };
+
+  const result = await createPaymentIntent(paymentInfo);
+  
+  if (!result) {
+    log.error(
+      'Purchase - createPaymentIntent: Error al Enviar información a Stripe'
+      );
+      return res.status(400).send('Mala Petición');
+  }
+
+  log.info(
+    `paymentIntents - createPaymentIntent: Se creó un nuevo intento de pago (${result.id})`
+    );
+    console.log('paymentIntents - createPaymentIntent: client_secret enviada al front');
+    
+  // Renderizar la vista de pago y pasa la clientSecret como variable de contexto
+  res.render('payment', {
+    title: 'EcommBack',
+    pageTitle: 'Formulario de Pago',
+    clientSecret: result.client_secret,
   });
 };
 
@@ -426,4 +464,5 @@ export {
   deleteCart,
   viewCart,
   purchase,
+  paymentIntents,
 };

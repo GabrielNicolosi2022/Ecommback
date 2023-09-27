@@ -20,11 +20,7 @@ viewsRouter.get('/login', isPublic, userControllers.login);
 
 viewsRouter.get('/faillogin', isPublic, userControllers.faillogin);
 
-viewsRouter.get(
-  '/profile/:uid',
-  isPrivate,
-  userControllers.profile
-);
+viewsRouter.get('/profile/:uid', isPrivate, userControllers.profile);
 
 viewsRouter.get('/passwordrecover', userControllers.passwordRecoverView);
 
@@ -37,6 +33,8 @@ viewsRouter.get('/product/:pid', prodControllers.getProductById);
 viewsRouter.get('/cart', isPrivate, cartControllers.getMyCart);
 
 viewsRouter.get('/cart/:cid', isPrivate, cartControllers.getCartById);
+
+viewsRouter.get('/payment-intents', cartControllers.paymentIntents);
 
 viewsRouter.get(
   '/admin',

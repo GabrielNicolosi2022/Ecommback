@@ -4,9 +4,9 @@
 {{! Verificar si hay productos en el carrito }}
 {{#if products.length}}
   <div class='row'>
-    <div class='container cart-purchase'>
-      {{!-- Cart --}}
-      <div class='col-8 cart float-start'>
+    <div class='container'>
+      {{! Cart }}
+      <div class='col-8 float-start'>
         <h2>Productos en el carrito</h2>
         <hr />
         {{#each products}}
@@ -19,14 +19,19 @@
           <hr />
         {{/each}}
       </div>
-      {{!-- Purchase --}}
-      <div class='col-4 purchase float-end'>
+      {{! Purchase }}
+      <div class='col-4 float-end'>
         <div>
-          <form action="/v1/api/carts/{{cartId}}/purchase" method="post">
-            <h3>Compra: <span class="fw-bold text-primary"> $ {{totalAmount}} </span></h3>
-            <div class="float-end mt-3">
-              <button class='btn btn-outline-success me-2' type="submit">Continuar compra</button>
-              <button class='btn btn-outline-primary' href='/product'>Volver</button>     
+          <form action='/payment-intents' method='get'>
+            <input type='hidden' name='totalAmount' value='{{totalAmount}}'>
+            <h3>Compra:
+              <span class='fw-bold text-primary'> $ {{totalAmount}} </span></h3>
+            <div class='float-end mt-3'>
+              <button
+                class='btn btn-outline-success me-2'
+                type='submit'
+              >Comprar</button>
+              <a class='btn btn-outline-primary' href='/product'>Volver</a>
             </div>
           </form>
         </div>
@@ -36,4 +41,3 @@
 {{else}}
   <p>No hay productos en el carrito</p>
 {{/if}}
-

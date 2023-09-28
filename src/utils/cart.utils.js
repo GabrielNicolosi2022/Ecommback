@@ -4,10 +4,16 @@ export const calculateTotal = (processedProducts) => {
   }, 0);
 };
 
-export const decimalToInteger = (totalAmount) => {
-  // Convertir el número a una cadena y reemplazar el punto con una cadena vacía
-  const integerString = totalAmount.split(',');
-  // Convierte la cadena resultante a un número entero
-  const integerValue = parseInt(integerString.join(''));
+export const decimalToInteger = (value) => {
+  let valor = value;
+
+  if (typeof value === 'number') {
+    valor = value.toString();
+  }
+
+  const integerString = valor.split('.');
+  const newIntegerString = integerString.join('')
+  const integerValue = parseInt(newIntegerString);
+
   return integerValue;
-}
+};

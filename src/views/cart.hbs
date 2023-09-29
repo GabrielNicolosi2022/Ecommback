@@ -7,7 +7,7 @@
     <div class='container'>
       {{! Cart }}
       <div class='col-8 float-start'>
-        <h2>Productos en el carrito</h2>
+        <h2>Productos disponibles</h2>
         <hr />
         {{#each products}}
           <div>
@@ -18,14 +18,32 @@
           </div>
           <hr />
         {{/each}}
+        {{#if productsNotProcessed}}
+          <div class="text-danger">
+            <h2>Productos no disponibles</h2>
+            <hr />
+            {{#each productsNotProcessed}}
+              <div>
+                <h3>{{title}}</h3>
+                <p>{{description}}</p>
+                <p>Precio: $ {{price}}</p>
+                <p>Cantidad: {{quantity}} u.</p>
+              </div>
+              <hr />
+            {{/each}}
+          </div>
+        {{/if}}
       </div>
       {{! Purchase }}
       <div class='col-4 float-end'>
         <div>
-          <form action='/payment-intents' method='get'>
+          {{!-- <form action='/v1/api/carts/payment-intents' method='post'> --}}
+          <form action='/v1/api/carts/{{cartId}}/purchase' method='post'>
             <input type='hidden' name='totalAmount' value='{{totalAmount}}'>
-            <h3>Compra:
-              <span class='fw-bold text-primary'> $ {{totalAmount}} </span></h3>
+            <h3>Total Carrito:
+              <span class='fw-bold text-primary'> $ {{totalAmount}} </span></h3>              
+            <h3 class="mt-4">A Abonar:
+              <span class='fw-bold text-success'> $ {{totalToPay}} </span></h3>              
             <div class='float-end mt-3'>
               <button
                 class='btn btn-outline-success me-2'
@@ -41,3 +59,4 @@
 {{else}}
   <p>No hay productos en el carrito</p>
 {{/if}}
+

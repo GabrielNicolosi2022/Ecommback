@@ -7,4 +7,9 @@ const stripe = new Stripe(config.stripe.sk);
 const createPaymentIntent = async (paymentInfo) =>
   await stripe.paymentIntents.create(paymentInfo);
 
-export { createPaymentIntent };
+const createSession = async (paymentInfo) => {
+  const session = await stripe.checkout.sessions.create(paymentInfo);
+  return session;
+};
+
+export { createPaymentIntent, createSession };

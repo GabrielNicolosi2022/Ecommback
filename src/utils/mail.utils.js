@@ -1,6 +1,12 @@
 import transporter from '../config/mails.js';
 import config from '../config/config.js';
 
+import { devLog, prodLog } from '../config/customLogger.js';
+
+let log;
+
+config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
+
 const sendRecoverPassword = (email, token) => {
   const url =
     config.url.baseUrl + config.url.recoverPassword + `?token=${token}`;
@@ -28,11 +34,11 @@ const sendRecoverPassword = (email, token) => {
   };
   transporter.sendMail(mailOptions, (err, info) => {
     if (err) {
-      console.error('Error: ', err.message);
+      log.error('Error: ', err.message);
       return;
     }
 
-    console.log('Mail enviado: ', info);
+    log.info('Mail enviado: ', info);
   });
 };
 
@@ -57,11 +63,11 @@ const deleteAccountMail = (email) => {
   };
   transporter.sendMail(mailOptions, (err, info) => {
     if (err) {
-      console.error('Error: ', err.message);
+      log.error('Error: ', err.message);
       return;
     }
 
-    console.log('Mail enviado: ', info);
+    log.info('Mail enviado: ', info);
   });
 };
 
@@ -86,16 +92,101 @@ const deleteProductMail = (email) => {
   };
   transporter.sendMail(mailOptions, (err, info) => {
     if (err) {
-      console.error('Error: ', err.message);
+      log.error('Error: ', err.message);
       return;
     }
 
-    console.log('Mail enviado: ', info);
+    log.info('Mail enviado: ', info);
   });
 };
 
+const successfulPurchase = (order, email, response) => {
+  try {
+    const { code, purchase_datetime, amount } = order;
+    const { message, processedProducts, remainingProducts } = response;
+    let mailBody = `
+  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <h1>Compra realizada exitosamente</h1>
+    <tr>
+    <th style="border: 1px solid #000; padding: 8px;">N° de orden</th>
+    <th style="border: 1px solid #000; padding: 8px;">Fecha de compra</th>
+    <th style="border: 1px solid #000; padding: 8px;">Monto abonado</th>
+  </tr>
+  <tr>
+    <td style="border: 1px solid #000; padding: 8px;">${code}</td>
+    <td style="border: 1px solid #000; padding: 8px;">${purchase_datetime}</td>
+    <td style="border: 1px solid #000; padding: 8px;">$ ${amount}</td>
+  </tr>
+  </table>
+  <hr />
+  `;
+    if (processedProducts.length > 0) {
+      mailBody += '<h2>Productos procesados:</h2>';
+      mailBody +=
+        '<table width="100%" border="0" cellspacing="0" cellpadding="0">';
+      mailBody += '<tr>';
+      mailBody +=
+        '<th style="border: 1px solid #000; padding: 8px;">Producto</th>';
+      mailBody +=
+        '<th style="border: 1px solid #000; padding: 8px;">Precio</th>';
+      mailBody += '</tr>';
+
+      processedProducts.forEach((product) => {
+        mailBody += '<tr>';
+        mailBody += `<td style="border: 1px solid #000; padding: 8px;">${product.product.title}</td>`;
+        mailBody += `<td style="border: 1px solid #000; padding: 8px;">$ ${product.product.price}</td>`;
+        mailBody += '</tr>';
+      });
+
+      mailBody += '</table>';
+    }
+
+    if (
+      message !== 'Compra realizada exitosamente' &&
+      remainingProducts.length > 0
+    ) {
+      mailBody += '<h2>Productos no procesados:</h2>';
+      mailBody +=
+        '<table width="100%" border="0" cellspacing="0" cellpadding="0">';
+      mailBody += '<tr>';
+      mailBody +=
+        '<th style="border: 1px solid #000; padding: 8px;">Producto</th>';
+      mailBody +=
+        '<th style="border: 1px solid #000; padding: 8px;">Precio</th>';
+      mailBody += '</tr>';
+
+      remainingProducts.forEach((product) => {
+        mailBody += '<tr>';
+        mailBody += `<td style="border: 1px solid #000; padding: 8px;">${product.product.title}</td>`;
+        mailBody += `<td style="border: 1px solid #000; padding: 8px;">$ ${product.product.price}</td>`;
+        mailBody += '</tr>';
+      });
+
+      mailBody += '</table>';
+    }
+
+    const mailOptions = {
+      from: 'noreply@miempresa.com',
+      to: email,
+      subject: 'Compra realizada',
+      html: mailBody,
+    };
+    transporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        log.error('Error: ', err.message);
+        return;
+      }
+
+      log.info('Mail enviado: ', info);
+    });
+  } catch (error) {
+    log.info('successfulPurchase mail: ', error);
+    throw new Error();
+  }
+};
 export {
   sendRecoverPassword,
   deleteAccountMail,
-  deleteProductMail
+  deleteProductMail,
+  successfulPurchase,
 };

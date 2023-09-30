@@ -10,6 +10,7 @@ import { generateUniqueCode } from '../utils/generateCode.utils.js';
 import { create as createOrder } from '../services/dataBase/orderServices.js';
 import { updateProduct } from '../services/dataBase/prodServicesDB.js';
 import { devLog, prodLog } from '../config/customLogger.js';
+import { successfulPurchase } from '../utils/mail.utils.js';
 
 let log;
 config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
@@ -19,13 +20,6 @@ const paymentSuccess = async (req, res) => {
   const cartId = req.params.cid;
 
   try {
-    // Obtener información de la transacción de Stripe (puedes usar Stripe Webhooks para recibir esta información de forma más confiable en el futuro)
-    const stripeTransactionInfo = req.body;
-    console.log(
-      'paymentSuccess - stripeTransactionInfo:===> ',
-      stripeTransactionInfo
-    );
-
     const cart = await getCartById(cartId);
     if (!cart) {
       log.error(`paymentSuccess - Carrito con id ${cartId} no encontrado`);
@@ -69,7 +63,6 @@ const paymentSuccess = async (req, res) => {
 
     // crear ticket con los datos de la compra
     const { email } = await getUserById(cart.user);
-
     const orderInfo = {
       code: code,
       purchase_datetime: new Date(),
@@ -79,7 +72,7 @@ const paymentSuccess = async (req, res) => {
 
     const newOrder = await createOrder(orderInfo);
 
-    //* Enviar Correo de compra realizada
+    successfulPurchase(newOrder, email, response);
 
     if (req.get('User-Agent').includes('Postman')) {
       log.info('paymentSuccess- Compra realizada exitosamente.' + newOrder);

@@ -34,8 +34,6 @@ viewsRouter.get('/cart', isPrivate, cartControllers.getMyCart);
 
 viewsRouter.get('/cart/:cid', isPrivate, cartControllers.getCartById);
 
-viewsRouter.get('/payment-intents', cartControllers.paymentIntents);
-
 viewsRouter.get(
   '/admin',
   checkRole('admin'),

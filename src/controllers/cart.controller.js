@@ -1,14 +1,17 @@
 import mongoose from 'mongoose';
 import * as cartServices from '../services/dataBase/cartServicesDB.js';
 import * as prodServices from '../services/dataBase/prodServicesDB.js';
-import { getUserById } from '../services/dataBase/usersServices.js';
-import { generateUniqueCode } from '../utils/generateCode.utils.js';
-import { create as createOrder } from '../services/dataBase/orderServices.js';
 import { toLocaleFloat } from '../utils/numbers.utils.js';
 import config from '../config/config.js';
 import { devLog, prodLog } from '../config/customLogger.js';
-import { calculateTotal, decimalToInteger } from '../utils/cart.utils.js';
-import { createPaymentIntent } from '../services/dataBase/paymentServices.js';
+import {
+  calculateTotal,
+  decimalToInteger,
+  separateProductsByStock,
+  processProducts,
+  createCartDTO,
+} from '../utils/cart.utils.js';
+import { createSession } from '../services/dataBase/paymentServices.js';
 
 let log;
 config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
@@ -53,12 +56,13 @@ const getCartById = async (req, res) => {
     return res.status(500).send('Error interno');
   }
 };
+
 // Obtener el carrito del usuario
 const getMyCart = async (req, res) => {
   try {
     if (req.get('User-Agent').includes('Postman')) {
       const userId = req.params.uid;
-      // Obtener el carrito del usuario desde la base de datos
+
       const cart = await cartServices.getCartByUserId(userId);
 
       if (!cart) {
@@ -74,36 +78,34 @@ const getMyCart = async (req, res) => {
     } else {
       const cartId = req.session.user.cart;
       const cart = await cartServices.getCartById(cartId);
-
+      const products = cart.products;
       if (!cart) {
         req.flash('error', 'Carrito no encontrado');
         return res.redirect('/product');
       }
+      // Separar los productos por Disponibilidad (Stock)
+      const { productsToProcess, productsNotProcessed } =
+        await separateProductsByStock(cart);
+      const availableProducts = processProducts(productsToProcess);
+      const notAvailableProducts = processProducts(productsNotProcessed);
 
-      const cartDTO = cart.products.map((cartItem) => ({
-        title: cartItem.product.title,
-        description: cartItem.product.description,
-        code: cartItem.product.code,
-        price: toLocaleFloat(cartItem.product.price),
-        status: cartItem.product.status,
-        stock: cartItem.product.stock,
-        quantity: cartItem.quantity,
-      }));
+      const availableProductsDTO = createCartDTO(availableProducts);
+      const notAvailableProductsDTO = createCartDTO(notAvailableProducts);
 
-      // Calcular el monto total de todos los productos en el carrito
-      const totalPrice = cart.products.reduce((total, product) => {
-        const productPrice = product.product.price;
-        const quantity = product.quantity;
+      // Calcular el monto total de todos los productos en el carrito y monto real a abonar
+      const totalPrice = calculateTotal(products);
+      const currentAmount = calculateTotal(availableProducts);
 
-        return total + productPrice * quantity;
-      }, 0);
-      const totalAmount = toLocaleFloat(totalPrice);
+      const totalCartAmount = toLocaleFloat(totalPrice);
+      const totalToPay = toLocaleFloat(currentAmount);
 
       res.render('cart', {
         title: 'EcommBack',
         pageTitle: 'Mi Carrito',
-        products: cartDTO,
-        totalAmount: totalAmount,
+        products: availableProductsDTO,
+        productsNotProcessed: notAvailableProductsDTO,
+        totalAmount: totalCartAmount,
+        totalToPay: totalToPay,
         cartId,
       });
     }
@@ -112,6 +114,7 @@ const getMyCart = async (req, res) => {
     res.status(500).send('Error interno');
   }
 };
+
 // Crear un nuevo carrito
 const createCart = async (req, res) => {
   try {
@@ -273,21 +276,39 @@ const deleteProdOfCart = async (req, res) => {
       log.error(`Carrito con id ${cartId} no encontrado`);
       return res.status(404).send('Carrito no encontrado');
     }
-    const productInCart = cart.products.find((p) => p.product.equals(pid));
+    const product = await prodServices.getProductsById(pid);
+    if (!product) {
+      log.error(`Producto con id ${pid} no encontrado`);
+      return res.status(404).send('Producto no encontrado');
+    }
+    const productTitle = product.title;
 
-    if (!productInCart) {
-      log.error(`Producto con id ${pid} no encontrado en el carrito`);
+    const productIndex = cart.products.findIndex((p) => p.product.equals(pid));
+
+    if (productIndex === -1) {
+      log.error(
+        `deleteProdOfCart - Producto con id ${pid} no encontrado en el carrito`
+      );
       return res.status(404).send('Producto no encontrado en el carrito');
     }
 
-    cart.products.splice(productInCart, 1);
+    // Utiliza splice para eliminar el elemento en el índice encontrado
+    cart.products.splice(productIndex, 1);
 
     await cart.save();
 
-    log.info('Producto removido correctamente del carrito' + cart);
-    res
-      .status(200)
-      .json({ message: 'Producto removido correctamente del carrito', cart });
+    if (req.get('User-Agent').includes('Postman')) {
+      log.info(`Producto ${pid} removido correctamente del carrito` + cart);
+      res
+        .status(200)
+        .json({ message: 'Producto removido correctamente del carrito', cart });
+    } else {
+      req.flash(
+        'success',
+        `Producto ${productTitle} removido correctamente del carrito`
+      );
+      res.redirect('/cart');
+    }
   } catch (error) {
     log.fatal('Error al eliminar el producto del carrito. ' + error.message);
     res
@@ -322,136 +343,53 @@ const purchase = async (req, res) => {
   const cartId = req.params.cid;
 
   try {
-    // Obtener el carrito por ID
     const cart = await cartServices.getCartById(cartId);
     if (!cart) {
-      log.error(`Carrito con id ${cartId} no encontrado`);
+      log.error(`purchase - Carrito con id ${cartId} no encontrado`);
       return res.status(404).send('Carrito no encontrado');
     }
 
-    const productsToProcess = [];
-    const productsNotProcessed = [];
+    const { productsToProcess } = await separateProductsByStock(cart);
 
-    // Validar el stock de los productos en el carrito y separar los productos sin stock
-    for (const product of cart.products) {
-      const productId = product.product;
-      const quantityInCart = product.quantity;
-      // Obtener el producto por ID desde la base de datos
-      const productFromDB = await prodServices.getProductsById(productId);
-      if (!productFromDB) {
-        productsNotProcessed.push(productId);
-        log.error(
-          `Producto con id ${productId._id} no encontrado en la base de datos`
-        );
-      } else if (productFromDB.stock >= quantityInCart) {
-        productsToProcess.push({ productFromDB, quantityInCart });
-        log.info(
-          `${quantityInCart} ud. del producto con id ${productId._id} serán procesadas.`
-        );
-      } else {
-        productsNotProcessed.push(productId);
-        log.warn(`Producto con id ${productId._id} no tiene suficiente stock`);
-      }
+    const processedProducts = processProducts(productsToProcess);
+
+    // Formatear los productos para poder ser procesados por Stipe
+    const line_items = [];
+
+    for (const item of processedProducts) {
+      const product = item.product;
+
+      const lineItem = {
+        price_data: {
+          product_data: {
+            name: product.title,
+            description: product.description,
+          },
+          currency: 'usd',
+          unit_amount: decimalToInteger(product.price),
+        },
+        quantity: item.quantity,
+      };
+
+      line_items.push(lineItem);
     }
 
-    const processedProducts = [];
-    for (const { productFromDB, quantityInCart } of productsToProcess) {
-      processedProducts.push({
-        product: productFromDB,
-        quantity: quantityInCart,
-      });
-    }
-
-    // calcular total de la compra
-    const totalAmount = calculateTotal(processedProducts);
-    // generar código único para la orden
-    const code = await generateUniqueCode();
-
-    /*     // Si el pago es exitoso, Restar la cantidad comprada del stock del producto y actualizar la base de datos
-    for (const { productFromDB, quantityInCart } of productsToProcess) {
-      productFromDB.stock -= quantityInCart;
-      await prodServices.updateProduct(productFromDB._id, productFromDB.stock);
-    }
-
-    // Actualizar el carrito en base a los productos procesados
-    const remainingProducts = cart.products.filter((prod) =>
-      productsNotProcessed.includes(prod.product)
-    );
-    cart.products = remainingProducts;
-    await cart.save();
-
-    let response = {
-      message: 'Compra realizada exitosamente',
-      processedProducts: processedProducts,
-      remainingProducts: remainingProducts,
+    // Intento de pago con Stripe
+    const paymentInfo = {
+      line_items,
+      mode: 'payment',
+      success_url: `http://localhost:8080/v1/api/payment/success/${cartId}`,
+      cancel_url: `http://localhost:8080/v1/api/payment/cancel/${cartId}`,
     };
 
-    if (productsNotProcessed.length > 0) {
-      log.warn(
-        'Algunos productos no pudieron ser procesados. ',
-        remainingProducts
-      );
-      response.message = 'Algunos productos no pudieron ser procesados';
-    }
+    const result = await createSession(paymentInfo);
+    // console.log('purchase - result: ', result);
 
-    // crear ticket con los datos de la compra
-    const { email } = await getUserById(cart.user);
-
-    const orderInfo = {
-      code: code,
-      purchase_datetime: new Date(),
-      amount: totalAmount,
-      purchaser: email,
-    };
-
-    const newOrder = await createOrder(orderInfo);
- 
-    log.info('Compra realizada exitosamente.' + newOrder);
-    res.status(200).json({ response: response, order: newOrder });
- */
+    return res.status(200).redirect(result.url);
   } catch (error) {
-    log.fatal('Error al realizar la compra. ' + error);
+    log.fatal('purchase - Error al realizar la compra. ' + error);
     res.status(500).send('Error al realizar la compra');
   }
-};
-
-// VISTAS
-const viewCart = (req, res) => {
-  res.render('cart', {
-    title: 'EcommBack',
-    pageTitle: 'Carrito',
-    products: req.session.user.cart,
-  });
-};
-// Intento de pago con Stripe
-const paymentIntents = async (req, res) => {
-  const {totalAmount} = req.query;
-
-  const paymentInfo = {
-    amount: decimalToInteger(totalAmount),
-    currency: 'ars',
-  };
-
-  const result = await createPaymentIntent(paymentInfo);
-  
-  if (!result) {
-    log.error(
-      'Purchase - createPaymentIntent: Error al Enviar información a Stripe'
-      );
-      return res.status(400).send('Mala Petición');
-  }
-
-  log.info(
-    `paymentIntents - createPaymentIntent: Se creó un nuevo intento de pago (${result.id})`
-    );
-    console.log('paymentIntents - createPaymentIntent: client_secret enviada al front');
-    
-  // Renderizar la vista de pago y pasa la clientSecret como variable de contexto
-  res.render('payment', {
-    title: 'EcommBack',
-    pageTitle: 'Formulario de Pago',
-    clientSecret: result.client_secret,
-  });
 };
 
 export {
@@ -462,7 +400,7 @@ export {
   updateCart,
   deleteProdOfCart,
   deleteCart,
-  viewCart,
   purchase,
-  paymentIntents,
+  // viewCart,
+  // paymentIntents,
 };

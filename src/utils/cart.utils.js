@@ -7,6 +7,7 @@ config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
 
 export const createCartDTO = (products) => {
   const cartDTO = products.map((cartItem) => ({
+    id: cartItem.product._id,
     title: cartItem.product.title,
     description: cartItem.product.description,
     code: cartItem.product.code,
@@ -55,12 +56,8 @@ export const separateProductsByStock = async (cart) => {
       );
     } else if (productFromDB.stock >= quantityInCart) {
       productsToProcess.push({ productFromDB, quantityInCart });
-      log.info(
-        `${quantityInCart} ud. del producto con id ${productId._id} serán procesadas.`
-      );
     } else {
       productsNotProcessed.push({ productFromDB, quantityInCart });
-      log.warn(`Producto con id ${productId._id} no tiene suficiente stock`);
     }
   }
 

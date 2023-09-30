@@ -35,6 +35,12 @@ cartsRouter.delete(
   checkRole('user', 'premium'),
   controllers.deleteProdOfCart
 );
+// Eliminar un producto del carrito (Opción para Vistas)
+cartsRouter.post(
+  '/:cid/products/:pid',
+  checkRole('user', 'premium'),
+  controllers.deleteProdOfCart
+);
 
 // Finalizar el proceso de compra del carrito
 cartsRouter.post(

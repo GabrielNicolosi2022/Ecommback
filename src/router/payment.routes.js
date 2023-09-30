@@ -1,13 +1,12 @@
 import { Router } from 'express';
-import { createSession } from '../services/dataBase/paymentServices.js';
+import {
+  paymentCancel,
+  paymentSuccess,
+} from '../controllers/payment.controller.js';
 
 const paymentRouter = Router();
 
-paymentRouter.get('/success', (req, res) => {
-  res.send('success');
-});
-paymentRouter.get('/cancel', (req, res) => {
-  res.send('cancel');
-});
+paymentRouter.get('/success/:cid', paymentSuccess);
+paymentRouter.get('/cancel/:cid', paymentCancel);
 
 export default paymentRouter;

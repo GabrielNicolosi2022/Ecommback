@@ -1,15 +1,13 @@
 import config from './config.js';
-import { devLog, prodLog } from '../config/customLogger.js';
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import gitHubStrategy from 'passport-github2';
 import { isValidPassword } from '../utils/validations.utils.js';
 import UserModel from '../models/schemas/UserModel.js';
 import {createUser} from '../utils/users.utils.js'
+import getLogger from '../utils/log.utils.js';
 
-
-let log;
-config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
+const log = getLogger();
 
 const initializePassport = () => {
   // Estrategia de registro local

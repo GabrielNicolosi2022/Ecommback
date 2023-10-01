@@ -1,4 +1,7 @@
 import { generateProducts } from './mocks/generateProducts.js';
+import getLogger from '../utils/log.utils.js';
+
+const log = getLogger();
 
 const generateMockingProducts = async (req, res) => {
   try {
@@ -16,7 +19,7 @@ const generateMockingProducts = async (req, res) => {
         products: mockProducts,
       });
   } catch (error) {
-    console.error(error.message);
+    log.error(error.message);
     res
       .status(500)
       .json({ error: 'Error al generar los productos de prueba.' });

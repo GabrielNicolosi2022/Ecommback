@@ -1,8 +1,6 @@
-import config from '../config/config.js';
-import { devLog, prodLog } from '../config/customLogger.js';
+import getLogger from '../utils/log.utils.js';
 
-let log;
-config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
+const log = getLogger();
 
 // Middleware para verificar si la ruta es pública
 const isPublic = (req, res, next) => {
@@ -18,9 +16,9 @@ const isPublic = (req, res, next) => {
 // Middleware para verificar si la ruta es privada
 /**
  * Debe estar logueado para tener acceso
- * @param {req.session.user} req 
- * @param {redirect} res 
- * @param {*} next 
+ * @param {req.session.user} req
+ * @param {redirect} res
+ * @param {*} next
  */
 const isPrivate = (req, res, next) => {
   if (req.session && req.session.user) {
@@ -44,7 +42,8 @@ const isAuthorized = (req, res, next) => {
 };
 
 // Middleware para verificar el rol del usuario y autorizar el acceso a ciertas rutas
-const checkRole = (...requiredRole) =>
+const checkRole =
+  (...requiredRole) =>
   (req, res, next) => {
     // Verificar si hay una sesión activa y si el usuario tiene un rol válido
     if (

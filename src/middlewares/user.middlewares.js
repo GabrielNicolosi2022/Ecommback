@@ -1,10 +1,8 @@
 import { validateToken } from '../utils/validations.utils.js';
 import { getUserById } from '../services/dataBase/usersServices.js';
-import config from '../config/config.js';
-import { devLog, prodLog } from '../config/customLogger.js';
+import getLogger from '../utils/log.utils.js';
 
-let log;
-config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
+const log = getLogger();
 
 export const isUserOrTokenValid = (req, res, next) => {
   if (req.user) {

@@ -1,4 +1,3 @@
-import config from '../config/config.js';
 import { getCartById } from '../services/dataBase/cartServicesDB.js';
 import {
   separateProductsByStock,
@@ -9,11 +8,10 @@ import { getUserById } from '../services/dataBase/usersServices.js';
 import { generateUniqueCode } from '../utils/generateCode.utils.js';
 import { create as createOrder } from '../services/dataBase/orderServices.js';
 import { updateProduct } from '../services/dataBase/prodServicesDB.js';
-import { devLog, prodLog } from '../config/customLogger.js';
 import { successfulPurchase } from '../utils/mail.utils.js';
+import getLogger from '../utils/log.utils.js';
 
-let log;
-config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
+const log = getLogger();
 
 const paymentSuccess = async (req, res) => {
   // Si el pago es exitoso, Restar la cantidad comprada del stock del producto y actualizar la base de datos

@@ -1,11 +1,8 @@
 import transporter from '../config/mails.js';
 import config from '../config/config.js';
+import getLogger from '../utils/log.utils.js';
 
-import { devLog, prodLog } from '../config/customLogger.js';
-
-let log;
-
-config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
+const log = getLogger();
 
 const sendRecoverPassword = (email, token) => {
   const url =

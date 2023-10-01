@@ -2,6 +2,9 @@ import { Router } from 'express';
 import { v4 } from 'uuid';
 import ProductManager from '../../services/fileSystem/prodServicesFS.js'
 import { uploader } from '../../middlewares/multer.js';
+import getLogger from '../../utils/log.utils.js';
+
+const log = getLogger();
 
 const productsRouterFs = Router();
 const productManager = new ProductManager();
@@ -91,7 +94,7 @@ productsRouterFs.post('/', uploader.array('thumbnails', 5), async (req, res) => 
     });
   } catch (error) {
     res.status(500).json({ error: 'Error al guardar los productos' });
-    console.error('El error es: ', error);
+    log.error('El error es: ', error);
   }
 });
 
@@ -141,7 +144,7 @@ productsRouterFs.put('/:pid', async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ error: 'Error al actualizar el producto' });
-    console.error('El error es: ', error);
+    log.error('El error es: ', error);
   }
 });
 

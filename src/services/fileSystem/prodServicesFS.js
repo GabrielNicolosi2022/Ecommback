@@ -1,7 +1,7 @@
 import { promises } from 'fs';
 import { join } from 'path';
 import __dirname from '../../utils.js';
-import getLogger from '../utils/log.utils.js';
+import getLogger from '../../utils/log.utils.js';
 
 const log = getLogger();
 
@@ -108,12 +108,12 @@ class ProductManager {
     await this.loadProducts();
     // Validación de ingreso de id
     if (productId === undefined) {
-      console.error('Debe especificar un id de producto');
+      log.error('Debe especificar un id de producto');
       return;
     }
     // Validación de existencia de id
     const product = this.products.find((p) => p.id === productId);
-    !product ? console.error('Not found') : log.info(product);
+    !product ? log.error('Not found') : log.info(product);
   }
   // método para modificar un producto
   async uptadeProduct(productId, newProductData) {
@@ -126,7 +126,7 @@ class ProductManager {
     const findProd = this.products.find((p) => p.id === productId);
     // Validación de existencia de id
     if (!findProd) {
-      console.error('El producto solicitado no fue encontrado');
+      log.error('El producto solicitado no fue encontrado');
       return;
     }
     // Modificación de producto
@@ -153,7 +153,7 @@ class ProductManager {
     // log.info(findProd);
     // Validación de existencia de id
     if (!findProd) {
-      console.error('El producto solicitado no fue encontrado');
+      log.error('El producto solicitado no fue encontrado');
       return;
     }
     // Elimina el producto del array

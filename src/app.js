@@ -17,14 +17,14 @@ import indexRouter from './router/Index.routes.js';
 import router from './router/carts.routes.js';
 
 import morgan from 'morgan';
-import { devLog, prodLog } from './config/customLogger.js';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUiExpress from 'swagger-ui-express';
 import db from './config/dbConnection.js';
 import { passSessionToViews } from './middlewares/sessions.middlewares.js';
+import getLogger from './utils/log.utils.js';
+
 // Logger
-let log;
-config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
+const log = getLogger();
 
 /* CONFIGURATIONS */
 const app = express();

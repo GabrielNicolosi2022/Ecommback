@@ -1,12 +1,12 @@
+import getLogger from '../utils/log.utils.js';
+
+const log = getLogger();
 /* Escenarios de prueba
 1. No se proporcionaron productos válidos (formato Array de objetos)
 2. Faltan campos obligatorios (required)
 3. Hay tipos de datos incorrectos (typeOf)
 4. Nuevo producto guardado correctamente (el formato y todos los datos son válidos)
  */
-import getLogger from '../utils/log.utils.js';
-
-const log = getLogger();
 
 const createProducts = (data) => {
   if (!data || !Array.isArray(data.products) || data.products.length === 0)
@@ -67,7 +67,7 @@ if (result1 === 'No se proporcionaron productos válidos') {
   log.info('Test 1: Pasado');
   testPasados++;
 } else {
-  console.error(
+  log.error(
     '* Test 1 fail: se esperaba < No se proporcionaron productos válidos > y se obtuvo',
     result1
   );
@@ -95,7 +95,7 @@ if (result2 === 'Faltan campos obligatorios') {
   log.info('Test 2: Pasado');
   testPasados++;
 } else {
-  console.error(
+  log.error(
     '* Test 2 fail: se esperaba < Faltan campos obligatorios > y se obtuvo',
     result2
   );
@@ -124,7 +124,7 @@ if (result3 === 'Hay tipos de datos incorrectos') {
   log.info('Test 3: Pasado');
   testPasados++;
 } else {
-  console.error(
+  log.error(
     '* Test 3 fail: se esperaba < Hay tipos de datos incorrectos > y se obtuvo',
     result3
   );
@@ -153,7 +153,7 @@ if (result4 === 'Nuevo producto guardado correctamente') {
   log.info('Test 4: Pasado');
   testPasados++;
 } else {
-  console.error(
+  log.error(
     '* Test 4 fail: se esperaba < Nuevo producto guardado correctamente > y se obtuvo',
     result4
   );

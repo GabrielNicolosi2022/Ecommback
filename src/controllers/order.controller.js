@@ -1,9 +1,7 @@
 import * as services from '../services/dataBase/orderServices.js';
-import config from '../config/config.js';
-import { devLog, prodLog } from '../config/customLogger.js';
+import getLogger from '../utils/log.utils.js';
 
-let log;
-config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
+const log = getLogger();
 
 const getAllOrders = async (req, res) => {
   try {
@@ -33,17 +31,5 @@ const getOrderById = async (req, res) => {
     res.status(500).json({ error: 'Error al obtener la orden' });
   }
 };
-
-/* const createOrder = (req, res) => { 
-  // const {user, cart }
-  
-    try {
-        const {userId, cartId, products} = 
-    } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Error al crear la orden' });
-    }
-}
- */
 
 export { getAllOrders, getOrderById };

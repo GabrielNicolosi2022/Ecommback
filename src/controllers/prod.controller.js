@@ -411,7 +411,7 @@ const products = async (req, res) => {
       // userCart: req.session.user.cart
     });
   } catch (error) {
-    console.error('Error al obtener los productos', error);
+    log.error('Error al obtener los productos', error);
     res.status(500).json({ message: 'Error al obtener los productos', error });
   }
 };

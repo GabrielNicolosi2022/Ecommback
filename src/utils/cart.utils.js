@@ -1,9 +1,9 @@
 import { getProductsById } from '../services/dataBase/prodServicesDB.js';
 import { toLocaleFloat } from './numbers.utils.js';
-import config from '../config/config.js';
-import { devLog, prodLog } from '../config/customLogger.js';
-let log;
-config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
+import getLogger from '../utils/log.utils.js';
+
+const log = getLogger();
+
 export const createCartDTO = (products) => {
   const cartDTO = products.map((cartItem) => ({
     id: cartItem.product._id,

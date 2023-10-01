@@ -1,9 +1,7 @@
 import { getProductsById } from '../services/dataBase/prodServicesDB.js';
-import config from '../config/config.js';
-import { devLog, prodLog } from '../config/customLogger.js';
+import getLogger from '../utils/log.utils.js';
 
-let log;
-config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
+const log = getLogger();
 
 export const checkProductOwner = async (req, res, next) => {
   try {

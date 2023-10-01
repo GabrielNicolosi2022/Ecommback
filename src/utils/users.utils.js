@@ -1,5 +1,8 @@
 import UserModel from '../models/schemas/UserModel.js';
 import { createHash } from '../utils/validations.utils.js';
+import getLogger from '../utils/log.utils.js';
+
+const log = getLogger();
 
 export const createUser = async ({
   first_name,
@@ -27,7 +30,7 @@ export const createUser = async ({
 
     return result;
   } catch (error) {
-    console.error('Error creating user:', error);
+    log.error('Error creating user:', error);
     throw error;
   }
 };

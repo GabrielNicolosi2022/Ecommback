@@ -1,11 +1,7 @@
 import UserModel from '../models/schemas/UserModel.js';
-import config from '../config/config.js';
+import getLogger from '../utils/log.utils.js';
 
-import { devLog, prodLog } from '../config/customLogger.js';
-
-let log;
-
-config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
+const log = getLogger();
 
 // Función para actualizar los permisos del usuario
 const updateUserPermissions = async (userId, permissions) => {

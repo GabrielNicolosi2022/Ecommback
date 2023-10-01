@@ -20,7 +20,7 @@ export const configSocket = (server) => {
         const chats = await chatModel.find();
         io.emit('messageLogs', chats);
       } catch (error) {
-        console.error('Error handling message:', error);
+        log.error('Error handling message:', error);
       }
     });
 

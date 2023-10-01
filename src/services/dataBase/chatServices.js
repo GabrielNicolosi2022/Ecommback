@@ -1,6 +1,6 @@
 import chatModel from "../../models/schemas/ChatModel.js";
 import userModel from '../../models/schemas/UserModel.js';
-import getLogger from '../utils/log.utils.js';
+import getLogger from '../../utils/log.utils.js';
 
 const log = getLogger();
 
@@ -14,7 +14,7 @@ const saveChat = async (req, message) => {
     const chat = await chatModel.create({ userMongoId, message });
     return chat;
   } catch (error) {
-    console.error('Error saving chat:', error);
+    log.error('Error saving chat:', error);
     throw error;
   }
 };
@@ -24,7 +24,7 @@ const getChatById = async (chatId) => {
     const chat = await chatModel.findById(chatId).lean();
     return chat;
   } catch (error) {
-    console.error('Error getting chat by ID:', error);
+    log.error('Error getting chat by ID:', error);
     throw error;
   }
 };
@@ -34,7 +34,7 @@ const deleteChat = async (chatId) => {
     const deletedChat = await chatModel.findByIdAndDelete(chatId);
     return deletedChat;
   } catch (error) {
-    console.error('Error deleting chat:', error);
+    log.error('Error deleting chat:', error);
     throw error;
   }
 };

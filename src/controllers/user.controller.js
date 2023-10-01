@@ -237,7 +237,7 @@ const resetPassword = async (req, res) => {
     log.info('Contraseña modificada correctamente');
     res.status(200).send('Contraseña modificada correctamente');
   } catch (error) {
-    console.error('Error: ', error);
+    log.error('Error: ', error);
     res.status(500).send('Error interno');
   }
 };
@@ -545,7 +545,7 @@ const currentUser = async (req, res) => {
       res.json(null);
     }
   } catch (error) {
-    console.error('Error al buscar el usuario:', error);
+    log.error('Error al buscar el usuario:', error);
     res.status(500).json({ error: 'Error al buscar el usuario' });
   }
 };
@@ -553,7 +553,7 @@ const currentUser = async (req, res) => {
 const logout = (req, res) => {
   req.session.destroy((err) => {
     if (err) {
-      console.error('Error al destruir la sesión', err);
+      log.error('Error al destruir la sesión', err);
       return res.status(500).json({ error: 'Error al cerrar la sesión' });
     }
     res.redirect('/login');

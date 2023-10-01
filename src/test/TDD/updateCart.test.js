@@ -34,7 +34,7 @@ if (result1 === 'No se ha proporcionado un cartId') {
   log.info('Test 1: Pasado');
   testPasados++;
 } else {
-  console.error(
+  log.error(
     '* Test 1 fails: se esperaba < No se ha proporcionado un cartId > y se obtuvo',
     result1
   );
@@ -48,7 +48,7 @@ if (result2 === 'Tipo de dato incorrecto') {
   log.info('Test 2: Pasado');
   testPasados++;
 } else {
-  console.error(
+  log.error(
     '* Test 2 fails: se esperaba < Tipo de dato incorrecto > y se obtuvo',
     result2
   );
@@ -66,7 +66,7 @@ if (result3 === 'Carrito no encontrado') {
   log.info('Test 3: Pasado');
   testPasados++;
 } else {
-  console.error(
+  log.error(
     '* Test 3 fails: se esperaba < Carrito no encontrado > y se obtuvo',
     result3
   );
@@ -83,7 +83,7 @@ if (result4 === 'Producto no encontrado') {
   log.info('Test 4: Pasado');
   testPasados++;
 } else {
-  console.error(
+  log.error(
     '* Test 4 fails: se esperaba < Producto no encontrado > y se obtuvo',
     result4
   );
@@ -100,7 +100,7 @@ if (result5 === 'La cantidad mínima es 1') {
   log.info('Test 5: Pasado');
   testPasados++;
 } else {
-  console.error(
+  log.error(
     '* Test 5 fails: se esperaba < La cantidad mínima es 1 > y se obtuvo',
     result5
   );
@@ -117,7 +117,7 @@ if (result6 === 'Stock insuficiente') {
   log.info('Test 6: Pasado');
   testPasados++;
 } else {
-  console.error(
+  log.error(
     '* Test 6 fails: se esperaba < Stock insuficiente > y se obtuvo',
     result6
   );
@@ -136,7 +136,7 @@ if (result7 === 'Carrito actualizado correctamente') {
   log.info('Test 7: Pasado');
   testPasados++;
 } else {
-  console.error(
+  log.error(
     '* Test 7 fails: se esperaba < Carrito actualizado correctamente > y se obtuvo',
     result7
   );

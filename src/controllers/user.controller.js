@@ -1,5 +1,4 @@
-import config from '../config/config.js';
-import { devLog, prodLog } from '../config/customLogger.js';
+import getLogger from '../utils/log.utils.js';
 import * as usersServices from '../services/dataBase/usersServices.js';
 import { sendRecoverPassword, deleteAccountMail } from '../utils/mail.utils.js';
 import {
@@ -11,8 +10,7 @@ import {
 import { userDTO } from '../DTO/currentUser.js';
 import { createCart } from '../services/dataBase/cartServicesDB.js';
 
-let log;
-config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
+const log = getLogger();
 
 const root = (req, res) => {
   res.redirect('/product');
@@ -95,7 +93,7 @@ const userLogin = async (req, res) => {
         documents: req.user.documents,
         last_connection: new Date(),
       };
-            
+
       if (req.user.role !== 'admin') {
         // Verificar si el usuario ya tiene un carrito asignado
         if (!req.user.cart) {
@@ -236,7 +234,7 @@ const resetPassword = async (req, res) => {
 
     const hashedPassword = await createHash(password);
     await usersServices.updatePasswordByEmail(email, hashedPassword);
-    console.log('Contraseña modificada correctamente');
+    log.info('Contraseña modificada correctamente');
     res.status(200).send('Contraseña modificada correctamente');
   } catch (error) {
     console.error('Error: ', error);
@@ -541,7 +539,7 @@ const currentUser = async (req, res) => {
       const userDTOData = userDTO(user);
 
       // Devolver el usuario en la respuesta
-      res.json({data: userDTOData});
+      res.json({ data: userDTOData });
     } else {
       // No hay un usuario en la sesión actual
       res.json(null);

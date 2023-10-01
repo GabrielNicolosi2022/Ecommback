@@ -1,13 +1,16 @@
 import chatModel from "../../models/schemas/ChatModel.js";
 import userModel from '../../models/schemas/UserModel.js';
+import getLogger from '../utils/log.utils.js';
+
+const log = getLogger();
 
 const saveChat = async (req, message) => {
   try {
     const userId = req.session; //! no está obteniendo la req.session
-    console.log('userId: ', userId)
+    log.info('userId: ', userId)
     const user = await userModel.findOne({ _id: userId });
     const userMongoId = user._id;
-    console.log('user: ',user);
+    log.info('user: ',user);
     const chat = await chatModel.create({ userMongoId, message });
     return chat;
   } catch (error) {

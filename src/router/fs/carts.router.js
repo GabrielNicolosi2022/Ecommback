@@ -22,7 +22,6 @@ cartsRouterFs.get('/:cid', async (req, res) => {
 cartsRouterFs.post('/', async (req, res) => {
   try {
     const newCart = await cartManager.addCart();
-    console.log(newCart);
     res.status(201).json({ message: 'Carrito creado correctamente', newCart });
   } catch (error) {
     res.status(500).json({ message: 'Error al crear el carrito', error });

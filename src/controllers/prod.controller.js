@@ -1,14 +1,12 @@
+import getLogger from '../utils/log.utils.js';
 import * as prodServices from '../services/dataBase/prodServicesDB.js';
 import * as usersServices from '../services/dataBase/usersServices.js';
 import { deleteProductMail } from '../utils/mail.utils.js';
 import customError from '../services/errors/customError.js';
 import { EErrors, PErrors } from '../services/errors/enums.js';
 import { createProductPropsErrorInfo } from '../services/errors/info.js';
-import config from '../config/config.js';
-import { devLog, prodLog } from '../config/customLogger.js';
 
-let log;
-config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
+const log = getLogger()
 
 // Traer todos los productos
 const getProducts = async (req, res) => {
@@ -399,6 +397,7 @@ const products = async (req, res) => {
     const nextLink = nextPage
       ? `/product?page=${nextPage}&limit=${limit}`
       : null;
+
     res.render('products', {
       title: 'EcommBack',
       pageTitle: 'Lista de Productos',

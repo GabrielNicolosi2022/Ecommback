@@ -1,8 +1,6 @@
-import config from '../config/config.js';
-import { devLog, prodLog } from '../config/customLogger.js';
+import getLogger from '../utils/log.utils.js';
 
-let log;
-config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
+const log = getLogger();
 
 export const verifyRequiredFields = (req, res, next) => {
   try {
@@ -28,8 +26,8 @@ export const requireDocumentation = (req, res, next) => {
     if (role === 'user') {
       return next();
     } else if (role === 'premium') {
-      const uploadedDocs = req.files; 
-      console.log('uploadedDocs:', uploadedDocs)
+      const uploadedDocs = req.files;
+      log.info('uploadedDocs:', uploadedDocs);
       const requiredDocs = [
         'identificacion',
         'comprobanteDomicilio',

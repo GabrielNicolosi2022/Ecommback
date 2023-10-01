@@ -4,6 +4,9 @@
 3. Hay tipos de datos incorrectos (typeOf)
 4. Nuevo producto guardado correctamente (el formato y todos los datos son válidos)
  */
+import getLogger from '../utils/log.utils.js';
+
+const log = getLogger();
 
 const createProducts = (data) => {
   if (!data || !Array.isArray(data.products) || data.products.length === 0)
@@ -43,9 +46,9 @@ const createProducts = (data) => {
 // Escenarios
 let testPasados = 0;
 let testTotales = 4;
-console.log('Create Product Test');
+log.info('Create Product Test');
 // Test 1: La función debe devolver < No se proporcionaron productos válidos >
-console.log(
+log.info(
   'Test 1: La función debe devolver < No se proporcionaron productos válidos >'
 );
 let result1 = createProducts();
@@ -61,18 +64,18 @@ let result1 = createProducts();
     }]} */
 
 if (result1 === 'No se proporcionaron productos válidos') {
-  console.log('Test 1: Pasado');
+  log.info('Test 1: Pasado');
   testPasados++;
 } else {
   console.error(
     '* Test 1 fail: se esperaba < No se proporcionaron productos válidos > y se obtuvo',
     result1
   );
-  console.log(result1);
+  log.info(result1);
 }
-console.log('----------------------------------------------------------------');
+log.info('----------------------------------------------------------------');
 // Test 2: La función debe devolver < Faltan campos obligatorios >
-console.log('Test 2: La función debe devolver < Faltan campos obligatorios >');
+log.info('Test 2: La función debe devolver < Faltan campos obligatorios >');
 let result2 = createProducts({
   products: [
     {
@@ -89,7 +92,7 @@ let result2 = createProducts({
 });
 
 if (result2 === 'Faltan campos obligatorios') {
-  console.log('Test 2: Pasado');
+  log.info('Test 2: Pasado');
   testPasados++;
 } else {
   console.error(
@@ -97,9 +100,9 @@ if (result2 === 'Faltan campos obligatorios') {
     result2
   );
 }
-console.log('----------------------------------------------------------------');
+log.info('----------------------------------------------------------------');
 // Test 3: La función debe devolver < Hay tipos de datos incorrectos >
-console.log(
+log.info(
   'Test 3: La función debe devolver < Hay tipos de datos incorrectos >'
 );
 let result3 = createProducts({
@@ -118,7 +121,7 @@ let result3 = createProducts({
 });
 
 if (result3 === 'Hay tipos de datos incorrectos') {
-  console.log('Test 3: Pasado');
+  log.info('Test 3: Pasado');
   testPasados++;
 } else {
   console.error(
@@ -126,9 +129,9 @@ if (result3 === 'Hay tipos de datos incorrectos') {
     result3
   );
 }
-console.log('----------------------------------------------------------------');
+log.info('----------------------------------------------------------------');
 // Test 4: La función debe devolver < Nuevo producto guardado correctamente >
-console.log(
+log.info(
   'Test 4: La función debe devolver < Nuevo producto guardado correctamente >'
 );
 let result4 = createProducts({
@@ -147,7 +150,7 @@ let result4 = createProducts({
 });
 
 if (result4 === 'Nuevo producto guardado correctamente') {
-  console.log('Test 4: Pasado');
+  log.info('Test 4: Pasado');
   testPasados++;
 } else {
   console.error(
@@ -155,18 +158,18 @@ if (result4 === 'Nuevo producto guardado correctamente') {
     result4
   );
 }
-console.log('----------------------------------------------------------------');
+log.info('----------------------------------------------------------------');
 
 if (testPasados === testTotales) {
-  console.log(
+  log.info(
     `${testPasados} de ${testTotales} test han pasado satisfactoriamente!!!`
   );
 } else {
-  console.log(
+  log.info(
     `*** ${testTotales - testPasados} de ${testTotales} han fallado ***`
   );
 }
-console.log(
+log.info(
   '________________________________________________________________________________________________________________________________'
 );
 

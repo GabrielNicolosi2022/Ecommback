@@ -1,3 +1,7 @@
+import getLogger from '../utils/log.utils.js';
+
+const log = getLogger();
+
 const socket = io();
 
 let user;
@@ -20,7 +24,7 @@ Swal.fire({
   allowEscapeKey: true,
   allowEnterKey: true,
 }).then((result) => {
-  console.log('result: ', result);
+  log.info('result: ', result);
   user = result.value;
   socket.emit('authenticated', user);
 });

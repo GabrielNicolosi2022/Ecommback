@@ -6,14 +6,9 @@ import mongoose from 'mongoose';
 import supertest from 'supertest';
 import { expect } from 'chai';
 import { products1, products2 } from '../../mocks/products.mocks.js';
+import getLogger from '../utils/log.utils.js';
 
-/* 
-* Bloque comentado porque no me estan llegando los values del config.js
-console.log(config.environment);
-mongoose.connect(config.db.testing,{
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  }); */
+const log = getLogger();
 
 const requester = supertest('http://localhost:8080');
 
@@ -99,7 +94,7 @@ describe('Product router testing', function () {
 
       const response = await requester.post('/api/products').send(products1);
 
-      console.log(response);
+      log.info(response);
     });
   });
  */

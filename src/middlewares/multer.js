@@ -1,5 +1,8 @@
 import multer from 'multer';
 import __dirname from '../utils.js';
+import getLogger from '../utils/log.utils.js';
+
+const log = getLogger();
 
 // Multer
 const storage = multer.diskStorage({
@@ -18,7 +21,7 @@ const storage = multer.diskStorage({
     cb(null, uploadPath);
   },
   filename: (req, file, cb) => {
-    console.log(file);
+    log.info(file);
     cb(null, `${Date.now()}-${file.originalname}`);
   },
 });
@@ -26,7 +29,7 @@ const storage = multer.diskStorage({
 export const uploader = multer({
   storage,
   onError: (err, next) => {
-    console.log(err);
+    log.info(err);
     next();
   },
 });

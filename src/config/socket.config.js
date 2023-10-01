@@ -1,16 +1,19 @@
+import getLogger from '../utils/log.utils.js';
 import { Server } from 'socket.io';
 import chatModel from '../models/schemas/ChatModel.js';
 import { saveChat } from '../services/dataBase/chatServices.js';
+
+const log = getLogger();
 
 // Server Socket.io
 export const configSocket = (server) => {
   const io = new Server(server);
 
   io.on('connection', (socket) => {
-    console.log('Socket connected');
+    log.info('Socket connected');
 
     socket.on('message', async (data) => {
-      console.log('data:', data);
+      log.info('data:', data);
       try {
         // Persistence in mongoDB
         const chat = await saveChat(data.user, data.message);

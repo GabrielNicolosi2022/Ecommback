@@ -1,9 +1,8 @@
+import getLogger from '../utils/log.utils.js';
 import mongoose from 'mongoose';
 import * as cartServices from '../services/dataBase/cartServicesDB.js';
 import * as prodServices from '../services/dataBase/prodServicesDB.js';
 import { toLocaleFloat } from '../utils/numbers.utils.js';
-import config from '../config/config.js';
-import { devLog, prodLog } from '../config/customLogger.js';
 import {
   calculateTotal,
   decimalToInteger,
@@ -13,8 +12,7 @@ import {
 } from '../utils/cart.utils.js';
 import { createSession } from '../services/dataBase/paymentServices.js';
 
-let log;
-config.environment.env === 'production' ? (log = prodLog) : (log = devLog);
+const log = getLogger();
 
 // Obtener todos los carritos
 const getCarts = async (req, res) => {
@@ -119,7 +117,6 @@ const getMyCart = async (req, res) => {
 const createCart = async (req, res) => {
   try {
     const { products } = req.body;
-    // console.log({ products });
     if (!products) {
       log.error('No se han enviado productos para cargar en el carrito');
       return res.status(400).json({
@@ -130,7 +127,6 @@ const createCart = async (req, res) => {
     const newCart = {
       products: products,
     };
-    console.log(newCart);
     await cartServices.createCart(newCart);
     return res.status(200).json({
       status: 'success',
@@ -383,7 +379,6 @@ const purchase = async (req, res) => {
     };
 
     const result = await createSession(paymentInfo);
-    // console.log('purchase - result: ', result);
 
     return res.status(200).redirect(result.url);
   } catch (error) {

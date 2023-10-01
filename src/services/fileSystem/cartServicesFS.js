@@ -2,6 +2,9 @@ import fs from 'fs';
 import path from 'path';
 import { v4 } from 'uuid';
 import __dirname from '../../utils.js';
+import getLogger from '../utils/log.utils.js';
+
+const log = getLogger();
 
 class CartManager {
   constructor() {
@@ -25,7 +28,7 @@ class CartManager {
       if (error.code === 'ENOENT') {
         return [];
       } else {
-        console.log('Error al obtener los carritos', error);
+        log.info('Error al obtener los carritos', error);
       }
     }
   }
@@ -37,9 +40,9 @@ class CartManager {
         this.path,
         JSON.stringify(this.carts, null, 2)
       );
-      console.log('Los datos fueron guardados exitosamente');
+      log.info('Los datos fueron guardados exitosamente');
     } catch (error) {
-      console.log(error);
+      log.info(error);
     }
   }
 
@@ -52,7 +55,7 @@ class CartManager {
     // agrego producto al array y lo guardo en un archivo json
     this.carts.push(newCart);
     await this.saveCarts();
-    console.log(`El carrito con id ${newCart.id} ha sido creado con éxito`);
+    log.info(`El carrito con id ${newCart.id} ha sido creado con éxito`);
     return newCart;
   }
 
@@ -63,9 +66,9 @@ class CartManager {
         this.pathDelete,
         JSON.stringify(this.removed, null, 2)
       );
-      console.log('Los datos fueron guardados exitosamente');
+      log.info('Los datos fueron guardados exitosamente');
     } catch (error) {
-      console.log(error);
+      log.info(error);
     }
   }
 }

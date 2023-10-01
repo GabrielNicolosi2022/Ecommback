@@ -1,6 +1,9 @@
 import { promises } from 'fs';
 import { join } from 'path';
 import __dirname from '../../utils.js';
+import getLogger from '../utils/log.utils.js';
+
+const log = getLogger();
 
 class ProductManager {
   constructor() {
@@ -22,7 +25,7 @@ class ProductManager {
       if (error.code === 'ENOENT') {
         return [];
       } else {
-        console.log('Error al obtener los productos', error);
+        log.info('Error al obtener los productos', error);
       }
     }
   }
@@ -34,9 +37,9 @@ class ProductManager {
         this.path,
         JSON.stringify(this.products, null, 2)
       );
-      console.log('Los datos fueron guardados exitosamente');
+      log.info('Los datos fueron guardados exitosamente');
     } catch (error) {
-      console.log(error);
+      log.info(error);
     }
   }
 
@@ -47,9 +50,9 @@ class ProductManager {
         './removedProducts.json',
         JSON.stringify(this.removed, null, 2)
       );
-      console.log('Los datos eliminados fueron guardados exitosamente');
+      log.info('Los datos eliminados fueron guardados exitosamente');
     } catch (error) {
-      console.log(error);
+      log.info(error);
     }
   }
 
@@ -72,7 +75,7 @@ class ProductManager {
     );
     // validación de campo code
     if (existsProduct) {
-      console.log(`El producto con código ${code} ya existe`);
+      log.info(`El producto con código ${code} ya existe`);
       return;
     }
     // validación de campos obligatorios
@@ -80,7 +83,7 @@ class ProductManager {
       (key) => !product[key]
     );
     if (missingAttributes.length > 0) {
-      console.log(
+      log.info(
         `Error: faltan los siguientes atributos para crear el producto: ${missingAttributes.join(
           ', '
         )}`
@@ -89,7 +92,7 @@ class ProductManager {
     }
     // agrego producto al array y lo guardo en un archivo json
     this.products.push(product);
-    console.log(
+    log.info(
       `El producto ${product.title} con id ${product.id} ha sido agregado con éxito`
     );
     await this.saveProducts();
@@ -98,7 +101,7 @@ class ProductManager {
   // método que retorna los productos creados hasta el momento
   async getProducts() {
     await this.loadProducts();
-    console.log(this.products);
+    log.info(this.products);
   }
   // método para buscar productos por id
   async getProductById(productId) {
@@ -110,13 +113,13 @@ class ProductManager {
     }
     // Validación de existencia de id
     const product = this.products.find((p) => p.id === productId);
-    !product ? console.error('Not found') : console.log(product);
+    !product ? console.error('Not found') : log.info(product);
   }
   // método para modificar un producto
   async uptadeProduct(productId, newProductData) {
     // Validación de ingreso de id
     if (productId === undefined) {
-      console.log('Debe especificar el id del producto a modificar');
+      log.info('Debe especificar el id del producto a modificar');
       return;
     }
     // Obtengo el primer producto que coincida con el id buscado
@@ -131,8 +134,8 @@ class ProductManager {
     this.products[findProd] = modifiedProduct;
     // Guarda el array modificado en el json
     await this.saveProducts();
-    // console.log(productId);
-    console.log(
+    // log.info(productId);
+    log.info(
       `El producto con id: ${productId} ha sido actualizado correctamente`
     );
   }
@@ -142,12 +145,12 @@ class ProductManager {
     this.loadProducts();
     // Validación de ingreso de id
     if (productId === undefined) {
-      console.log('Debe especificar el id del producto a eliminar');
+      log.info('Debe especificar el id del producto a eliminar');
       return;
     }
     // Obtengo el primer producto que coincida con el id buscado
     const findProd = this.products.find((p) => p.id === productId);
-    // console.log(findProd);
+    // log.info(findProd);
     // Validación de existencia de id
     if (!findProd) {
       console.error('El producto solicitado no fue encontrado');
@@ -158,7 +161,7 @@ class ProductManager {
     // Guarda el array modificado en el json
     await this.saveProducts();
     // await this.loadProducts();
-    console.log(
+    log.info(
       `El producto ${productoEliminado.id} - ${productoEliminado.title} ha sido eliminado`
     );
   }

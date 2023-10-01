@@ -4,6 +4,9 @@ import {
   PErrors,
   UErrors,
 } from '../../services/errors/enums.js';
+import getLogger from '../utils/log.utils.js';
+
+const log = getLogger();
 
 const errorResponses = {
   [EErrors.ROUTING_ERROR]: { status: 'error', error: 'ROUTING_ERROR' },
@@ -18,7 +21,7 @@ const errorResponses = {
 };
 
 export default (error, req, res, next) => {
-  console.log(error.cause);
+  log.info(error.cause);
   const response = errorResponses[error.code] || { error: 'unhandled error' };
   res.send(response);
 };

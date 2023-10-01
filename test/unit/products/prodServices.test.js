@@ -1,12 +1,11 @@
-// import 'dotenv/config';
-// import config from '../../../src/config/config.js';
-// console.log(config);
-
 import * as prodServices from '../../../src/services/dataBase/prodServicesDB.js';
 import mongoose from 'mongoose';
 import { expect } from 'chai';
 import { incompleteData, productsData } from '../../mocks/products.mocks.js';
 import { before } from 'mocha';
+import getLogger from '../utils/log.utils.js';
+
+const log = getLogger();
 
 // Conectar a la base de datos
 const dbURI =

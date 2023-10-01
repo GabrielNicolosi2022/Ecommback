@@ -83,7 +83,6 @@ productsRouterFs.post('/', uploader.array('thumbnails', 5), async (req, res) => 
       category,
       thumbnails: thumbnails || [],
     };
-    console.log('Nuevo producto: ', nuevoProducto);
     await productManager.addProduct(nuevoProducto);
     res.send({
       status: 'success',

@@ -1,3 +1,7 @@
+import getLogger from '../utils/log.utils.js';
+
+const log = getLogger();
+
 /* Escenarios de prueba
 Carrito actualizado correctamente (todos los datos son válidos)
  */
@@ -19,15 +23,15 @@ const updateCart = (cartId, products, quantity) => {
 let testPasados = 0;
 let testTotales = 7;
 
-console.log('Update Cart Test');
+log.info('Update Cart Test');
 // Test 1: La función debe devolver < No se ha proporcionado un cartId >
-console.log(
+log.info(
   'Test 1: La función debe devolver < No se ha proporcionado un cartId >'
 );
 const result1 = updateCart('', 'd0eaf83dabb3cf21a3fd7afc', 32);
 
 if (result1 === 'No se ha proporcionado un cartId') {
-  console.log('Test 1: Pasado');
+  log.info('Test 1: Pasado');
   testPasados++;
 } else {
   console.error(
@@ -35,13 +39,13 @@ if (result1 === 'No se ha proporcionado un cartId') {
     result1
   );
 }
-console.log('----------------------------------------------------------------');
+log.info('----------------------------------------------------------------');
 // Test 2: La función debe devolver < Tipo de dato incorrecto >
-console.log('Test 2: La función debe devolver < Tipo de dato incorrecto >');
+log.info('Test 2: La función debe devolver < Tipo de dato incorrecto >');
 const result2 = updateCart(24, 'd0eaf83dabb3cf21a3fd7afc', 32);
 
 if (result2 === 'Tipo de dato incorrecto') {
-  console.log('Test 2: Pasado');
+  log.info('Test 2: Pasado');
   testPasados++;
 } else {
   console.error(
@@ -49,9 +53,9 @@ if (result2 === 'Tipo de dato incorrecto') {
     result2
   );
 }
-console.log('----------------------------------------------------------------');
+log.info('----------------------------------------------------------------');
 // Test 3: La función debe devolver < Carrito no encontrado >
-console.log('Test 3: La función debe devolver < Carrito no encontrado >');
+log.info('Test 3: La función debe devolver < Carrito no encontrado >');
 const result3 = updateCart(
   '64c594d1085825c5ca084c35',
   'd0eaf83dabb3cf21a3fd7afc',
@@ -59,7 +63,7 @@ const result3 = updateCart(
 );
 
 if (result3 === 'Carrito no encontrado') {
-  console.log('Test 3: Pasado');
+  log.info('Test 3: Pasado');
   testPasados++;
 } else {
   console.error(
@@ -67,16 +71,16 @@ if (result3 === 'Carrito no encontrado') {
     result3
   );
 }
-console.log('----------------------------------------------------------------');
+log.info('----------------------------------------------------------------');
 // Test 4: La función debe devolver < Producto no encontrado >
-console.log('Test 4: La función debe devolver < Producto no encontrado >');
+log.info('Test 4: La función debe devolver < Producto no encontrado >');
 const result4 = updateCart(
   '64c594d1085825c5ca084d62',
   'd0eaf83dabb3cf21a3fd7cfa',
   32
 );
 if (result4 === 'Producto no encontrado') {
-  console.log('Test 4: Pasado');
+  log.info('Test 4: Pasado');
   testPasados++;
 } else {
   console.error(
@@ -84,16 +88,16 @@ if (result4 === 'Producto no encontrado') {
     result4
   );
 }
-console.log('----------------------------------------------------------------');
+log.info('----------------------------------------------------------------');
 // Test 5: La función debe devolver < La cantidad mínima es 1 >
-console.log('Test 5: La función debe devolver < La cantidad mínima es 1 >');
+log.info('Test 5: La función debe devolver < La cantidad mínima es 1 >');
 const result5 = updateCart(
   '64c594d1085825c5ca084d62',
   'd0eaf83dabb3cf21a3fd7afc',
   0
 );
 if (result5 === 'La cantidad mínima es 1') {
-  console.log('Test 5: Pasado');
+  log.info('Test 5: Pasado');
   testPasados++;
 } else {
   console.error(
@@ -101,16 +105,16 @@ if (result5 === 'La cantidad mínima es 1') {
     result5
   );
 }
-console.log('----------------------------------------------------------------');
+log.info('----------------------------------------------------------------');
 // Test 6: La función debe devolver < Stock insuficiente >
-console.log('Test 6: La función debe devolver < Stock insuficiente >');
+log.info('Test 6: La función debe devolver < Stock insuficiente >');
 const result6 = updateCart(
   '64c594d1085825c5ca084d62',
   'd0eaf83dabb3cf21a3fd7afc',
   32
 );
 if (result6 === 'Stock insuficiente') {
-  console.log('Test 6: Pasado');
+  log.info('Test 6: Pasado');
   testPasados++;
 } else {
   console.error(
@@ -118,9 +122,9 @@ if (result6 === 'Stock insuficiente') {
     result6
   );
 }
-console.log('----------------------------------------------------------------');
+log.info('----------------------------------------------------------------');
 // Test 7: La función debe devolver < Carrito actualizado correctamente >
-console.log(
+log.info(
   'Test 7: La función debe devolver < Carrito actualizado correctamente >'
 );
 const result7 = updateCart(
@@ -129,7 +133,7 @@ const result7 = updateCart(
   16
 );
 if (result7 === 'Carrito actualizado correctamente') {
-  console.log('Test 7: Pasado');
+  log.info('Test 7: Pasado');
   testPasados++;
 } else {
   console.error(
@@ -137,18 +141,18 @@ if (result7 === 'Carrito actualizado correctamente') {
     result7
   );
 }
-console.log('----------------------------------------------------------------');
+log.info('----------------------------------------------------------------');
 
 if (testPasados === testTotales) {
-  console.log(
+  log.info(
     `${testPasados} de ${testTotales} test han pasado satisfactoriamente!!!`
   );
 } else {
-  console.log(
+  log.info(
     `*** ${testTotales - testPasados} de ${testTotales} han fallado ***`
   );
 }
-console.log(
+log.info(
   '________________________________________________________________________________________________________________________________'
 );
 

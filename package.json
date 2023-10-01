@@ -5,7 +5,7 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "start": "src/app.js",
+    "start": "app.js",
     "dev": "nodemon src/app.js",
     "open": "open http://localhost:8080",
     "tdd": "node src/test/TDD/package.test.js",

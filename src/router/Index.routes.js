@@ -1,8 +1,4 @@
 import { Router } from 'express';
-// File System
-// import productsRouterFs from '../router/fs/products.router.js';
-// import cartsRouterFs from '../router/fs/carts.router.js';
-// Mongo Database
 import viewsRouter from './views.routes.js';
 import sessionsRouter from './sessions.routes.js';
 import userRouter from './users.routes.js';

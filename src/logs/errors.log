@@ -7,3 +7,6 @@ error: Acceso denegado. El usuario no tiene el rol adecuado {"timestamp":"2023-1
 error: Acceso denegado. El usuario no tiene el rol adecuado {"timestamp":"2023-10-01T19:27:33.721Z"}
 error: Acceso denegado. El usuario no tiene el rol adecuado {"timestamp":"2023-10-01T19:27:56.766Z"}
 error: Acceso denegado. El usuario no tiene el rol adecuado {"timestamp":"2023-10-01T19:28:57.335Z"}
+fatal: purchase - Error al realizar la compra. Error: Not a valid URL {"timestamp":"2023-10-01T23:01:53.461Z"}
+fatal: purchase - Error al realizar la compra. Not a valid URL {"timestamp":"2023-10-01T23:06:52.755Z"}
+fatal: purchase - Error al realizar la compra. Error: Not a valid URL {"timestamp":"2023-10-01T23:17:33.520Z"}

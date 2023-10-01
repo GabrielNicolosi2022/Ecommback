@@ -374,7 +374,7 @@ const purchase = async (req, res) => {
     const paymentInfo = {
       line_items,
       mode: 'payment',
-      success_url: `https://ecommback.up.railway.app//v1/api/payment/success/${cartId}`,
+      success_url: `https://ecommback.up.railway.app/v1/api/payment/success/${cartId}`,
       cancel_url: `https://ecommback.up.railway.app/v1/api/payment/cancel/${cartId}`,
     };
 

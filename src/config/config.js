@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 let config = {};
 
-const environment = 'development'; // cambiar environment: 'production' / 'development' / 'testing'
+const environment = 'production'; // cambiar environment: 'production' / 'development' / 'testing'
 
 dotenv.config({
   path:

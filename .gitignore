@@ -1,4 +1,6 @@
 node_modules
+src/router/fs
+src/services/fileSystem
 .vscode
 .env.development
 .env.production

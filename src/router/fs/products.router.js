@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { v4 } from 'uuid';
+// import { v4 } from 'uuid';
 import ProductManager from '../../services/fileSystem/prodServicesFS.js'
 import { uploader } from '../../middlewares/multer.js';
 import getLogger from '../../utils/log.utils.js';

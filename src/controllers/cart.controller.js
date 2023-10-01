@@ -374,8 +374,8 @@ const purchase = async (req, res) => {
     const paymentInfo = {
       line_items,
       mode: 'payment',
-      success_url: `/v1/api/payment/success/${cartId}`,
-      cancel_url: `/v1/api/payment/cancel/${cartId}`,
+      success_url: `http://localhost:8080/v1/api/payment/success/${cartId}`,
+      cancel_url: `http://localhost:8080/v1/api/payment/cancel/${cartId}`,
     };
 
     const result = await createSession(paymentInfo);

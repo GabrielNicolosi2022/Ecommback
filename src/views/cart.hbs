@@ -18,9 +18,6 @@
             <form action="/v1/api/carts/{{@root/cartId}}/products/{{this.id}}" class="d-flex justify-content-end" method="post">
               <button type="submit" class='btn btn-outline-danger me-3' title='Eliminar este producto del carrito'>Eliminar</button>
             </form>
-<!-- Agrega estos para verificar los valores -->
-<p>Cart ID: {{@root/cartId}}</p>
-<p>Product ID: {{this.id}}</p>          </div>
           <hr />
         {{/each}}
         {{#if productsNotProcessed.length}}
@@ -36,9 +33,6 @@
                 <form action="/v1/api/carts/{{@root/cartId}}/products/{{this.id}}" class="d-flex justify-content-end" method="post">
                   <button type="submit" class='btn btn-outline-danger me-3' title='Eliminar este producto del carrito'>Eliminar</button>
                 </form>
-                <!-- Agrega estos para verificar los valores -->
-<p>Cart ID: {{@root/cartId}}</p>
-<p>Product ID: {{this.id}}</p>
               </div>
               <hr />
             {{/each}}
@@ -79,9 +73,6 @@
         <form action="/v1/api/carts/{{@root/cartId}}/products/{{this.id}}" class="d-flex justify-content-end" method="post">
            <button type="submit" class='btn btn-outline-danger me-3' title='Eliminar este producto del carrito'>Eliminar</button>
         </form>
-        <!-- Agrega estos para verificar los valores -->
-<p>Cart ID: {{@root/cartId}}</p>
-<p>Product ID: {{this.id}}</p>
       </div>
       <hr />
     {{/each}}

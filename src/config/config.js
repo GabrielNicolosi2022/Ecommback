@@ -61,6 +61,4 @@ config.stripe = {
   sk: process.env.SECRET_KEY,
 };
 
-// console.log(config);
-
 export default config;

@@ -44,8 +44,7 @@ const isAuthorized = (req, res, next) => {
 };
 
 // Middleware para verificar el rol del usuario y autorizar el acceso a ciertas rutas
-const checkRole =
-  (...requiredRole) =>
+const checkRole = (...requiredRole) =>
   (req, res, next) => {
     // Verificar si hay una sesión activa y si el usuario tiene un rol válido
     if (

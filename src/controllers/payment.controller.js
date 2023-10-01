@@ -100,7 +100,11 @@ const paymentSuccess = async (req, res) => {
 };
 
 const paymentCancel = (req, res) => {
-  res.send('cancel');
+  req.flash('error', 'La compra no ha podido ser completada');
+  res.render('cancelPayment', {
+    title: 'EcommBack',
+    pageTitle: 'Mi Carrito',
+  });
 };
 
 export { paymentSuccess, paymentCancel };

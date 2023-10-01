@@ -10,3 +10,9 @@ error: Acceso denegado. El usuario no tiene el rol adecuado {"timestamp":"2023-1
 fatal: purchase - Error al realizar la compra. Error: Not a valid URL {"timestamp":"2023-10-01T23:01:53.461Z"}
 fatal: purchase - Error al realizar la compra. Not a valid URL {"timestamp":"2023-10-01T23:06:52.755Z"}
 fatal: purchase - Error al realizar la compra. Error: Not a valid URL {"timestamp":"2023-10-01T23:17:33.520Z"}
+fatal: undefined {"code":"ECONNREFUSED","hostname":"_mongodb._tcp.ecommerce.hwzuuds.mongodb.net","syscall":"querySrv","timestamp":"2023-10-01T23:49:31.288Z"}
+fatal: undefined {"code":"ECONNREFUSED","hostname":"_mongodb._tcp.ecommerce.hwzuuds.mongodb.net","syscall":"querySrv","timestamp":"2023-10-01T23:49:40.124Z"}
+fatal: undefined {"code":"ECONNREFUSED","hostname":"_mongodb._tcp.ecommerce.hwzuuds.mongodb.net","syscall":"querySrv","timestamp":"2023-10-01T23:49:42.046Z"}
+fatal: undefined {"code":"ECONNREFUSED","hostname":"_mongodb._tcp.ecommerce.hwzuuds.mongodb.net","syscall":"querySrv","timestamp":"2023-10-01T23:49:43.970Z"}
+fatal: undefined {"code":"ECONNREFUSED","hostname":"_mongodb._tcp.ecommerce.hwzuuds.mongodb.net","syscall":"querySrv","timestamp":"2023-10-01T23:49:48.779Z"}
+fatal: undefined {"code":"ECONNREFUSED","hostname":"_mongodb._tcp.ecommerce.hwzuuds.mongodb.net","syscall":"querySrv","timestamp":"2023-10-01T23:49:50.503Z"}

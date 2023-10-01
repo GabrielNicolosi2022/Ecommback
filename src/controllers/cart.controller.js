@@ -1,3 +1,4 @@
+import config from '../config/config.js';
 import getLogger from '../utils/log.utils.js';
 import mongoose from 'mongoose';
 import * as cartServices from '../services/dataBase/cartServicesDB.js';
@@ -13,7 +14,7 @@ import {
 import { createSession } from '../services/dataBase/paymentServices.js';
 
 const log = getLogger();
-
+const BASE_URL = config.url.baseUrl;
 // Obtener todos los carritos
 const getCarts = async (req, res) => {
   try {
@@ -374,8 +375,8 @@ const purchase = async (req, res) => {
     const paymentInfo = {
       line_items,
       mode: 'payment',
-      success_url: `https://ecommback.up.railway.app/v1/api/payment/success/${cartId}`,
-      cancel_url: `https://ecommback.up.railway.app/v1/api/payment/cancel/${cartId}`,
+      success_url: `${BASE_URL}/v1/api/payment/success/${cartId}`,
+      cancel_url: `${BASE_URL}/v1/api/payment/cancel/${cartId}`,
     };
 
     const result = await createSession(paymentInfo);

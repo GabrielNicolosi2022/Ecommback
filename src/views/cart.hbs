@@ -13,7 +13,7 @@
           <div>
             <h3>{{title}}</h3>
             <p>{{description}}</p>
-            <p>Precio: $ {{price}}</p>
+            <p>Precio: U$S {{price}}</p>
             <p>Cantidad: {{quantity}} u.</p>
             <form action="/v1/api/carts/{{@root/cartId}}/products/{{this.id}}" class="d-flex justify-content-end" method="post">
               <button type="submit" class='btn btn-outline-danger me-3' title='Eliminar este producto del carrito'>Eliminar</button>
@@ -29,7 +29,7 @@
             {{#each productsNotProcessed}}
             <div>
               <p>{{description}}</p>
-              <p>Precio: $ {{price}}</p>
+              <p>Precio: U$S {{price}}</p>
               <p>Cantidad: {{quantity}} u.</p>
               <form action="/v1/api/carts/{{@root/cartId}}/products/{{this.id}}" class="d-flex justify-content-end" method="post">
                 <button type="submit" class='btn btn-outline-danger me-3' title='Eliminar este producto del carrito'>Eliminar</button>
@@ -45,9 +45,9 @@
         <form action='/v1/api/carts/{{cartId}}/purchase' method='post'>
           <input type='hidden' name='totalAmount' value='{{totalAmount}}' />
           <h3>Total Carrito:
-            <span class='fw-bold text-primary'> $ {{totalAmount}} </span></h3>
+            <span class='fw-bold text-primary'> U$S {{totalAmount}} </span></h3>
           <h3 class='mt-4'>A Abonar:
-            <span class='fw-bold text-success'> $ {{totalToPay}} </span></h3>
+            <span class='fw-bold text-success'> U$S {{totalToPay}} </span></h3>
           <div class='float-end mt-3'>
             <button
               class='btn btn-outline-success me-2'
@@ -66,7 +66,7 @@
         <div>
           <h3>{{title}}</h3>
           <p>{{description}}</p>
-          <p>Precio: $ {{price}}</p>
+          <p>Precio: U$S {{price}}</p>
           <p>Cantidad: {{quantity}} u.</p>
           <form action="/v1/api/carts/{{@root/cartId}}/products/{{this.id}}" class="d-flex justify-content-end" method="post">
             <button type="submit" class='btn btn-outline-danger me-3' title='Eliminar este producto del carrito'>Eliminar</button>

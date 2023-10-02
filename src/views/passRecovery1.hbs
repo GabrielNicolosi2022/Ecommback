@@ -1,10 +1,6 @@
 <h1 class='mb-3'>{{view}}</h1>
 
-{{#if message}}
-  <div class='alert alert-danger' role='alert'>
-    {{message}}
-  </div>
-{{/if}}
+{{>messages}}
 
 <p class='mb-3'>Por favor, introduce tu nueva contraseña:</p>
 <div class='row'>

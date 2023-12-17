@@ -1,14 +1,14 @@
 import mongoose from 'mongoose';
 import config from './config.js';
 import getLogger from '../utils/log.utils.js';
-
+console.log('dbConnection ', config)
 const log = getLogger();
 
 const connection = mongoose
   .connect(config.db.cs, {
     dbName: config.db.dbName,
   })
-  .catch((err) => log.fatal(err));
+  .catch((err) => log.fatal(err.message));
 
 const db = mongoose.connection;
 

@@ -1,12 +1,12 @@
 {
   "name": "proyecto-backend",
   "version": "1.0.0",
-  "description": "Práctica integradora sobre todos los skills vistos hasta el momento: Clases, Express y modelo request/response, Router y Multer, Handlebars, MongoDB y Mongoose, Cookies, Sesions y Storage. Se desarrollará un servidor que contenga los endpoints y servicios necesarios para gestionar los productos y carritos de compra en el e-commerce. tambien se integra un sistema le login con usuarios y sesiones integrados a la base de datos existente",
-  "main": "src/app.js",
+  "description": "Práctica integradora sobre todos los skills vistos hasta el momento: Clases, Express y modelo request/response, Router y Multer, Handlebars, MongoDB y Mongoose, Cookies, Sessions y Storage. Se desarrollará un servidor que contenga los endpoints y servicios necesarios para gestionar los productos y carritos de compra en el e-commerce. también se integra un sistema le login con usuarios y sesiones integrados a la base de datos existente",
+  "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "start": "node src/app.js",
-    "dev": "nodemon src/app.js",
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
     "tdd": "node src/test/TDD/package.test.js",
     "test": "mocha test/**/*.test.js"
   },

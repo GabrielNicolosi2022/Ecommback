@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import config from './config.js';
 import getLogger from '../utils/log.utils.js';
-console.log('dbConnection ', config)
+
 const log = getLogger();
 
 const connection = mongoose
